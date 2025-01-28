@@ -6,6 +6,8 @@ import { COLORS, SIZES } from '../../styles/theme'
 import ServiceAvailability from '../../components/Vendor/ServiceAvailability'
 import DeliveryAvailability from '../../components/Vendor/DeliveryAvailability'
 import PickupAvailability from '../../components/Vendor/PickupAvailability'
+import Divider from '../../components/Divider'
+import ManageFood from '../../components/Vendor/ManageFood'
 
 const UserRestaurantPage = () => {
     const navigation = useNavigation();
@@ -38,10 +40,10 @@ const UserRestaurantPage = () => {
             <ServiceAvailability availability={item.isAvailable} id={item._id} />
             <DeliveryAvailability availability={item.delivery} id={item._id} />
             <PickupAvailability availability={item.pickup} id={item._id} />
-            {/* <Divider />
+            <Divider />
             <ManageFood restaurantId={item._id} />
-            <AddFood restaurantId={item._id} />
-            <EditRestaurantButton details={item} address={item.coords.address} /> */}
+            {/* <AddFood restaurantId={item._id} /> */}
+            {/* <EditRestaurantButton details={item} address={item.coords.address} /> */}
         </View >
     )
 }

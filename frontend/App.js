@@ -16,6 +16,7 @@ import { CartCountContext } from './contexts/CartCountContext';
 import * as Location from 'expo-location';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import UserRestaurantPage from './screens/Vendor/UserRestaurantPage';
+import ManageFoodPage from './screens/Food/ManageFoodPage';
 
 
 const Stack = createNativeStackNavigator();
@@ -88,6 +89,11 @@ export default function App() {
                       <Stack.Screen
                         name="user-restaurant-page"
                         component={UserRestaurantPage}
+                        options={{ headerShown: false }}
+                      />
+                      <Stack.Screen
+                        name='manage-food-page'
+                        component={ManageFoodPage}
                         options={{ headerShown: false }}
                       />
                     </Stack.Navigator>
