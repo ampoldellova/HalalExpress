@@ -15,6 +15,7 @@ import { LoginContext } from './contexts/LoginContext';
 import { CartCountContext } from './contexts/CartCountContext';
 import * as Location from 'expo-location';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import UserRestaurantPage from './screens/Vendor/UserRestaurantPage';
 
 
 const Stack = createNativeStackNavigator();
@@ -82,6 +83,11 @@ export default function App() {
                       <Stack.Screen
                         name="bottom-navigation"
                         component={BottomTab}
+                        options={{ headerShown: false }}
+                      />
+                      <Stack.Screen
+                        name="user-restaurant-page"
+                        component={UserRestaurantPage}
                         options={{ headerShown: false }}
                       />
                     </Stack.Navigator>
