@@ -5,7 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import baseUrl from '../../assets/common/baseUrl'
 import axios from 'axios'
 import Loader from '../Loader'
-import RestaurantStoreComponent from '../RestaurantStoreComponent'
+import RestaurantStoreComponent from './RestaurantStoreComponent'
 
 const UserRestaurants = ({ user }) => {
     const navigation = useNavigation();
