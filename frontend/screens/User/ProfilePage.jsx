@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView, Alert, Modal, Pressable } from "react-native";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useState } from "react";
 import { COLORS, SIZES } from "../../styles/theme";
 import { AntDesign } from "@expo/vector-icons";
 import ProfileTile from "../../components/User/ProfileTile";
@@ -11,6 +11,7 @@ import axios from "axios";
 import { cleanUser } from "../../redux/UserReducer";
 import baseUrl from "../../assets/common/baseUrl";
 import Heading from "../../components/Heading";
+import UserRestaurants from "../../components/Vendor/UserRestaurants";
 // import UserRestaurants from "../../components/Vendor/UserRestaurants";
 // import UserStores from "../../components/Supplier/UserStores";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -107,14 +108,14 @@ const ProfilePage = () => {
                         </View>
                     )}
 
-                    {/* {user.userType === 'Vendor' && (
+                    {user.userType === 'Vendor' && (
                         <View>
                             <Heading heading={'Your Restaurants'} onPress={() => { }} />
                             <UserRestaurants user={user} />
                         </View>
                     )}
 
-                    {user.userType === 'Supplier' && (
+                    {/* {user.userType === 'Supplier' && (
                         <View>
                             <Heading heading={'Your Stores'} onPress={() => { }} />
                             <UserStores user={user} />
