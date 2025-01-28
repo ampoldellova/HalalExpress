@@ -17,6 +17,7 @@ import * as Location from 'expo-location';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import UserRestaurantPage from './screens/Vendor/UserRestaurantPage';
 import ManageFoodPage from './screens/Food/ManageFoodPage';
+import VendorFoodPage from './screens/Food/VendorFoodPage';
 
 
 const Stack = createNativeStackNavigator();
@@ -94,6 +95,11 @@ export default function App() {
                       <Stack.Screen
                         name='manage-food-page'
                         component={ManageFoodPage}
+                        options={{ headerShown: false }}
+                      />
+                      <Stack.Screen
+                        name='vendor-food-page'
+                        component={VendorFoodPage}
                         options={{ headerShown: false }}
                       />
                     </Stack.Navigator>
