@@ -5,7 +5,7 @@ import { COLORS } from '../../styles/theme';
 import Entypo from '@expo/vector-icons/Entypo';
 import { useNavigation } from '@react-navigation/native';
 
-const ManageFood = ({ restaurantId }) => {
+const ManageFoodButton = ({ restaurantId }) => {
     const navigation = useNavigation();
     return (
         <TouchableOpacity style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 10 }} onPress={() => navigation.navigate('manage-food-page', restaurantId)}>
@@ -16,7 +16,7 @@ const ManageFood = ({ restaurantId }) => {
     )
 }
 
-export default ManageFood
+export default ManageFoodButton
 
 const styles = StyleSheet.create({
     text: {

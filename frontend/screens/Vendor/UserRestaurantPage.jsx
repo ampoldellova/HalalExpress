@@ -1,5 +1,5 @@
-import { ActivityIndicator, Alert, Image, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native'
-import React, { useContext, useEffect, useState } from 'react'
+import { Image, StyleSheet, Text, View } from 'react-native'
+import React from 'react'
 import { useNavigation, useRoute } from '@react-navigation/native'
 import BackBtn from '../../components/BackBtn'
 import { COLORS, SIZES } from '../../styles/theme'
@@ -7,8 +7,9 @@ import ServiceAvailability from '../../components/Vendor/ServiceAvailability'
 import DeliveryAvailability from '../../components/Vendor/DeliveryAvailability'
 import PickupAvailability from '../../components/Vendor/PickupAvailability'
 import Divider from '../../components/Divider'
-import ManageFood from '../../components/Vendor/ManageFood'
-import AddFood from '../../components/Foods/AddFood'
+import ManageFoodButton from '../../components/Vendor/ManageFoodButton'
+import AddFoodButton from '../../components/Foods/AddFoodButton'
+import EditRestaurantButton from '../../components/Vendor/EditRestaurantButton'
 
 const UserRestaurantPage = () => {
     const navigation = useNavigation();
@@ -42,9 +43,9 @@ const UserRestaurantPage = () => {
             <DeliveryAvailability availability={item.delivery} id={item._id} />
             <PickupAvailability availability={item.pickup} id={item._id} />
             <Divider />
-            <ManageFood restaurantId={item._id} />
-            <AddFood restaurantId={item._id} />
-            {/* <EditRestaurantButton details={item} address={item.coords.address} /> */}
+            <ManageFoodButton restaurantId={item._id} />
+            <AddFoodButton restaurantId={item._id} />
+            <EditRestaurantButton details={item} address={item.coords.address} />
         </View >
     )
 }
