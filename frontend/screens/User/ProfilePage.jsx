@@ -12,10 +12,9 @@ import { cleanUser } from "../../redux/UserReducer";
 import baseUrl from "../../assets/common/baseUrl";
 import Heading from "../../components/Heading";
 import UserRestaurants from "../../components/Vendor/UserRestaurants";
-// import UserRestaurants from "../../components/Vendor/UserRestaurants";
-// import UserStores from "../../components/Supplier/UserStores";
 import { SafeAreaView } from "react-native-safe-area-context";
 import pages from "../../styles/page.style";
+import SupplierStores from "../../components/Supplier/SupplierStores";
 
 
 const ProfilePage = () => {
@@ -115,12 +114,12 @@ const ProfilePage = () => {
                         </View>
                     )}
 
-                    {/* {user.userType === 'Supplier' && (
+                    {user.userType === 'Supplier' && (
                         <View>
                             <Heading heading={'Your Stores'} onPress={() => { }} />
-                            <UserStores user={user} />
+                            <SupplierStores user={user} />
                         </View>
-                    )} */}
+                    )}
                 </View>
             </View>
         </SafeAreaView>
