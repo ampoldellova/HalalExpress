@@ -8,6 +8,7 @@ import DeliveryAvailability from '../../components/Vendor/DeliveryAvailability'
 import PickupAvailability from '../../components/Vendor/PickupAvailability'
 import Divider from '../../components/Divider'
 import ManageFood from '../../components/Vendor/ManageFood'
+import AddFood from '../../components/Foods/AddFood'
 
 const UserRestaurantPage = () => {
     const navigation = useNavigation();
@@ -42,7 +43,7 @@ const UserRestaurantPage = () => {
             <PickupAvailability availability={item.pickup} id={item._id} />
             <Divider />
             <ManageFood restaurantId={item._id} />
-            {/* <AddFood restaurantId={item._id} /> */}
+            <AddFood restaurantId={item._id} />
             {/* <EditRestaurantButton details={item} address={item.coords.address} /> */}
         </View >
     )
