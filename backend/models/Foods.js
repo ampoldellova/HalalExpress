@@ -61,11 +61,11 @@ const foodSchema = new mongoose.Schema({
     imageUrl: {
         public_id: {
             type: String,
-            required: true
+            default: 'HalalExpress/Profile/profile_nsvdbb'
         },
         url: {
             type: String,
-            required: true
+            default: 'https://res.cloudinary.com/dwkmutbz3/image/upload/v1736011952/HalalExpress/Profile/profile_nsvdbb.png'
         },
     },
 });
