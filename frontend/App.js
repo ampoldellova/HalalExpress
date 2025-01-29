@@ -26,6 +26,8 @@ import ChatList from './screens/Chat/ChatList';
 import ChatRoom from './screens/Chat/ChatRoom';
 import SignUp from './screens/User/SignUp';
 import UserSupplierPage from './screens/Supplier/UserSupplierPage';
+import ManageProductPage from './screens/Product/ManageProductPage';
+import ProductPage from './screens/Product/ProductPage';
 
 
 const Stack = createNativeStackNavigator();
@@ -116,8 +118,18 @@ export default function App() {
                         options={{ headerShown: false }}
                       />
                       <Stack.Screen
+                        name='manage-product-page'
+                        component={ManageProductPage}
+                        options={{ headerShown: false }}
+                      />
+                      <Stack.Screen
                         name='vendor-food-page'
                         component={VendorFoodPage}
+                        options={{ headerShown: false }}
+                      />
+                      <Stack.Screen
+                        name='supplier-product-page'
+                        component={ProductPage}
                         options={{ headerShown: false }}
                       />
                       <Stack.Screen
