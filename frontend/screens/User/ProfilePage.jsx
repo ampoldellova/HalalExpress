@@ -144,6 +144,7 @@ const styles = StyleSheet.create({
         justifyContent: "space-between",
         alignItems: "center",
         marginHorizontal: 20,
+        marginTop: 20
     },
     modalBackground: {
         flex: 1,

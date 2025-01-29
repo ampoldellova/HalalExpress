@@ -1,4 +1,5 @@
-import { StatusBar } from 'expo-status-bar';
+import 'react-native-gesture-handler';
+import 'react-native-reanimated';
 import { StyleSheet, Text, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -21,6 +22,8 @@ import VendorFoodPage from './screens/Food/VendorFoodPage';
 import AddFoodPage from './screens/Food/AddFoodPage';
 import EditRestaurantPage from './screens/Vendor/EditRestaurantPage';
 import EditProfile from './screens/User/EditProfilePage';
+import ChatList from './screens/Chat/ChatList';
+import ChatRoom from './screens/Chat/ChatRoom';
 
 
 const Stack = createNativeStackNavigator();
@@ -119,6 +122,16 @@ export default function App() {
                         name='edit-profile-page'
                         component={EditProfile}
                         options={{ headerShown: false }}
+                      />
+                      <Stack.Screen
+                        name='chat-list'
+                        component={ChatList}
+                        options={{ headerShown: false }}
+                      />
+                      <Stack.Screen
+                        name='chat-page'
+                        component={ChatRoom}
+                        options={{ headerTitle: "" }}
                       />
                     </Stack.Navigator>
                   </NavigationContainer>

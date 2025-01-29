@@ -84,8 +84,8 @@ const LoginPage = ({ navigation }) => {
     };
     return (
         <ScrollView style={pages.viewOne}>
-            <View style={[pages.viewTwo, { backgroundColor: COLORS.white, height: SIZES.height - 20 }]}>
-                <View style={{ marginHorizontal: 20, marginTop: 50 }}>
+            <View style={[pages.viewTwo, { backgroundColor: COLORS.white }]}>
+                <View style={{ marginHorizontal: 20 }}>
                     <BackBtn onPress={() => navigation.goBack()} />
                     <LottieView
                         autoPlay
