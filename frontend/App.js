@@ -25,6 +25,7 @@ import EditProfile from './screens/User/EditProfilePage';
 import ChatList from './screens/Chat/ChatList';
 import ChatRoom from './screens/Chat/ChatRoom';
 import SignUp from './screens/User/SignUp';
+import UserSupplierPage from './screens/Supplier/UserSupplierPage';
 
 
 const Stack = createNativeStackNavigator();
@@ -102,6 +103,11 @@ export default function App() {
                       <Stack.Screen
                         name="user-restaurant-page"
                         component={UserRestaurantPage}
+                        options={{ headerShown: false }}
+                      />
+                      <Stack.Screen
+                        name="user-supplier-page"
+                        component={UserSupplierPage}
                         options={{ headerShown: false }}
                       />
                       <Stack.Screen

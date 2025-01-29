@@ -52,7 +52,7 @@ const SupplierStores = ({ user }) => {
                     style={{ marginTop: 5, rowGap: 10 }}
                     scrollEnabled
                     renderItem={({ item }) => (
-                        <SupplierStoreComponent item={item} onPress={() => { navigation.navigate('user-supplier-store-page', item) }} />
+                        <SupplierStoreComponent item={item} onPress={() => { navigation.navigate('user-supplier-page', item) }} />
                     )} />
             )}
         </View>

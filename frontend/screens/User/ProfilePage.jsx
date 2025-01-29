@@ -15,6 +15,7 @@ import UserRestaurants from "../../components/Vendor/UserRestaurants";
 import { SafeAreaView } from "react-native-safe-area-context";
 import pages from "../../styles/page.style";
 import SupplierStores from "../../components/Supplier/SupplierStores";
+import Divider from "../../components/Divider";
 
 
 const ProfilePage = () => {
@@ -84,6 +85,7 @@ const ProfilePage = () => {
                             <AntDesign name="logout" size={24} color="red" />
                         </TouchableOpacity>
                     </TouchableOpacity>
+                    <Divider />
 
                     {user.userType === 'Client' && (
                         <View>
@@ -111,6 +113,17 @@ const ProfilePage = () => {
                         <View>
                             <Heading heading={'Your Restaurants'} onPress={() => { }} />
                             <UserRestaurants user={user} />
+                            <View
+                                style={{
+                                    height: 92,
+                                    backgroundColor: COLORS.lightWhite,
+                                    margin: 10,
+                                    borderRadius: 12,
+                                }}
+                            >
+                                <ProfileTile title={"Orders"} icon={"fast-food-outline"} font={1} />
+                                <ProfileTile title={"Payment History"} icon={"creditcard"} />
+                            </View>
                         </View>
                     )}
 
@@ -118,6 +131,16 @@ const ProfilePage = () => {
                         <View>
                             <Heading heading={'Your Stores'} onPress={() => { }} />
                             <SupplierStores user={user} />
+                            <View
+                                style={{
+                                    backgroundColor: COLORS.lightWhite,
+                                    margin: 10,
+                                    borderRadius: 15,
+                                }}
+                            >
+                                <ProfileTile title={"Orders"} icon={"fast-food-outline"} font={1} />
+                                <ProfileTile title={"Payment History"} icon={"creditcard"} />
+                            </View>
                         </View>
                     )}
                 </View>
@@ -144,7 +167,7 @@ const styles = StyleSheet.create({
         justifyContent: "space-between",
         alignItems: "center",
         marginHorizontal: 20,
-        marginTop: 20
+        marginVertical: 10
     },
     modalBackground: {
         flex: 1,
