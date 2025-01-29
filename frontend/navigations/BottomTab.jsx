@@ -9,6 +9,7 @@ import CartPage from '../screens/Cart/CartPage';
 import ProfilePage from '../screens/User/ProfilePage';
 import { useSelector } from 'react-redux';
 import LoginPage from '../screens/User/LoginPage';
+import VendorHomePage from '../screens/VendorHomePage';
 
 const Tab = createBottomTabNavigator();
 
@@ -30,7 +31,7 @@ const BottomTab = () => {
         >
             <Tab.Screen
                 name="HomePage"
-                component={HomePage}
+                component={user ? (user.userType === 'Vendor' ? VendorHomePage : HomePage) : HomePage}
                 options={{
                     tabBarStyle: tabBarStyle,
                     tabBarShowLabel: false,
