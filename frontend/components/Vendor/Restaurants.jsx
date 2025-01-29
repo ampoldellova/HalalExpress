@@ -18,7 +18,7 @@ const Restaurants = ({ restaurants }) => {
                 scrollEnabled
                 keyExtractor={(item) => item._id.toString()}
                 renderItem={({ item }) => (
-                    <StoreComponent item={item} onPress={() => { navigation.navigate('restaurant', item), setRestaurantObj(item) }} />
+                    <StoreComponent item={item} onPress={() => { navigation.navigate('restaurant-page', item), setRestaurantObj(item) }} />
                 )}
             />
         </View>

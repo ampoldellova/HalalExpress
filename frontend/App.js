@@ -30,6 +30,7 @@ import ManageProductPage from './screens/Product/ManageProductPage';
 import ProductPage from './screens/Product/ProductPage';
 import AddProductPage from './screens/Product/AddProductPage';
 import EditSupplierPage from './screens/Supplier/EditSupplierPage';
+import Restaurant from './screens/Vendor/Restaurant';
 
 
 const Stack = createNativeStackNavigator();
@@ -168,6 +169,11 @@ export default function App() {
                         name='chat-page'
                         component={ChatRoom}
                         options={{ headerTitle: "" }}
+                      />
+                      <Stack.Screen
+                        name='restaurant-page'
+                        component={Restaurant}
+                        options={{ headerShown: false }}
                       />
                     </Stack.Navigator>
                   </NavigationContainer>
