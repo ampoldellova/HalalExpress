@@ -2,8 +2,8 @@ import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { useRoute } from '@react-navigation/native'
-import FoodPage from '../screens/FoodPage'
-import OrderPage from '../screens/OrderPage';
+import FoodPage from '../screens/Food/FoodPage'
+import OrderPage from '../screens/Cart/OrderPage'
 import 'react-native-gesture-handler';
 
 const Stack = createNativeStackNavigator();
