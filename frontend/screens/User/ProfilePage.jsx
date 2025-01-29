@@ -90,7 +90,7 @@ const ProfilePage = () => {
                         <View>
                             <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 25, marginTop: 10 }}>
                                 <ProfileTile title={"Orders"} icon={"fast-food-outline"} font={1} />
-                                <ProfileTile title={"Addresses"} icon={"location-outline"} font={1} />
+                                <ProfileTile title={"Addresses"} icon={"location-outline"} font={1} onPress={() => navigation.navigate('address-page', user)} />
                             </View>
                         </View>
                     )}
@@ -99,7 +99,7 @@ const ProfilePage = () => {
                         <View>
                             <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 25, marginTop: 10 }}>
                                 <ProfileTile title={"Orders"} icon={"fast-food-outline"} font={1} />
-                                <ProfileTile title={"Addresses"} icon={"location-outline"} font={1} />
+                                <ProfileTile title={"Addresses"} icon={"location-outline"} font={1} onPress={() => navigation.navigate('address-page', user)}/>
                             </View>
                             <Heading heading={'Your Restaurants'} onPress={() => { }} />
                             <UserRestaurants user={user} />
@@ -110,7 +110,7 @@ const ProfilePage = () => {
                         <View>
                             <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 25, marginTop: 10 }}>
                                 <ProfileTile title={"Orders"} icon={"fast-food-outline"} font={1} />
-                                <ProfileTile title={"Addresses"} icon={"location-outline"} font={1} />
+                                <ProfileTile title={"Addresses"} icon={"location-outline"} font={1} onPress={() => navigation.navigate('address-page', user)}/>
                             </View>
                             <Heading heading={'Your Stores'} onPress={() => { }} />
                             <SupplierStores user={user} />

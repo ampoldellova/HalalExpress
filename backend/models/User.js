@@ -19,10 +19,22 @@ const UserSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    address: {
-        type: Array,
-        required: false,
-    },
+    address: [
+        {
+            latitude: {
+                type: Number,
+                required: true
+            },
+            longitude: {
+                type: Number,
+                required: true
+            },
+            address: {
+                type: String,
+                required: true
+            },
+        }
+    ],
     phone: {
         type: String,
         required: false,

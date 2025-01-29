@@ -67,5 +67,24 @@ module.exports = {
         } catch (err) {
             console.log(err);
         }
-    }
+    },
+
+    addAddress: async (req, res) => {
+        const userId = req.user.id;
+        const { latitude, longitude, address } = req.body;
+        
+        try {
+            const user = await User.findById(userId);
+            if (!user) {
+                return res.status(404).json({ message: 'User not found' });
+            }
+
+            user.address.push({ latitude, longitude, address });
+            await user.save();
+
+            res.status(200).json({ success: true, message: 'Address added successfully', address: user.address });
+        } catch (error) {
+            res.status(500).json({ message: 'Error adding address', error: error.message });
+        }
+    },
 }
