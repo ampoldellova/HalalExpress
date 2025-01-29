@@ -9,6 +9,7 @@ import DeliveryAvailability from '../../components/Supplier/DeliveryAvailability
 import PickupAvailability from '../../components/Supplier/PickupAvailability';
 import ManageProducts from '../../components/Products/ManageProducts';
 import AddProductButton from '../../components/Products/AddProductButton';
+import EditSupplierButton from '../../components/Supplier/EditSupplierButton';
 
 const UserSupplierPage = () => {
     const route = useRoute();
@@ -44,7 +45,7 @@ const UserSupplierPage = () => {
             <Divider />
             <ManageProducts supplierId={item._id} />
             <AddProductButton supplierId={item._id} />
-            {/* <EditSupplierButton details={item} address={item.coords.address} /> */}
+            <EditSupplierButton details={item} address={item.coords.address} />
         </View >
     )
 }
