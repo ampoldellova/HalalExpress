@@ -24,6 +24,7 @@ import EditRestaurantPage from './screens/Vendor/EditRestaurantPage';
 import EditProfile from './screens/User/EditProfilePage';
 import ChatList from './screens/Chat/ChatList';
 import ChatRoom from './screens/Chat/ChatRoom';
+import SignUp from './screens/User/SignUp';
 
 
 const Stack = createNativeStackNavigator();
@@ -91,6 +92,11 @@ export default function App() {
                       <Stack.Screen
                         name="bottom-navigation"
                         component={BottomTab}
+                        options={{ headerShown: false }}
+                      />
+                      <Stack.Screen
+                        name="register-page"
+                        component={SignUp}
                         options={{ headerShown: false }}
                       />
                       <Stack.Screen
