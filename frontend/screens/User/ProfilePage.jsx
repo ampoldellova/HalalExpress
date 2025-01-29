@@ -85,62 +85,35 @@ const ProfilePage = () => {
                             <AntDesign name="logout" size={24} color="red" />
                         </TouchableOpacity>
                     </TouchableOpacity>
-                    <Divider />
 
                     {user.userType === 'Client' && (
                         <View>
-                            <RegistrationTile
-                                heading={"Register a restaurant"}
-                                desc={
-                                    "Join our community and showcase your culinary delights to a wider audience."
-                                }
-                            />
-                            <View
-                                style={{
-                                    height: 92,
-                                    backgroundColor: COLORS.lightWhite,
-                                    margin: 10,
-                                    borderRadius: 12,
-                                }}
-                            >
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 25, marginTop: 10 }}>
                                 <ProfileTile title={"Orders"} icon={"fast-food-outline"} font={1} />
-                                <ProfileTile title={"Payment History"} icon={"creditcard"} />
+                                <ProfileTile title={"Addresses"} icon={"location-outline"} font={1} />
                             </View>
                         </View>
                     )}
 
                     {user.userType === 'Vendor' && (
                         <View>
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 25, marginTop: 10 }}>
+                                <ProfileTile title={"Orders"} icon={"fast-food-outline"} font={1} />
+                                <ProfileTile title={"Addresses"} icon={"location-outline"} font={1} />
+                            </View>
                             <Heading heading={'Your Restaurants'} onPress={() => { }} />
                             <UserRestaurants user={user} />
-                            <View
-                                style={{
-                                    height: 92,
-                                    backgroundColor: COLORS.lightWhite,
-                                    margin: 10,
-                                    borderRadius: 12,
-                                }}
-                            >
-                                <ProfileTile title={"Orders"} icon={"fast-food-outline"} font={1} />
-                                <ProfileTile title={"Payment History"} icon={"creditcard"} />
-                            </View>
                         </View>
                     )}
 
                     {user.userType === 'Supplier' && (
                         <View>
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 25, marginTop: 10 }}>
+                                <ProfileTile title={"Orders"} icon={"fast-food-outline"} font={1} />
+                                <ProfileTile title={"Addresses"} icon={"location-outline"} font={1} />
+                            </View>
                             <Heading heading={'Your Stores'} onPress={() => { }} />
                             <SupplierStores user={user} />
-                            <View
-                                style={{
-                                    backgroundColor: COLORS.lightWhite,
-                                    margin: 10,
-                                    borderRadius: 15,
-                                }}
-                            >
-                                <ProfileTile title={"Orders"} icon={"fast-food-outline"} font={1} />
-                                <ProfileTile title={"Payment History"} icon={"creditcard"} />
-                            </View>
                         </View>
                     )}
                 </View>

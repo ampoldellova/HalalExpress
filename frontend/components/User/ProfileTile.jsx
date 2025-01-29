@@ -7,7 +7,7 @@ const ProfileTile = ({ onPress, title, icon, font }) => {
     return (
         <TouchableOpacity onPress={onPress}>
             <View style={styles.outter}>
-                <View style={styles.inner}>
+                <View style={{ alignItems: 'center', justifyContent: 'center', height: 80 }}>
                     {font === 1 ? (
                         <Ionicons name={icon} size={24} color={COLORS.gray} />
                     ) : font === 2 ? (
@@ -17,15 +17,7 @@ const ProfileTile = ({ onPress, title, icon, font }) => {
                     )}
                     <Text style={styles.text}>{title}</Text>
                 </View>
-
-                <AntDesign
-                    name="right"
-                    size={18}
-                    color={COLORS.gray2}
-                    style={{ bottom: -3, marginRight: 10 }}
-                />
             </View>
-            <View style={styles.divider} />
         </TouchableOpacity>
     );
 }
@@ -33,29 +25,21 @@ const ProfileTile = ({ onPress, title, icon, font }) => {
 export default ProfileTile
 
 const styles = StyleSheet.create({
-    divider: {
-        borderColor: COLORS.gray2,
-        opacity: 0.7,
-        borderWidth: 0.3,
-        width: SIZES.width - 35,
-        marginLeft: 10,
-        marginBottom: 5,
-        marginTop: 7,
-    },
     outter: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
+        borderColor: COLORS.gray2,
+        borderWidth: 1,
+        width: SIZES.width / 2.5,
+        borderRadius: 15,
+        height: 80
     },
     inner: {
-        flexDirection: "row",
-        marginHorizontal: 20,
         alignItems: "center",
-        marginVertical: 6,
+        justifyContent: "center",
     },
     text: {
-        marginLeft: 10,
+        marginTop: 5,
         fontFamily: "regular",
+        textAlign: 'center',
         fontSize: 12,
         color: COLORS.gray,
     },
