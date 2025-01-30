@@ -1,11 +1,17 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import pages from '../../styles/page.style'
 
 const CartPage = () => {
   return (
-    <SafeAreaView>
-      <Text>CartPage</Text>
+    <SafeAreaView >
+      <View style={pages.viewOne}>
+        <View style={pages.viewTwo}>
+
+
+        </View>
+      </View>
     </SafeAreaView>
   )
 }
