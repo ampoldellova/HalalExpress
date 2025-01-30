@@ -52,6 +52,7 @@
           "react-native-maps",
           "react-native-element-dropdown",
           "react-native-stock-star-rating",
+          "react-native-bouncy-checkbox",          
           "yup"
         ],
         "listUnknownPackages": false
