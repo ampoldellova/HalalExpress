@@ -1,4 +1,4 @@
-import { ActivityIndicator, Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import React, { useContext, useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { FontAwesome6, Ionicons } from '@expo/vector-icons';
@@ -14,6 +14,7 @@ import baseUrl from '../../assets/common/baseUrl';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { Formik } from 'formik';
+import Loader from '../../components/Loader';
 
 const validationSchema = Yup.object().shape({
     coords: Yup.object().shape({
@@ -141,90 +142,92 @@ const AddAddressPage = () => {
     };
 
     return (
-        <SafeAreaView style={{ marginHorizontal: 20 }}>
-            <Text style={styles.heading}>Add Address</Text>
-            <TouchableOpacity onPress={() => navigation.goBack()} style={{ marginTop: -32 }}>
-                <Ionicons
-                    name='chevron-back-circle'
-                    size={30}
-                    color={COLORS.primary}
-                />
-            </TouchableOpacity>
+        <ScrollView showsVerticalScrollIndicator={false}>
+            <SafeAreaView style={{ marginHorizontal: 20 }}>
+                <Text style={styles.heading}>Add Address</Text>
+                <TouchableOpacity onPress={() => navigation.goBack()} style={{ marginTop: -32 }}>
+                    <Ionicons
+                        name='chevron-back-circle'
+                        size={30}
+                        color={COLORS.primary}
+                    />
+                </TouchableOpacity>
 
-            <Formik
-                initialValues={{
-                    coords: {
-                        address: address,
-                    },
-                }}
-                enableReinitialize
-                validationSchema={validationSchema}
-                onSubmit={(values) => {
-                    addAddress(values);
-                }}
-            >
-                {({
-                    touched,
-                    handleSubmit,
-                    errors,
-                    isValid,
-                    values,
-                    setFieldTouched,
-                    setFieldValue
-                }) => (
-                    <View>
-                        <View style={[styles.inputWrapper(touched.coords?.address ? COLORS.secondary : COLORS.offwhite), { height: 'auto' }]}>
-                            {loader ? (
-                                <ActivityIndicator size="small" color={COLORS.primary} style={{ marginRight: 5 }} />
-                            ) : (
-                                <TouchableOpacity onPress={useCurrentLocation}>
-                                    <FontAwesome6
-                                        style={styles.iconStyle}
-                                        color={COLORS.primary}
-                                        name="location-crosshairs"
-                                        size={20}
-                                    />
-                                </TouchableOpacity>
+                <Formik
+                    initialValues={{
+                        coords: {
+                            address: address,
+                        },
+                    }}
+                    enableReinitialize
+                    validationSchema={validationSchema}
+                    onSubmit={(values) => {
+                        addAddress(values);
+                    }}
+                >
+                    {({
+                        touched,
+                        handleSubmit,
+                        errors,
+                        isValid,
+                        values,
+                        setFieldTouched,
+                        setFieldValue
+                    }) => (
+                        <View>
+                            <View style={[styles.inputWrapper(touched.coords?.address ? COLORS.secondary : COLORS.offwhite), { height: 'auto' }]}>
+                                {loader ? (
+                                    <ActivityIndicator size="small" color={COLORS.primary} style={{ marginRight: 5 }} />
+                                ) : (
+                                    <TouchableOpacity onPress={useCurrentLocation}>
+                                        <FontAwesome6
+                                            style={styles.iconStyle}
+                                            color={COLORS.primary}
+                                            name="location-crosshairs"
+                                            size={20}
+                                        />
+                                    </TouchableOpacity>
+                                )}
+                                <TextInput
+                                    style={styles.textInput}
+                                    placeholder="Search for your address..."
+                                    placeholderTextColor={COLORS.gray}
+                                    value={values.coords.address}
+                                    multiline
+                                    onChangeText={(text) => {
+                                        handleAddressChange(text)
+                                        setFieldValue('coords.address', text)
+                                    }}
+                                    onFocus={() => {
+                                        setFieldTouched('coords.address', '');
+                                    }}
+                                    onBlur={() => {
+                                        setFieldTouched('coords.address');
+                                    }}
+                                />
+                            </View>
+                            {touched.coords?.address && errors.coords?.address && (
+                                <Text style={styles.errorMessage}>{errors.coords?.address}</Text>
                             )}
-                            <TextInput
-                                style={styles.textInput}
-                                placeholder="Search for your address..."
-                                placeholderTextColor={COLORS.gray}
-                                value={values.coords.address}
-                                multiline
-                                onChangeText={(text) => {
-                                    handleAddressChange(text)
-                                    setFieldValue('coords.address', text)
-                                }}
-                                onFocus={() => {
-                                    setFieldTouched('coords.address', '');
-                                }}
-                                onBlur={() => {
-                                    setFieldTouched('coords.address');
-                                }}
+                            <AddressSuggestions suggestions={suggestions} onSuggestionPress={handleSuggestionPress} />
+
+                            <View style={styles.container}>
+                                <MapView style={{ height: SIZES.height / 2 }} region={{ latitude: region.latitude, longitude: region.longitude, latitudeDelta: 0.01, longitudeDelta: 0.01 }}>
+                                    <Marker coordinate={{ latitude: region.latitude, longitude: region.longitude }} />
+                                </MapView>
+                            </View>
+
+                            <Button
+                                loader={loading}
+                                title="A D D   A D D R E S S"
+                                onPress={isValid ? handleSubmit : inValidForm}
+                                isValid={isValid}
                             />
                         </View>
-                        {touched.coords?.address && errors.coords?.address && (
-                            <Text style={styles.errorMessage}>{errors.coords?.address}</Text>
-                        )}
-                        <AddressSuggestions suggestions={suggestions} onSuggestionPress={handleSuggestionPress} />
-
-                        <View style={styles.container}>
-                            <MapView style={{ height: SIZES.height / 2 }} region={{ latitude: region.latitude, longitude: region.longitude, latitudeDelta: 0.01, longitudeDelta: 0.01 }}>
-                                <Marker coordinate={{ latitude: region.latitude, longitude: region.longitude }} />
-                            </MapView>
-                        </View>
-
-                        <Button
-                            loader={loading}
-                            title="A D D   A D D R E S S"
-                            onPress={isValid ? handleSubmit : inValidForm}
-                            isValid={isValid}
-                        />
-                    </View>
-                )}
-            </Formik>
-        </SafeAreaView>
+                    )}
+                </Formik>
+            </SafeAreaView>
+        </ScrollView>
     )
 }
 

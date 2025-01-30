@@ -6,7 +6,8 @@ import Entypo from '@expo/vector-icons/Entypo';
 import Feather from '@expo/vector-icons/Feather';
 import DeleteAddress from './DeleteAddress';
 
-const Addresses = ({ item }) => {
+const Addresses = ({ item, getUserAddresses }) => {
+
     return (
         <View>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -16,7 +17,7 @@ const Addresses = ({ item }) => {
                 </View>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                     <Feather name="edit" size={24} color={COLORS.secondary} style={{ marginLeft: 5 }} />
-                    <DeleteAddress addressId={item._id} />
+                    <DeleteAddress addressId={item._id} getUserAddresses={getUserAddresses} />
                 </View>
             </View>
             <Divider />

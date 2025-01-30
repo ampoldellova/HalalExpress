@@ -9,5 +9,6 @@ router.delete('/', verifyAndAuthorization, userController.deleteUser)
 router.put('/', verifyAndAuthorization, upload.single('profile'), userController.updateUser);
 router.post('/address', verifyAndAuthorization, userController.addAddress);
 router.delete('/address/:addressId', verifyAndAuthorization, userController.deleteAddress);
+router.get('/address/list', verifyAndAuthorization, userController.getUserAddresses);
 
 module.exports = router;

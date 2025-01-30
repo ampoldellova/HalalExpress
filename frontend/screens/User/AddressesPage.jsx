@@ -1,16 +1,42 @@
 import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React, { useRef } from 'react'
+import React, { useRef, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS, SIZES } from '../../styles/theme';
 import Button from '../../components/Button';
 import Addresses from '../../components/User/Addresses';
+import baseUrl from '../../assets/common/baseUrl';
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const AddressesPage = () => {
     const navigation = useNavigation();
-    const route = useRoute();
-    const item = route.params;
+    const [addresses, setAddresses] = useState([]);
+
+    const getUserAddresses = async () => {
+        try {
+            const token = await AsyncStorage.getItem('token');
+            if (token) {
+                const config = {
+                    headers: {
+                        Authorization: `Bearer ${JSON.parse(token)}`,
+                    }
+                }
+
+                const response = await axios.get(`${baseUrl}/api/users/address/list`, config);
+                setAddresses(response.data.addresses);
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    useFocusEffect(
+        React.useCallback(() => {
+            getUserAddresses();
+        }, [])
+    );
 
     return (
         <SafeAreaView style={{ marginHorizontal: 20 }}>
@@ -23,7 +49,7 @@ const AddressesPage = () => {
                 />
             </TouchableOpacity>
 
-            {item.address.length <= 0 ? (
+            {addresses.length <= 0 ? (
                 <View style={styles.container}>
                     <Image
                         style={styles.image}
@@ -39,12 +65,12 @@ const AddressesPage = () => {
             ) : (
                 <View>
                     <FlatList
-                        data={item.address}
+                        data={addresses}
                         scrollEnabled={true}
                         style={{ marginTop: 30, height: SIZES.height / 1.3 }}
                         keyExtractor={(item, index) => index.toString()}
                         renderItem={({ item }) => (
-                            <Addresses item={item} />
+                            <Addresses item={item} getUserAddresses={getUserAddresses} />
                         )}
                     />
                     <View style={styles.buttonContainer}>
