@@ -10,6 +10,7 @@ import ProfilePage from '../screens/User/ProfilePage';
 import { useSelector } from 'react-redux';
 import LoginPage from '../screens/User/LoginPage';
 import VendorHomePage from '../screens/VendorHomePage';
+import VendorSearchPage from '../screens/Search/VendorSearchPage';
 
 const Tab = createBottomTabNavigator();
 
@@ -47,7 +48,7 @@ const BottomTab = () => {
             />
             <Tab.Screen
                 name="SearchPage"
-                component={SearchPage}
+                component={user ? (user.userType === 'Vendor' ? VendorSearchPage : SearchPage) : SearchPage}
                 options={{
                     tabBarStyle: tabBarStyle,
                     tabBarShowLabel: false,
