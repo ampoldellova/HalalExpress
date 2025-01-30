@@ -3,7 +3,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { FontAwesome6, Ionicons } from '@expo/vector-icons';
 import { COLORS, SIZES } from '../../styles/theme';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import MapView, { Marker } from 'react-native-maps';
 import { UserLocationContext } from '../../contexts/UserLocationContext';
 import Button from '../../components/Button';
@@ -21,16 +21,17 @@ const validationSchema = Yup.object().shape({
     })
 });
 
-const AddAddressPage = () => {
-    const { location, setLocation } = useContext(UserLocationContext)
+const EditAddressPage = () => {
+    const router = useRoute();
+    const item = router.params;
     const [suggestions, setSuggestions] = useState([]);
     const [loading, setLoading] = useState(false);
     const [loader, setLoader] = useState(false);
-    const [address, setAddress] = useState('');
+    const [address, setAddress] = useState(item?.address);
     const navigation = useNavigation();
     const [region, setRegion] = useState({
-        latitude: location.coords.latitude,
-        longitude: location.coords.longitude,
+        latitude: item?.latitude,
+        longitude: item?.longitude,
         latitudeDelta: 0.01,
         longitudeDelta: 0.01,
     });
@@ -109,7 +110,7 @@ const AddAddressPage = () => {
             });
     };
 
-    const addAddress = async (values) => {
+    const editAddress = async (values) => {
         try {
             const token = await AsyncStorage.getItem('token');
             if (token) {
@@ -121,13 +122,16 @@ const AddAddressPage = () => {
                 };
 
                 const data = {
-                    address: values.coords.address,
-                    latitude: region.latitude,
-                    longitude: region.longitude,
+                    addressId: item._id,
+                    newAddress: {
+                        address: values.coords.address,
+                        latitude: region.latitude,
+                        longitude: region.longitude,
+                    },
                 };
 
-                await axios.post(`${baseUrl}/api/users/address`, data, config);
-                Alert.alert('Success ✅', 'Address added successfully!', [
+                await axios.put(`${baseUrl}/api/users/address`, data, config);
+                Alert.alert('Success ✅', 'Address edited successfully!', [
                     { text: 'OK', onPress: () => navigation.goBack() },
                 ]);
             } else {
@@ -141,7 +145,7 @@ const AddAddressPage = () => {
     return (
         <ScrollView showsVerticalScrollIndicator={false}>
             <SafeAreaView style={{ marginHorizontal: 20 }}>
-                <Text style={styles.heading}>Add Address</Text>
+                <Text style={styles.heading}>Edit Address</Text>
                 <TouchableOpacity onPress={() => navigation.goBack()} style={{ marginTop: -32 }}>
                     <Ionicons
                         name='chevron-back-circle'
@@ -149,7 +153,6 @@ const AddAddressPage = () => {
                         color={COLORS.primary}
                     />
                 </TouchableOpacity>
-
                 <Formik
                     initialValues={{
                         coords: {
@@ -159,7 +162,7 @@ const AddAddressPage = () => {
                     enableReinitialize
                     validationSchema={validationSchema}
                     onSubmit={(values) => {
-                        addAddress(values);
+                        editAddress(values);
                     }}
                 >
                     {({
@@ -189,7 +192,7 @@ const AddAddressPage = () => {
                                     style={styles.textInput}
                                     placeholder="Search for your address..."
                                     placeholderTextColor={COLORS.gray}
-                                    value={values.coords.address}
+                                    value={address}
                                     multiline
                                     onChangeText={(text) => {
                                         handleAddressChange(text)
@@ -216,7 +219,7 @@ const AddAddressPage = () => {
 
                             <Button
                                 loader={loading}
-                                title="A D D   A D D R E S S"
+                                title="E D I T   A D D R E S S"
                                 onPress={isValid ? handleSubmit : inValidForm}
                                 isValid={isValid}
                             />
@@ -224,11 +227,11 @@ const AddAddressPage = () => {
                     )}
                 </Formik>
             </SafeAreaView>
-        </ScrollView>
+        </ScrollView >
     )
 }
 
-export default AddAddressPage
+export default EditAddressPage
 
 const styles = StyleSheet.create({
     heading: {

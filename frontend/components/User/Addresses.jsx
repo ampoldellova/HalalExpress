@@ -2,12 +2,11 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React from 'react'
 import { COLORS } from '../../styles/theme'
 import Divider from '../Divider'
-import Entypo from '@expo/vector-icons/Entypo';
-import Feather from '@expo/vector-icons/Feather';
 import DeleteAddress from './DeleteAddress';
+import EditAddress from './EditAddress';
 
 const Addresses = ({ item, getUserAddresses }) => {
-
+    console.log(item)
     return (
         <View>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -16,7 +15,7 @@ const Addresses = ({ item, getUserAddresses }) => {
                     <Text style={{ fontFamily: 'regular', fontSize: 14, marginLeft: 10, color: COLORS.gray }} numberOfLines={3} ellipsizeMode='tail'>{item.address}</Text>
                 </View>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <Feather name="edit" size={24} color={COLORS.secondary} style={{ marginLeft: 5 }} />
+                    <EditAddress address={item} />
                     <DeleteAddress addressId={item._id} getUserAddresses={getUserAddresses} />
                 </View>
             </View>

@@ -36,6 +36,7 @@ import ProductNavigator from './navigations/ProductNavigator';
 import FoodNavigator from './navigations/FoodNavigator';
 import AddressesPage from './screens/User/AddressesPage';
 import AddAddressPage from './screens/User/AddAddressPage';
+import EditAddressPage from './screens/User/EditAddressPage';
 
 
 const Stack = createNativeStackNavigator();
@@ -203,6 +204,11 @@ export default function App() {
                       <Stack.Screen
                         name='add-address-page'
                         component={AddAddressPage}
+                        options={{ headerShown: false }}
+                      />
+                      <Stack.Screen
+                        name='edit-address-page'
+                        component={EditAddressPage}
                         options={{ headerShown: false }}
                       />
                     </Stack.Navigator>

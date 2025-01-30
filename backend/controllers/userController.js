@@ -126,4 +126,30 @@ module.exports = {
             res.status(500).json({ message: 'Error fetching addresses', error: error.message });
         }
     },
+
+    editUserAddress: async (req, res) => {
+        const userId = req.user.id;
+        const { addressId, newAddress } = req.body;
+        console.log(req.body);
+        console.log(userId)
+
+        try {
+            const user = await User.findById(userId);
+            if (!user) {
+                return res.status(404).json({ message: 'User not found' });
+            }
+
+            const addressIndex = user.address.findIndex(address => address.id === addressId);
+            if (addressIndex === -1) {
+                return res.status(404).json({ message: 'Address not found' });
+            }
+
+            user.address[addressIndex] = { ...user.address[addressIndex], ...newAddress };
+            await user.save();
+
+            res.status(200).json({ success: true, message: 'Address updated successfully', address: user.address[addressIndex] });
+        } catch (error) {
+            res.status(500).json({ message: 'Error updating address', error: error.message });
+        }
+    },
 }
