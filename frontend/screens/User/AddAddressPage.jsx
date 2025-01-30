@@ -99,7 +99,6 @@ const AddAddressPage = () => {
                     const currentAddress = data.results[0].formatted;
                     handleAddressChange(currentAddress);
                     setAddress(currentAddress);
-                    setIsUsingCurrentLocation(true);
                 } else {
                     throw new Error('No results found');
                 }
@@ -174,7 +173,7 @@ const AddAddressPage = () => {
                     setFieldValue
                 }) => (
                     <View>
-                        <View style={styles.inputWrapper(touched.coords?.address ? COLORS.secondary : COLORS.offwhite)}>
+                        <View style={[styles.inputWrapper(touched.coords?.address ? COLORS.secondary : COLORS.offwhite), { height: 'auto' }]}>
                             {loader ? (
                                 <ActivityIndicator size="small" color={COLORS.primary} style={{ marginRight: 5 }} />
                             ) : (
@@ -192,27 +191,23 @@ const AddAddressPage = () => {
                                 placeholder="Search for your address..."
                                 placeholderTextColor={COLORS.gray}
                                 value={values.coords.address}
+                                multiline
                                 onChangeText={(text) => {
                                     handleAddressChange(text)
                                     setFieldValue('coords.address', text)
-                                    setIsTypingAddress(true);
                                 }}
                                 onFocus={() => {
                                     setFieldTouched('coords.address', '');
-                                    setIsTypingAddress(true);
                                 }}
                                 onBlur={() => {
                                     setFieldTouched('coords.address');
-                                    setIsTypingAddress(false);
                                 }}
                             />
                         </View>
                         {touched.coords?.address && errors.coords?.address && (
                             <Text style={styles.errorMessage}>{errors.coords?.address}</Text>
                         )}
-                        {!isUsingCurrentLocation &&
-                            <AddressSuggestions suggestions={suggestions} onSuggestionPress={handleSuggestionPress} />
-                        }
+                        <AddressSuggestions suggestions={suggestions} onSuggestionPress={handleSuggestionPress} />
 
                         <View style={styles.container}>
                             <MapView style={{ height: SIZES.height / 2 }} region={{ latitude: region.latitude, longitude: region.longitude, latitudeDelta: 0.01, longitudeDelta: 0.01 }}>

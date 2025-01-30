@@ -8,5 +8,6 @@ router.get("/list", verifyAndAuthorization, userController.getAllUsers)
 router.delete('/', verifyAndAuthorization, userController.deleteUser)
 router.put('/', verifyAndAuthorization, upload.single('profile'), userController.updateUser);
 router.post('/address', verifyAndAuthorization, userController.addAddress);
+router.delete('/address/:addressId', verifyAndAuthorization, userController.deleteAddress);
 
 module.exports = router;
