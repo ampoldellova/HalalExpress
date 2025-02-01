@@ -17,9 +17,9 @@
     "@reduxjs/toolkit": "^2.5.1",
     "axios": "^1.7.9",
     "dotenv": "^16.4.7",
-    "expo": "~52.0.27",
+    "expo": "~52.0.28",
     "expo-constants": "^17.0.5",
-    "expo-image-picker": "^16.0.4",
+    "expo-image-picker": "~16.0.5",
     "expo-location": "^18.0.5",
     "expo-status-bar": "~2.0.1",
     "firebase": "^11.2.0",
@@ -49,10 +49,9 @@
     "doctor": {
       "reactNativeDirectoryCheck": {
         "exclude": [
-          "react-native-maps",
           "react-native-element-dropdown",
           "react-native-stock-star-rating",
-          "react-native-bouncy-checkbox",          
+          "react-native-bouncy-checkbox",
           "yup"
         ],
         "listUnknownPackages": false
