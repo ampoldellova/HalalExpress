@@ -21,7 +21,13 @@ export default {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.ampol321.frontend"
+      "package": "com.ampol321.frontend",
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyBb5KicFxg9zwfu05AjPuacFyT0AtwW6sE"
+        }
+      },
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -38,6 +44,10 @@ export default {
       "eas": {
         "projectId": "67884e58-e57c-4668-8358-1cb93cb57fbb"
       }
-    }
+    },
+    "plugins": [
+      "@react-native-firebase/app",
+      "@react-native-firebase/auth",
+    ]
   }
 }

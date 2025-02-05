@@ -7,6 +7,7 @@ const fs = require('fs')
 
 module.exports = {
     createUser: async (req, res) => {
+        console.log(req.body)
         const user = req.body;
         try {
             await admin.auth().getUserByEmail(user.email);
@@ -14,6 +15,7 @@ module.exports = {
             res.status(400).json({ message: "Email is already registered" })
 
         } catch (error) {
+            console.log(error)
             if (error.code === 'auth/user-not-found') {
                 try {
                     const userResponse = await admin.auth().createUser({

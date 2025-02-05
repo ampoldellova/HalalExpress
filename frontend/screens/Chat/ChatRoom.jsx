@@ -3,7 +3,7 @@ import React, { useLayoutEffect, useState, useEffect, useCallback } from 'react'
 import { GiftedChat, InputToolbar } from 'react-native-gifted-chat'
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { COLORS } from '../../styles/theme';
-import { collection, query, orderBy, onSnapshot, addDoc } from 'firebase/firestore';
+import { collection, query, orderBy, onSnapshot, addDoc } from '@react-native-firebase/firestore';
 import { database } from '../../config/firebase'
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';

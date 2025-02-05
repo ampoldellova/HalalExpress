@@ -59,13 +59,14 @@ const SignUp = ({ navigation }) => {
   };
 
   const registerUser = async (values) => {
-    setLoader(true);
+    // setLoader(true);
 
     try {
       const endpoint = `${baseUrl}/register`;
       const data = values;
-
+      
       const response = await axios.post(endpoint, data);
+      console.log(response)
       if (response.status === 201) {
         setLogin(true);
 
