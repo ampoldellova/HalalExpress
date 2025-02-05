@@ -5,6 +5,7 @@ import { COLORS, SIZES } from '../styles/theme';
 import MapView, { PROVIDER_GOOGLE, Marker, Polyline } from 'react-native-maps';
 import PlaceMarker from './PlaceMarker';
 import { useFocusEffect } from '@react-navigation/native';
+import { Image } from 'react-native';
 
 const GoogleMapView = ({ placeList, title }) => {
     const [coordinates, setCoordinates] = useState([]);
@@ -63,10 +64,15 @@ const GoogleMapView = ({ placeList, title }) => {
                 region={mapRegion}
             >
                 <Marker
-                    title='My location'
+                    title="My location"
                     coordinate={mapRegion}
-                    icon={require('../assets/images/location.png')}
-                />
+                >
+                    <Image
+                        source={require('../assets/images/location.png')}
+                        style={{ width: 30, height: 30 }} // Adjust size here
+                        resizeMode="contain"
+                    />
+                </Marker>
 
                 {placeList.map(
                     (item, index) => index <= 1 && <PlaceMarker key={index} coordinates={item} title={title} />

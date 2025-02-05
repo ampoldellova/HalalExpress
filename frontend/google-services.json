@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "239431572065",
+    "project_id": "halalexpress-86dbb",
+    "storage_bucket": "halalexpress-86dbb.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:239431572065:android:b777b579fe50b7a744a820",
+        "android_client_info": {
+          "package_name": "com.ampol321.frontend"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA58yolMkTFBibl_1AW8GfpgBwQLg3PsJo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:239431572065:android:5377deb92f7255ff44a820",
+        "android_client_info": {
+          "package_name": "halalexpress.com"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA58yolMkTFBibl_1AW8GfpgBwQLg3PsJo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

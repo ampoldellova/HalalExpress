@@ -1,11 +1,10 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { Image, StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 import { Marker } from 'react-native-maps'
 
 const PlaceMarker = ({ coordinates, title }) => {
     return (
         <Marker
-            style={{ height: 30, width: 30 }}
             title={title}
             coordinate={{
                 latitude: coordinates.latitude,
@@ -14,8 +13,14 @@ const PlaceMarker = ({ coordinates, title }) => {
                 longitudeDelta: 0.01,
 
             }}
-            icon={require('../assets/images/restaurant.png')}
-        />
+        >
+            <Image
+                source={require('../assets/images/restaurant.png')}
+                style={{ width: 30, height: 30 }} // Adjust size here
+                resizeMode="contain"
+            />
+
+        </Marker>
     )
 }
 
