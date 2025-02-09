@@ -37,6 +37,7 @@ import FoodNavigator from './navigations/FoodNavigator';
 import AddressesPage from './screens/User/AddressesPage';
 import AddAddressPage from './screens/User/AddAddressPage';
 import EditAddressPage from './screens/User/EditAddressPage';
+import LoginPage from './screens/User/LoginPage';
 
 
 const Stack = createNativeStackNavigator();
@@ -109,6 +110,11 @@ export default function App() {
                       <Stack.Screen
                         name="register-page"
                         component={SignUp}
+                        options={{ headerShown: false }}
+                      />
+                      <Stack.Screen
+                        name="login-page"
+                        component={LoginPage}
                         options={{ headerShown: false }}
                       />
                       <Stack.Screen

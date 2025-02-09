@@ -1,4 +1,4 @@
-import { FlatList, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { Alert, FlatList, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import React, { useContext, useEffect, useState } from 'react'
 import { CartCountContext } from '../../contexts/CartCountContext';
 import { COLORS, SIZES } from '../../styles/theme';
@@ -60,21 +60,18 @@ const FoodPage = ({ route, navigation }) => {
 
     try {
       const token = await AsyncStorage.getItem('token');
-      const config = {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${JSON.parse(token)}`,
+      if (token) {
+        const config = {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${JSON.parse(token)}`,
+          }
         }
+        await axios.post(`${baseUrl}/api/cart/`, cartItem, config);
+        Alert.alert('Success ✅', 'Food added to cart');
+      } else {
+        Alert.alert('Error ❌', 'Please login first to add food to cart');
       }
-      await axios.post(`${baseUrl}/api/cart/`, cartItem, config);
-      Toast.show({
-        type: 'success',
-        text1: 'Success ✅',
-        text2: 'Item added to cart!',
-        visibilityTime: 3000,
-        autoHide: true
-      })
-      navigation.navigate.goBack();
     } catch (error) {
       console.log(error);
     }
