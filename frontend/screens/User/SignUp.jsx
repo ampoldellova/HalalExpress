@@ -158,7 +158,7 @@ const SignUp = ({ navigation }) => {
                   />
 
                   <TextInput
-                    placeholder="Username"
+                    placeholder="Enter Username"
                     onFocus={() => {
                       setFieldTouched("username");
                     }}

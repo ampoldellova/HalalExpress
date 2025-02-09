@@ -83,7 +83,7 @@ const FoodPage = ({ route, navigation }) => {
 
           <FlatList
             data={item.foodTags}
-            showsVerticalScrollIndicator={false}
+            showsHorizontalScrollIndicator={false}
             keyExtractor={(item) => item}
             style={{ marginTop: 10 }}
             horizontal
@@ -100,10 +100,9 @@ const FoodPage = ({ route, navigation }) => {
 
           <FlatList
             data={item.additives}
-            showsHorizontalScrollIndicator={false}
             keyExtractor={(item) => item.id}
             style={{ marginTop: 10 }}
-            scrollEnabled={false}
+            showsVerticalScrollIndicator={false}
             renderItem={({ item }) => (
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 }}>
                 <View style={{ flexDirection: 'row' }}>
@@ -120,8 +119,8 @@ const FoodPage = ({ route, navigation }) => {
                 </View>
                 <Text style={[styles.small]}>$ {item.price}</Text>
               </View>
-
-            )} />
+            )}
+          />
 
           <Text style={[styles.title, { marginBottom: 10, marginTop: 20 }]}>Preferences</Text>
           <View style={styles.input}>
