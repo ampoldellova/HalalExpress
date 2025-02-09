@@ -1,4 +1,4 @@
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import pages from '../../styles/page.style'
@@ -8,6 +8,7 @@ import axios from 'axios'
 import baseUrl from '../../assets/common/baseUrl'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import BackBtn from '../../components/BackBtn'
+import CartProducts from '../../components/Cart/CartProducts'
 
 const CartPage = () => {
   const navigation = useNavigation()
@@ -34,7 +35,6 @@ const CartPage = () => {
       getCartItems();
     }, [])
   );
-
   return (
     <SafeAreaView >
       <View style={pages.viewOne}>
@@ -42,6 +42,16 @@ const CartPage = () => {
           {cartItems.length > 0 ? (
             <View style={{ marginHorizontal: 20, marginTop: 15 }}>
               <BackBtn onPress={() => navigation.goBack()} />
+              <Text style={styles.heading}>Your Cart</Text>
+
+              <FlatList
+                data={cartItems}
+                keyExtractor={(item) => item._id}
+                renderItem={({ item }) => (
+                  <CartProducts item={item} />
+                )}
+              />
+
             </View>
           ) : (
             <View style={styles.container}>
@@ -93,5 +103,11 @@ const styles = StyleSheet.create({
   buttonText: {
     color: 'white',
     fontFamily: 'regular'
+  },
+  heading: {
+    fontFamily: 'bold',
+    fontSize: 24,
+    textAlign: 'center',
+    marginTop: 10
   },
 })
