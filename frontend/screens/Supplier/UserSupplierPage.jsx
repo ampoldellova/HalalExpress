@@ -17,7 +17,7 @@ const UserSupplierPage = () => {
     const navigation = useNavigation();
 
     return (
-        <View style={{ marginHorizontal: 20, marginTop: 30 }}>
+        <View style={{ marginHorizontal: 20, marginTop: 15 }}>
             <BackBtn onPress={() => navigation.goBack()} />
             <Text style={styles.heading}>Supplier Page</Text>
             <View style={styles.imageContainer}>

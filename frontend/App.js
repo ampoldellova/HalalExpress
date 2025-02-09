@@ -1,7 +1,7 @@
 import 'react-native-gesture-handler';
 import 'react-native-reanimated';
 import { StyleSheet, Text, View } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, useFocusEffect } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useFonts } from 'expo-font';
 import BottomTab from './navigations/BottomTab';
@@ -38,6 +38,8 @@ import AddressesPage from './screens/User/AddressesPage';
 import AddAddressPage from './screens/User/AddAddressPage';
 import EditAddressPage from './screens/User/EditAddressPage';
 import LoginPage from './screens/User/LoginPage';
+import axios from 'axios';
+import baseUrl from './assets/common/baseUrl';
 
 
 const Stack = createNativeStackNavigator();
@@ -50,7 +52,7 @@ export default function App() {
   const [restaurantObj, setRestaurantObj] = useState(null);
   const [supplierObj, setSupplierObj] = useState(null);
   const [error, setErrorMsg] = useState(null);
-
+  
   const defaultAddresss = { "city": "Shanghai", "country": "China", "district": "Pudong", "isoCountryCode": "CN", "name": "33 East Nanjing Rd", "postalCode": "94108", "region": "SH", "street": "Stockton St", "streetNumber": "1", "subregion": "San Francisco County", "timezone": "America/Los_Angeles" }
   const [fontsLoaded] = useFonts({
     regular: require('./assets/fonts/Poppins-Regular.ttf'),
@@ -82,6 +84,7 @@ export default function App() {
       loginStatus();
     })();
   }, [])
+
 
   const loginStatus = async () => {
     const userToken = await AsyncStorage.getItem('token')

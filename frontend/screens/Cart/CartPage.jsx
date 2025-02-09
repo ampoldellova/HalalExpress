@@ -1,28 +1,62 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React from 'react'
+import React, { useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import pages from '../../styles/page.style'
 import { COLORS, SIZES } from '../../styles/theme'
-import { useNavigation } from '@react-navigation/native'
+import { useFocusEffect, useNavigation } from '@react-navigation/native'
+import axios from 'axios'
+import baseUrl from '../../assets/common/baseUrl'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import BackBtn from '../../components/BackBtn'
 
 const CartPage = () => {
   const navigation = useNavigation()
+  const [cartItems, setCartItems] = useState([])
+
+  const getCartItems = async () => {
+    try {
+      const token = await AsyncStorage.getItem('token')
+      const config = {
+        headers: {
+          Authorization: `Bearer ${JSON.parse(token)}`,
+        }
+      }
+
+      const response = await axios.get(`${baseUrl}/api/cart/`, config)
+      setCartItems(response.data.cartItems)
+    } catch (error) {
+      console.log(error.message)
+    }
+  }
+
+  useFocusEffect(
+    React.useCallback(() => {
+      getCartItems();
+    }, [])
+  );
+
   return (
     <SafeAreaView >
       <View style={pages.viewOne}>
         <View style={pages.viewTwo}>
-          <View style={styles.container}>
-            <Image
-              style={styles.image}
-              source={require('../../assets/images/cart.png')}
-            />
-            <Text style={styles.text}>
-              You havent added anything to your cart yet.
-            </Text>
-            <TouchableOpacity style={styles.button} onPress={() => { navigation.navigate('HomePage') }}>
-              <Text style={styles.buttonText}>Browse Items</Text>
-            </TouchableOpacity>
-          </View>
+          {cartItems.length > 0 ? (
+            <View style={{ marginHorizontal: 20, marginTop: 15 }}>
+              <BackBtn onPress={() => navigation.goBack()} />
+            </View>
+          ) : (
+            <View style={styles.container}>
+              <Image
+                style={styles.image}
+                source={require('../../assets/images/cart.png')}
+              />
+              <Text style={styles.text}>
+                You havent added anything to your cart yet.
+              </Text>
+              <TouchableOpacity style={styles.button} onPress={() => { navigation.navigate('HomePage') }}>
+                <Text style={styles.buttonText}>Browse Items</Text>
+              </TouchableOpacity>
+            </View>
+          )}
         </View>
       </View>
     </SafeAreaView>
@@ -53,7 +87,8 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.primary,
     padding: 10,
     borderRadius: 15,
-    marginTop: 10
+    marginTop: 10,
+    textAlign: 'center'
   },
   buttonText: {
     color: 'white',

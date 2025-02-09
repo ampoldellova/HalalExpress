@@ -52,9 +52,9 @@ const ProductPage = () => {
     }
 
     return (
-        <View style={{ marginHorizontal: 20, marginTop: 30 }}>
+        <View style={{ marginHorizontal: 20, marginTop: 15 }}>
             <BackBtn onPress={() => navigation.goBack()} />
-            <Text style={styles.heading}>Food Details</Text>
+            <Text style={styles.heading}>Product Details</Text>
             <Image
                 source={{ uri: item.imageUrl.url }}
                 style={styles.imageUrl}

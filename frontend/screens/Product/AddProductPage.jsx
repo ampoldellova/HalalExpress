@@ -129,7 +129,7 @@ const AddProductPage = () => {
     return (
         <SafeAreaView>
             <ScrollView>
-                <View style={{ marginHorizontal: 20 }}>
+                <View style={{ marginHorizontal: 20, marginTop: 15 }}>
                     <BackBtn onPress={() => navigation.goBack()} />
                     <Text style={styles.heading}>Add a Product</Text>
                     <Formik
