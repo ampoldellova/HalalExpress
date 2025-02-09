@@ -1,39 +1,54 @@
 const Cart = require('../models/Cart')
 
 module.exports = {
-    addProductToCart: async (req, res) => {
+    addFoodToCart: async (req, res) => {
         const userId = req.user.id;
-        const { productId, totalPrice, quantity } = req.body;
-        let count;
+        const { foodId, totalPrice, quantity, additives, instructions } = req.body;
 
         try {
-            const existingProduct = await Cart.findOne({ userId, productId })
-            count = await Cart.countDocuments({ userId })
+            let cart = await Cart.findOne({ userId });
 
-            if (existingProduct) {
-                existingProduct.quantity += 1,
-                    existingProduct.totalPrice += totalPrice,
-                    await existingProduct.save()
+            if (cart) {
+                const existingItemIndex = cart.cartItems.findIndex(item => item.foodId.toString() === foodId);
+
+                if (existingItemIndex > -1) {
+                    cart.cartItems[existingItemIndex].quantity += quantity;
+                    cart.cartItems[existingItemIndex].totalPrice += totalPrice;
+                } else {
+                    cart.cartItems.push({
+                        foodId,
+                        additives,
+                        instructions,
+                        quantity,
+                        totalPrice
+                    });
+                }
+
+                cart.totalAmount += totalPrice;
+                await cart.save();
             } else {
                 const newCart = new Cart({
-                    userId: userId,
-                    productId: req.body.productId,
-                    additives: req.body.additives,
-                    instructions: req.body.instructions,
-                    totalPrice: req.body.totalPrice,
-                    quantity: req.body.quantity
-                })
+                    userId,
+                    cartItems: [{
+                        foodId,
+                        additives,
+                        instructions,
+                        quantity,
+                        totalPrice
+                    }],
+                    totalAmount: totalPrice
+                });
 
-                await newCart.save()
-                count = await Cart.countDocuments({ userId })
+                await newCart.save();
             }
 
-            res.status(200).json({ status: true, count: count })
+            const count = await Cart.countDocuments({ userId });
+            res.status(200).json({ status: true, count });
         } catch (error) {
-            res.status(500).json({ status: false, message: error.message })
+            res.status(500).json({ status: false, message: error.message });
         }
-
     },
+
     removeProductFromCart: async (req, res) => {
         const itemId = req.params.id
         const userId = req.user.id

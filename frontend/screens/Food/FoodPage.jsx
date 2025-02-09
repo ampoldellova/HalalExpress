@@ -7,6 +7,10 @@ import BouncyCheckbox from "react-native-bouncy-checkbox"
 import Counter from '../../components/Cart/Counter';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { RatingInput } from 'react-native-stock-star-rating';
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import baseUrl from '../../assets/common/baseUrl';
+import Toast from 'react-native-toast-message';
 
 const FoodPage = ({ route, navigation }) => {
   const item = route.params.item;
@@ -43,6 +47,37 @@ const FoodPage = ({ route, navigation }) => {
       return sum + parseFloat(additive.price)
     }, 0)
     setTotalPrice(total)
+  }
+
+  const addFoodToCart = async () => {
+    const cartItem = {
+      foodId: item._id,
+      additives: additives,
+      instructions: preference,
+      quantity: count,
+      totalPrice: (item.price + totalPrice) * count
+    }
+
+    try {
+      const token = await AsyncStorage.getItem('token');
+      const config = {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${JSON.parse(token)}`,
+        }
+      }
+      await axios.post(`${baseUrl}/api/cart/`, cartItem, config);
+      Toast.show({
+        type: 'success',
+        text1: 'Success ✅',
+        text2: 'Item added to cart!',
+        visibilityTime: 3000,
+        autoHide: true
+      })
+      navigation.navigate.goBack();
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   return (
@@ -143,7 +178,7 @@ const FoodPage = ({ route, navigation }) => {
         <View style={styles.suspended}>
           <View style={styles.cart}>
             <View style={styles.cartRow}>
-              <TouchableOpacity onPress={() => { }} style={styles.cartBtn}>
+              <TouchableOpacity onPress={addFoodToCart} style={styles.cartBtn}>
                 <AntDesign name='pluscircleo' size={24} color={COLORS.lightWhite} />
               </TouchableOpacity>
 

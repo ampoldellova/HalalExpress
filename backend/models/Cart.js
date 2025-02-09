@@ -7,27 +7,34 @@ const cartSchema = new mongoose.Schema({
         ref: 'User',
         autopopulate: true,
     },
-    productId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Food',
-        autopopulate: true,
-    },
-    additives: {
-        type: [],
-        default: ''
-    },
-    instructions: {
-        type: String,
-        default: ''
-    },
-    quantity: {
-        type: Number,
-        default: 1
-    },
-    totalPrice: {
+    cartItems: [{
+        foodId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Food',
+            autopopulate: true,
+        },
+        additives: {
+            type: [],
+            default: ''
+        },
+        instructions: {
+            type: String,
+            trim: true,
+            maxlength: 250,
+        },
+        quantity: {
+            type: Number,
+            default: 1
+        },
+        totalPrice: {
+            type: Number,
+            required: true
+        },
+    }],
+    totalAmount: {
         type: Number,
         required: true
-    },
+    }
 }, { timestamps: true });
 
 cartSchema.plugin(populate);

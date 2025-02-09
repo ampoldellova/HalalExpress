@@ -44,6 +44,7 @@
     "react-native-screens": "~4.4.0",
     "react-native-stock-star-rating": "^1.0.6",
     "react-native-tab-view": "^4.0.5",
+    "react-native-toast-message": "^2.2.1",
     "react-native-vector-icons": "^10.2.0",
     "react-redux": "^9.2.0",
     "yup": "^1.6.1"

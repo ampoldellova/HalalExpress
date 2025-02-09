@@ -26,6 +26,7 @@ import { useDispatch } from "react-redux";
 import { addUser } from "../../redux/UserReducer"
 import { SafeAreaView } from 'react-native-safe-area-context'
 import pages from "../../styles/page.style";
+import Toast from "react-native-toast-message";
 
 const validationSchema = Yup.object().shape({
     password: Yup.string()
@@ -68,6 +69,12 @@ const LoginPage = ({ navigation }) => {
                 await AsyncStorage.setItem("token", JSON.stringify(response.data.userToken));
 
                 navigation.navigate('HomePage')
+                Toast.show({
+                    topOffset: 60,
+                    type: "success",
+                    text1: "Login Successful",
+                    text2: "Welcome back"
+                });
 
             } else {
                 setLogin(false);
@@ -88,7 +95,7 @@ const LoginPage = ({ navigation }) => {
     return (
         <SafeAreaView>
             <ScrollView>
-                <View style={[pages.viewOne, { height: SIZES.height - 45}]} >
+                <View style={[pages.viewOne, { height: SIZES.height - 45 }]} >
                     <View style={[pages.viewTwo, { justifyContent: "center", backgroundColor: COLORS.white }]}>
                         <View style={{ marginHorizontal: 20 }}>
                             <BackBtn onPress={() => navigation.goBack()} />
