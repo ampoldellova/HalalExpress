@@ -47,7 +47,7 @@ const ManageFoodPage = () => {
             {loading ? (
                 <Loader />
             ) : (
-                <View style={{ marginHorizontal: 20 }}>
+                <View style={{ marginHorizontal: 20, marginTop: 15 }}>
                     <BackBtn onPress={() => navigation.goBack()} />
                     <Text style={styles.heading}>Manage Foods</Text>
                     <FlatList

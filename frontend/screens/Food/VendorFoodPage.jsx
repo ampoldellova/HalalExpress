@@ -52,7 +52,7 @@ const VendorFoodPage = () => {
     }
 
     return (
-        <View style={{ marginHorizontal: 20, marginTop: 30 }}>
+        <View style={{ marginHorizontal: 20, marginTop: 15 }}>
             <BackBtn onPress={() => navigation.goBack()} />
             <Text style={styles.heading}>Food Details</Text>
             <Image

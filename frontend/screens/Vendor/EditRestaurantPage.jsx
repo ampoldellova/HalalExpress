@@ -186,7 +186,7 @@ const EditRestaurantPage = () => {
 
     return (
         <ScrollView nestedScrollEnabled={true}>
-            <View style={{ marginHorizontal: 20 }}>
+            <View style={{ marginHorizontal: 20, marginTop: 15 }}>
                 <BackBtn onPress={() => navigation.goBack()} />
                 <Text style={styles.heading}>Edit Restaurant</Text>
                 <Formik
