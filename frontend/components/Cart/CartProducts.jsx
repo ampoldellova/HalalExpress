@@ -1,12 +1,48 @@
-import { FlatList, Image, StyleSheet, Text, View } from 'react-native'
+import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import React from 'react'
 import { COLORS, SIZES } from '../../styles/theme';
 import Divider from '../Divider';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import baseUrl from '../../assets/common/baseUrl';
+import axios from 'axios';
 
-const CartProducts = ({ item }) => {
-    console.log(item.additives)
+const CartProducts = ({ item, getCartItems }) => {
+
+    const handleIncrement = async () => {
+        try {
+            const token = await AsyncStorage.getItem('token')
+            const config = {
+                headers: {
+                    Authorization: `Bearer ${JSON.parse(token)}`,
+                }
+            }
+
+            await axios.put(`${baseUrl}/api/cart/increment`, { foodId: item.foodId._id, quantity: item.quantity + 1, totalPrice: item.totalPrice + item.foodId.price }, config)
+            getCartItems()
+        } catch (error) {
+            console.log(error.message)
+        }
+    }
+
+    const handleDecrement = async () => {
+        try {
+            const token = await AsyncStorage.getItem('token')
+            const config = {
+                headers: {
+                    Authorization: `Bearer ${JSON.parse(token)}`,
+                }
+            }
+
+            await axios.put(`${baseUrl}/api/cart/decrement`, { foodId: item.foodId._id, quantity: item.quantity - 1 }, config)
+            getCartItems()
+        } catch (error) {
+            console.log(error.message)
+        }
+    }
+
+
     return (
         <View style={{ marginTop: 15, flexDirection: 'row', alignItems: 'center' }}>
             <Image source={{ uri: item.foodId.imageUrl.url }} style={styles.image} />
@@ -31,13 +67,17 @@ const CartProducts = ({ item }) => {
                 )}
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 5 }}>
                     <View style={{ padding: 5, borderWidth: 1, borderColor: COLORS.gray, borderRadius: 15, flexDirection: 'row', alignItems: 'center' }}>
-                        {item.quantity === 1 ? (
-                            <FontAwesome name="trash-o" size={18} color="black" />
-                        ) : (
-                            <AntDesign name="minuscircleo" size={18} color="black" />
-                        )}
+                        <TouchableOpacity onPress={handleDecrement}>
+                            {item.quantity === 1 ? (
+                                <FontAwesome name="trash-o" size={18} color="black" />
+                            ) : (
+                                <AntDesign name="minuscircleo" size={18} color="black" />
+                            )}
+                        </TouchableOpacity>
                         <Text style={{ fontFamily: 'regular', marginHorizontal: 15 }}>{item.quantity}</Text>
-                        <AntDesign name="pluscircleo" size={18} color="black" />
+                        <TouchableOpacity onPress={handleIncrement}>
+                            <AntDesign name="pluscircleo" size={18} color="black" />
+                        </TouchableOpacity>
                     </View>
                     <Text style={{ fontFamily: 'regular', marginLeft: 10 }}>₱ {item.totalPrice}</Text>
                 </View>

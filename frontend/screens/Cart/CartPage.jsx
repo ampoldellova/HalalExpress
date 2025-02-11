@@ -48,7 +48,7 @@ const CartPage = () => {
                 data={cartItems}
                 keyExtractor={(item) => item._id}
                 renderItem={({ item }) => (
-                  <CartProducts item={item} />
+                  <CartProducts item={item} getCartItems={getCartItems} />
                 )}
               />
 
