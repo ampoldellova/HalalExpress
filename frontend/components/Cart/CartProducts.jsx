@@ -3,44 +3,32 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import React from 'react'
 import { COLORS, SIZES } from '../../styles/theme';
-import Divider from '../Divider';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import baseUrl from '../../assets/common/baseUrl';
 import axios from 'axios';
 
 const CartProducts = ({ item, getCartItems }) => {
-
-    const handleIncrement = async () => {
+    const increment = async () => {
         try {
-            const token = await AsyncStorage.getItem('token')
+            const token = await AsyncStorage.getItem('token');
             const config = {
                 headers: {
-                    Authorization: `Bearer ${JSON.parse(token)}`,
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${JSON.parse(token)}`
                 }
-            }
+            };
 
-            await axios.put(`${baseUrl}/api/cart/increment`, { foodId: item.foodId._id, quantity: item.quantity + 1, totalPrice: item.totalPrice + item.foodId.price }, config)
-            getCartItems()
+            console.log('Incrementing foodId:', item.foodId._id);
+            console.log('Base URL:', baseUrl);
+
+            const response = await axios.post(`${baseUrl}/api/cart/increment/${item.foodId._id}`, {}, config);
+            console.log('Response:', response.data);
+            getCartItems();
         } catch (error) {
-            console.log(error.message)
+            console.log('Error:', error.message);
         }
-    }
+    };
 
-    const handleDecrement = async () => {
-        try {
-            const token = await AsyncStorage.getItem('token')
-            const config = {
-                headers: {
-                    Authorization: `Bearer ${JSON.parse(token)}`,
-                }
-            }
-
-            await axios.put(`${baseUrl}/api/cart/decrement`, { foodId: item.foodId._id, quantity: item.quantity - 1 }, config)
-            getCartItems()
-        } catch (error) {
-            console.log(error.message)
-        }
-    }
 
 
     return (
@@ -67,7 +55,7 @@ const CartProducts = ({ item, getCartItems }) => {
                 )}
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 5 }}>
                     <View style={{ padding: 5, borderWidth: 1, borderColor: COLORS.gray, borderRadius: 15, flexDirection: 'row', alignItems: 'center' }}>
-                        <TouchableOpacity onPress={handleDecrement}>
+                        <TouchableOpacity onPress={() => { }}>
                             {item.quantity === 1 ? (
                                 <FontAwesome name="trash-o" size={18} color="black" />
                             ) : (
@@ -75,7 +63,7 @@ const CartProducts = ({ item, getCartItems }) => {
                             )}
                         </TouchableOpacity>
                         <Text style={{ fontFamily: 'regular', marginHorizontal: 15 }}>{item.quantity}</Text>
-                        <TouchableOpacity onPress={handleIncrement}>
+                        <TouchableOpacity onPress={increment}>
                             <AntDesign name="pluscircleo" size={18} color="black" />
                         </TouchableOpacity>
                     </View>

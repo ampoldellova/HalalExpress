@@ -65,72 +65,31 @@ module.exports = {
         }
     },
 
-    incrementFoodItemQuantity: async (req, res) => {
+    incrementCartItemQuantity: async (req, res) => {
         const userId = req.user.id;
-        const { foodId, quantity, totalPrice } = req.body;
+        const foodId = req.params.id;
 
         try {
             let cart = await Cart.findOne({ userId });
 
-            if (!cart) {
-                return res.status(404).json({ status: false, message: 'Cart not found' });
-            }
+            if (cart) {
+                const existingItemIndex = cart.cartItems.findIndex(item => item.foodId.toString() === foodId);
 
-            const existingItemIndex = cart.cartItems.findIndex(item => item.foodId.toString() === foodId);
+                if (existingItemIndex > -1) {
+                    cart.cartItems[existingItemIndex].quantity += 1;
+                    cart.cartItems[existingItemIndex].totalPrice += cart.cartItems[existingItemIndex].totalPrice / (cart.cartItems[existingItemIndex].quantity - 1);
+                    cart.totalAmount += cart.cartItems[existingItemIndex].totalPrice / cart.cartItems[existingItemIndex].quantity;
 
-            if (existingItemIndex > -1) {
-                const oldQuantity = cart.cartItems[existingItemIndex].quantity;
-                const oldTotalPrice = cart.cartItems[existingItemIndex].totalPrice;
-
-                cart.cartItems[existingItemIndex].quantity = quantity;
-                cart.cartItems[existingItemIndex].totalPrice = totalPrice;
-
-                cart.totalAmount += (totalPrice - oldTotalPrice);
-                await cart.save();
-
-                return res.status(200).json({ status: true, message: 'Quantity and total price updated successfully' });
+                    await cart.save();
+                    return res.status(200).json({ status: true, message: 'Quantity incremented successfully' });
+                } else {
+                    return res.status(404).json({ status: false, message: 'Item not found in cart' });
+                }
             } else {
-                return res.status(404).json({ status: false, message: 'Food item not found in cart' });
+                return res.status(404).json({ status: false, message: 'Cart not found' });
             }
         } catch (error) {
             res.status(500).json({ status: false, message: error.message });
         }
     },
-
-    decrementFoodItemQuantity: async (req, res) => {
-        const userId = req.user.id;
-        const { foodId, quantity } = req.body;
-
-        try {
-            let cart = await Cart.findOne({ userId });
-
-            if (!cart) {
-                return res.status(404).json({ status: false, message: 'Cart not found' });
-            }
-
-            const existingItemIndex = cart.cartItems.findIndex(item => item.foodId.toString() === foodId);
-
-            if (existingItemIndex > -1) {
-                const oldQuantity = cart.cartItems[existingItemIndex].quantity;
-                const oldTotalPrice = cart.cartItems[existingItemIndex].totalPrice;
-
-                if (oldQuantity - quantity < 1) {
-                    cart.totalAmount -= oldTotalPrice;
-                    cart.cartItems.splice(existingItemIndex, 1);
-                } else {
-                    cart.cartItems[existingItemIndex].quantity -= quantity;
-                    cart.cartItems[existingItemIndex].totalPrice -= (oldTotalPrice / oldQuantity) * quantity;
-                    cart.totalAmount -= (oldTotalPrice / oldQuantity) * quantity;
-                }
-
-                await cart.save();
-
-                return res.status(200).json({ status: true, message: 'Quantity decremented successfully' });
-            } else {
-                return res.status(404).json({ status: false, message: 'Food item not found in cart' });
-            }
-        } catch (error) {
-            res.status(500).json({ status: false, message: error.message });
-        }
-    }
 };
