@@ -13,7 +13,6 @@ const CartProducts = ({ item, getCartItems }) => {
             const token = await AsyncStorage.getItem('token');
             const config = {
                 headers: {
-                    'Content-Type': 'application/json',
                     Authorization: `Bearer ${JSON.parse(token)}`
                 }
             };
@@ -21,9 +20,9 @@ const CartProducts = ({ item, getCartItems }) => {
             console.log('Incrementing foodId:', item.foodId._id);
             console.log('Base URL:', baseUrl);
 
-            const response = await axios.post(`${baseUrl}/api/cart/increment/${item.foodId._id}`, {}, config);
+            const response = await axios.get(`${baseUrl}/api/cart/increment/${item.foodId._id}`, config);
             console.log('Response:', response.data);
-            getCartItems();
+            // getCartItems();
         } catch (error) {
             console.log('Error:', error.message);
         }
