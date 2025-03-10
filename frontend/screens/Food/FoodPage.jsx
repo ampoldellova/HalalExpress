@@ -11,14 +11,12 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import baseUrl from '../../assets/common/baseUrl';
 import Toast from 'react-native-toast-message';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 const FoodPage = ({ route, navigation }) => {
   const item = route.params.item;
-  const [isChecked, setIsChecked] = useState(false);
   const [additives, setAdditives] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
-  const [restaurant, setRestaurant] = useState(1);
   const [count, setCount] = useState(1);
   const [preference, setPreference] = useState('');
   const dispatch = useDispatch();
@@ -71,13 +69,13 @@ const FoodPage = ({ route, navigation }) => {
           }
         }
         await axios.post(`${baseUrl}/api/cart/`, cartItem, config);
-        dispatch(updateCartCount(cartCount + 1));
         navigation.goBack();
         Toast.show({
           type: 'success',
           text1: 'Success ✅',
           text2: 'Food has been added to your cart 🛒'
         });
+        dispatch(updateCartCount(cartCount + 1));
       } else {
         Alert.alert('Error ❌', 'Please login first to add food to cart');
       }

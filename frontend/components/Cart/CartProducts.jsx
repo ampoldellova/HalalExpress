@@ -85,9 +85,8 @@ const CartProducts = ({ item, getCartItems }) => {
                 text1: 'Success ✅',
                 text2: 'Food has been removed from your cart 🛒'
             });
-
-            dispatch(updateCartCount(cartCount - 1));
             getCartItems();
+            dispatch(updateCartCount(cartCount - 1));
         } catch (error) {
             console.log(error);
         }
