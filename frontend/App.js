@@ -38,8 +38,6 @@ import AddressesPage from './screens/User/AddressesPage';
 import AddAddressPage from './screens/User/AddAddressPage';
 import EditAddressPage from './screens/User/EditAddressPage';
 import LoginPage from './screens/User/LoginPage';
-import axios from 'axios';
-import baseUrl from './assets/common/baseUrl';
 import Toast from 'react-native-toast-message';
 
 

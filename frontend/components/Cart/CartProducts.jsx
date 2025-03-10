@@ -8,9 +8,13 @@ import baseUrl from '../../assets/common/baseUrl';
 import axios from 'axios';
 import { useFocusEffect } from '@react-navigation/native';
 import Toast from 'react-native-toast-message';
+import { useDispatch, useSelector } from 'react-redux';
+import { updateCartCount } from '../../redux/UserReducer';
 
 const CartProducts = ({ item, getCartItems }) => {
     const [user, setUser] = useState({});
+    const dispatch = useDispatch();
+    const { cartCount } = useSelector(state => state.user);
 
     const getUser = async () => {
         try {
@@ -81,6 +85,8 @@ const CartProducts = ({ item, getCartItems }) => {
                 text1: 'Success ✅',
                 text2: 'Food has been removed from your cart 🛒'
             });
+
+            dispatch(updateCartCount(cartCount - 1));
             getCartItems();
         } catch (error) {
             console.log(error);

@@ -39,8 +39,6 @@ const CartPage = () => {
     }, [])
   );
 
-  console.log(cart)
-
   return (
     <SafeAreaView >
       <View style={pages.viewOne}>

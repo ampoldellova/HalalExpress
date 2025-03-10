@@ -11,6 +11,7 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import baseUrl from '../../assets/common/baseUrl';
 import Toast from 'react-native-toast-message';
+import { useDispatch } from 'react-redux';
 
 const FoodPage = ({ route, navigation }) => {
   const item = route.params.item;
@@ -20,6 +21,8 @@ const FoodPage = ({ route, navigation }) => {
   const [restaurant, setRestaurant] = useState(1);
   const [count, setCount] = useState(1);
   const [preference, setPreference] = useState('');
+  const dispatch = useDispatch();
+  const { cartCount } = useSelector(state => state.user);
 
   const handleAdditives = (newAdditives) => {
     setAdditives((prevAdditives) => {
@@ -68,6 +71,7 @@ const FoodPage = ({ route, navigation }) => {
           }
         }
         await axios.post(`${baseUrl}/api/cart/`, cartItem, config);
+        dispatch(updateCartCount(cartCount + 1));
         navigation.goBack();
         Toast.show({
           type: 'success',
