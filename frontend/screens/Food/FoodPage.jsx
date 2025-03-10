@@ -169,27 +169,27 @@ const FoodPage = ({ route, navigation }) => {
             <Counter count={count} setCount={setCount} />
           </View>
         </View>
-      </ScrollView >
 
-      <View style={{ position: 'absolute', bottom: -40, alignItems: "center", width: "100%" }}>
-        <View style={styles.suspended}>
-          <View style={styles.cart}>
-            <View style={styles.cartRow}>
-              <TouchableOpacity onPress={addFoodToCart} style={styles.cartBtn}>
-                <AntDesign name='pluscircleo' size={24} color={COLORS.lightWhite} />
-              </TouchableOpacity>
+        <View style={{ alignItems: "center", width: "100%", marginVertical: 10 }}>
+          <View style={styles.suspended}>
+            <View style={styles.cart}>
+              <View style={styles.cartRow}>
+                <TouchableOpacity onPress={addFoodToCart} style={styles.cartBtn}>
+                  <AntDesign name='pluscircleo' size={24} color={COLORS.lightWhite} />
+                </TouchableOpacity>
 
-              <TouchableOpacity onPress={() => navigation.navigate('order-page')} style={{ backgroundColor: COLORS.primary, paddingHorizontal: 80, borderRadius: 30 }}>
-                <Text style={[styles.title, { color: COLORS.lightWhite, marginTop: 5, alignItems: "center" }]}>Order</Text>
-              </TouchableOpacity>
+                <TouchableOpacity onPress={() => navigation.navigate('order-page')} style={{ backgroundColor: COLORS.primary, paddingHorizontal: 80, borderRadius: 30 }}>
+                  <Text style={[styles.title, { color: COLORS.lightWhite, marginTop: 5, alignItems: "center" }]}>Order</Text>
+                </TouchableOpacity>
 
-              <TouchableOpacity onPress={() => { }} style={styles.cartBtn}>
-                <Text style={[styles.title, { color: COLORS.lightWhite, marginTop: 5, alignItems: "center" }]}>{0}</Text>
-              </TouchableOpacity>
+                <TouchableOpacity onPress={() => { }} style={styles.cartBtn}>
+                  <Text style={[styles.title, { color: COLORS.lightWhite, marginTop: 5, alignItems: "center" }]}>{0}</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
         </View>
-      </View>
+      </ScrollView >
     </SafeAreaView >
   )
 }
@@ -272,9 +272,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row'
   },
   suspended: {
-    position: 'absolute',
-    zIndex: 999,
-    bottom: 50,
+    // position: 'absolute',
+    // zIndex: 999,
+    // bottom: 50,
     width: "100%",
     alignItems: "center"
   },
