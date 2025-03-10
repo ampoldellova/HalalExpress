@@ -52,12 +52,12 @@ const FoodPage = ({ route, navigation }) => {
   const addFoodToCart = async () => {
     const cartItem = {
       foodId: item._id,
+      restaurantId: item.restaurant._id,
       additives: additives,
       instructions: preference,
       quantity: count,
       totalPrice: (item.price + totalPrice) * count
     }
-
     try {
       const token = await AsyncStorage.getItem('token');
       if (token) {
@@ -68,7 +68,12 @@ const FoodPage = ({ route, navigation }) => {
           }
         }
         await axios.post(`${baseUrl}/api/cart/`, cartItem, config);
-        Alert.alert('Success ✅', 'Food added to cart');
+        navigation.goBack();
+        Toast.show({
+          type: 'success',
+          text1: 'Success ✅',
+          text2: 'Food has been added to cart 🛒'
+        });
       } else {
         Alert.alert('Error ❌', 'Please login first to add food to cart');
       }

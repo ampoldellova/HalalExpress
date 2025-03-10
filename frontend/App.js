@@ -40,6 +40,7 @@ import EditAddressPage from './screens/User/EditAddressPage';
 import LoginPage from './screens/User/LoginPage';
 import axios from 'axios';
 import baseUrl from './assets/common/baseUrl';
+import Toast from 'react-native-toast-message';
 
 
 const Stack = createNativeStackNavigator();
@@ -52,7 +53,7 @@ export default function App() {
   const [restaurantObj, setRestaurantObj] = useState(null);
   const [supplierObj, setSupplierObj] = useState(null);
   const [error, setErrorMsg] = useState(null);
-  
+
   const defaultAddresss = { "city": "Shanghai", "country": "China", "district": "Pudong", "isoCountryCode": "CN", "name": "33 East Nanjing Rd", "postalCode": "94108", "region": "SH", "street": "Stockton St", "streetNumber": "1", "subregion": "San Francisco County", "timezone": "America/Los_Angeles" }
   const [fontsLoaded] = useFonts({
     regular: require('./assets/fonts/Poppins-Regular.ttf'),
@@ -228,6 +229,7 @@ export default function App() {
           </RestaurantContext.Provider>
         </UserReversedGeoCode.Provider>
       </UserLocationContext.Provider>
+      <Toast />
     </Provider>
   );
 }
