@@ -67,45 +67,13 @@ const FoodPage = ({ route, navigation }) => {
             Authorization: `Bearer ${JSON.parse(token)}`,
           }
         }
-        const response = await axios.get(`${baseUrl}/api/cart/`, config);
-        const cartItems = response.data.cartItems;
-
-        const differentRestaurantItem = cartItems.find(cartItem => cartItem.restaurantId !== item.restaurant._id);
-
-        if (differentRestaurantItem) {
-          Alert.alert(
-            'Add anyway?',
-            'You already have items from another restaurant or shop in your cart. Do you want to clear your cart and add this item?',
-            [
-              {
-                text: 'Cancel',
-                style: 'cancel',
-              },
-              {
-                text: 'OK',
-                onPress: async () => {
-                  await axios.delete(`${baseUrl}/api/cart/clear-cart`, config);
-                  await axios.post(`${baseUrl}/api/cart/`, cartItem, config);
-                  navigation.goBack();
-                  Toast.show({
-                    type: 'success',
-                    text1: 'Success ✅',
-                    text2: 'Food has been added to your cart 🛒'
-                  });
-                },
-              },
-            ],
-            { cancelable: false }
-          );
-        } else {
-          await axios.post(`${baseUrl}/api/cart/`, cartItem, config);
-          navigation.goBack();
-          Toast.show({
-            type: 'success',
-            text1: 'Success ✅',
-            text2: 'Food has been added to your cart 🛒'
-          });
-        }
+        await axios.post(`${baseUrl}/api/cart/`, cartItem, config);
+        navigation.goBack();
+        Toast.show({
+          type: 'success',
+          text1: 'Success ✅',
+          text2: 'Food has been added to your cart 🛒'
+        });
       } else {
         Alert.alert('Error ❌', 'Please login first to add food to cart');
       }
