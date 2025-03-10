@@ -100,27 +100,27 @@ module.exports = {
     incrementCartItemQuantity: async (req, res) => {
         const userId = req.user.id;
         const foodId = req.params.id;
-
         try {
             let cart = await Cart.findOne({ userId });
 
-            if (cart) {
-                const existingItemIndex = cart.cartItems.findIndex(item => item.foodId._id.toString() === foodId);
-
-                if (existingItemIndex > -1) {
-                    const item = cart.cartItems[existingItemIndex];
-                    item.quantity += 1;
-                    item.totalPrice += item.foodId.price;
-                    cart.totalAmount += item.foodId.price;
-
-                    await cart.save();
-                    return res.status(200).json({ status: true, message: 'Quantity incremented successfully' });
-                } else {
-                    return res.status(404).json({ status: false, message: 'Item not found in cart' });
-                }
-            } else {
+            if (!cart) {
                 return res.status(404).json({ status: false, message: 'Cart not found' });
             }
+
+            const existingItemIndex = cart.cartItems.findIndex(item => item.foodId._id.toString() === foodId);
+
+            if (existingItemIndex > -1) {
+                const item = cart.cartItems[existingItemIndex];
+                item.quantity += 1;
+                item.totalPrice += item.foodId.price;
+                cart.totalAmount += item.foodId.price;
+
+                await cart.save();
+                return res.status(200).json({ status: true, message: 'Quantity incremented successfully' });
+            } else {
+                return res.status(404).json({ status: false, message: 'Item not found in cart' });
+            }
+
         } catch (error) {
             res.status(500).json({ status: false, message: error.message });
         }

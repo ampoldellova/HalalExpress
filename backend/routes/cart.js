@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const cartController = require('../controllers/cartController');
-const { verifyAndAuthorization } = require('../middleware/verifyToken');
+const { verifyAndAuthorization, verifyToken } = require('../middleware/verifyToken');
 
 router.post('/', verifyAndAuthorization, cartController.addFoodToCart);
 router.get('/', verifyAndAuthorization, cartController.getCartItems);
