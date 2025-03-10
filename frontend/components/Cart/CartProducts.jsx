@@ -7,6 +7,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import baseUrl from '../../assets/common/baseUrl';
 import axios from 'axios';
 import { useFocusEffect } from '@react-navigation/native';
+import Toast from 'react-native-toast-message';
 
 const CartProducts = ({ item, getCartItems }) => {
     const [user, setUser] = useState({});
@@ -30,7 +31,6 @@ const CartProducts = ({ item, getCartItems }) => {
             console.log("Error fetching profile:", error);
         }
     };
-
 
     const increment = async (foodId) => {
         try {
@@ -76,6 +76,11 @@ const CartProducts = ({ item, getCartItems }) => {
                 }
             };
             await axios.delete(`${baseUrl}/api/cart/remove-food?userId=${user._id}&foodId=${foodId}`, config);
+            Toast.show({
+                type: 'success',
+                text1: 'Success ✅',
+                text2: 'Food has been removed from your cart 🛒'
+            });
             getCartItems();
         } catch (error) {
             console.log(error);

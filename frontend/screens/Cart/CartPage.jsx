@@ -9,6 +9,7 @@ import baseUrl from '../../assets/common/baseUrl'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import BackBtn from '../../components/BackBtn'
 import CartProducts from '../../components/Cart/CartProducts'
+import Button from '../../components/Button'
 
 const CartPage = () => {
   const navigation = useNavigation()
@@ -47,11 +48,12 @@ const CartPage = () => {
               <FlatList
                 data={cartItems}
                 keyExtractor={(item) => item._id}
+                style={{ height: SIZES.height / 1.4 }}
                 renderItem={({ item }) => (
                   <CartProducts item={item} getCartItems={getCartItems} />
                 )}
               />
-
+              <Button title='C H E C K O U T' isValid={true} onPress={() => { }} />
             </View>
           ) : (
             <View style={styles.container}>
