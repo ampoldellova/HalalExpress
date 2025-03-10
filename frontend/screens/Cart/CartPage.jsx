@@ -12,7 +12,8 @@ import CartProducts from '../../components/Cart/CartProducts'
 import Button from '../../components/Button'
 
 const CartPage = () => {
-  const navigation = useNavigation()
+  const navigation = useNavigation();
+  const [cart, setCart] = useState({})
   const [cartItems, setCartItems] = useState([])
 
   const getCartItems = async () => {
@@ -26,6 +27,7 @@ const CartPage = () => {
 
       const response = await axios.get(`${baseUrl}/api/cart/`, config)
       setCartItems(response.data.cartItems)
+      setCart(response.data.cart)
     } catch (error) {
       console.log(error.message)
     }
@@ -36,6 +38,9 @@ const CartPage = () => {
       getCartItems();
     }, [])
   );
+
+  console.log(cart)
+
   return (
     <SafeAreaView >
       <View style={pages.viewOne}>
@@ -48,11 +53,21 @@ const CartPage = () => {
               <FlatList
                 data={cartItems}
                 keyExtractor={(item) => item._id}
-                style={{ height: SIZES.height / 1.4 }}
+                style={{ height: SIZES.height / 1.5 }}
                 renderItem={({ item }) => (
                   <CartProducts item={item} getCartItems={getCartItems} />
                 )}
               />
+
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                <Text style={{ fontFamily: 'bold', fontSize: 18, textAlign: 'center', marginTop: 10 }}>
+                  Total:
+                </Text>
+                <Text style={{ fontFamily: 'bold', fontSize: 18, textAlign: 'center', marginTop: 10 }}>
+                  ₱ {cart.totalAmount.toFixed(2)}
+                </Text>
+              </View>
+
               <Button title='C H E C K O U T' isValid={true} onPress={() => { }} />
             </View>
           ) : (
