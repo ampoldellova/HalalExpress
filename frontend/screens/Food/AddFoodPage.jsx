@@ -273,7 +273,7 @@ const AddFoodPage = () => {
                                 <View style={[styles.inputWrapper(touched.description ? COLORS.secondary : COLORS.offwhite), { height: 100, alignItems: 'flex-start' }]}>
                                     <MaterialIcons name="description" size={20} color={COLORS.gray} style={[styles.iconStyle, { marginTop: 15 }]} />
                                     <TextInput
-                                        style={[styles.textInput, { marginVertical: 5 }]}
+                                        style={[styles.textInput, { marginVertical: 5, marginTop: 15 }]}
                                         placeholderTextColor={COLORS.gray}
                                         placeholder="Enter food description"
                                         onChangeText={handleChange('description')}

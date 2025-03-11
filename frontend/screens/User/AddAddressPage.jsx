@@ -240,7 +240,9 @@ const styles = StyleSheet.create({
     textInput: {
         flex: 1,
         fontFamily: 'regular',
-        marginTop: 2
+        marginTop: 2,
+        height: 50,
+        
     },
     inputWrapper: (borderColor) => ({
         borderColor: borderColor,

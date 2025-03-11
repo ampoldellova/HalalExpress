@@ -11,7 +11,6 @@ import MapView, { Marker } from 'react-native-maps';
 import { UserLocationContext } from '../contexts/UserLocationContext';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { UserReversedGeoCode } from '../contexts/UserReversedGeoCode';
-import { Feather } from '@expo/vector-icons';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { BottomModal, ModalContent, SlideAnimation } from 'react-native-modals';
 
@@ -23,6 +22,7 @@ const CheckoutPage = () => {
     const { address, setAddress } = useContext(UserReversedGeoCode);
     const { location, setLocation } = useContext(UserLocationContext);
     const [showAddresses, setShowAddresses] = useState(false);
+    const [selectedAddress, setSelectedAddress] = useState(null);
 
     const getUserAddresses = async () => {
         try {
@@ -66,22 +66,22 @@ const CheckoutPage = () => {
         const parts = address.split(',');
         return parts.slice(0, 2).join(',');
     };
-
+    console.log(selectedAddress)
     return (
         <SafeAreaView>
             <View style={{ marginHorizontal: 20, marginTop: 15 }}>
                 <BackBtn onPress={() => navigation.goBack()} />
                 <Text style={styles.heading}>Check Out</Text>
 
-                <View style={{ borderColor: COLORS.gray2, height: SIZES.height / 2.1, borderWidth: 1, borderRadius: 10, marginTop: 20, padding: 10 }}>
-                    <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10, width: '100%', justifyContent: 'space-between' }}>
+                <View style={{ borderColor: COLORS.gray2, height: SIZES.height / 2.05, borderWidth: 1, borderRadius: 10, marginTop: 20, padding: 10 }}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10, width: '100%', justifyContent: 'space-between', marginTop: 10 }}>
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                             <Image source={require('../assets/images/location.png')} style={{ width: 25, height: 25 }} />
                             <Text style={{ fontFamily: 'bold', fontSize: 18, marginLeft: 5 }}>Delivery Address</Text>
                         </View>
                         <View>
                             <TouchableOpacity onPress={() => setShowAddresses(true)}>
-                                <FontAwesome name="pencil" size={20} color={COLORS.black} />
+                                <FontAwesome name="pencil" size={20} color={COLORS.black} style={{ marginRight: 5 }} />
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -114,11 +114,38 @@ const CheckoutPage = () => {
             <BottomModal
                 visible={showAddresses}
                 onTouchOutside={() => setShowAddresses(false)}
-                swipeDirection={["up", "down"]}
-                swipeThreshold={200}
+                swipeThreshold={100}
                 modalAnimation={new SlideAnimation({ slideFrom: "bottom" })}
-                onHardwareBackPress={() => setShowAddresses(false)}>
-                <ModalContent style={{ width: "100%", height: 400 }}>
+                onHardwareBackPress={() => setShowAddresses(false)}
+            >
+                <ModalContent style={{ height: 300, width: '100%' }}>
+                    <Text style={{ fontFamily: 'bold', fontSize: 20, marginBottom: 5 }}> Saved Addresses</Text>
+
+                    <FlatList
+                        data={addresses}
+                        showsVerticalScrollIndicator={false}
+                        keyExtractor={(item) => item._id}
+                        renderItem={({ item }) => (
+                            <TouchableOpacity onPress={() => setSelectedAddress(item.address)} style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10, borderWidth: 1, padding: 10, borderRadius: 10, borderColor: selectedAddress === item.address ? COLORS.primary : COLORS.gray2 }}>
+                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                    <Image source={require('../assets/images/location.png')} style={{ width: 30, height: 30, marginLeft: 5 }} />
+                                    <View style={{ flex: 1, height: 60, justifyContent: 'center' }}>
+                                        <Text style={{ fontFamily: 'regular', fontSize: 14, marginLeft: 10, color: COLORS.gray }} numberOfLines={3} ellipsizeMode='tail'>{item.address}</Text>
+                                    </View>
+                                </View>
+                            </TouchableOpacity>
+                        )}
+                        ListFooterComponent={
+                            <TouchableOpacity onPress={() => { navigation.navigate('add-address-page'); setShowAddresses(false) }} style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10, borderWidth: 1, borderRadius: 10, borderColor: COLORS.gray2 }}>
+                                <View style={{ flexDirection: 'row', alignItems: 'center', marginHorizontal: 10 }}>
+                                    <MaterialIcons name="add" size={30} color={COLORS.gray2} />
+                                    <View style={{ flex: 1, height: 50, justifyContent: 'center' }}>
+                                        <Text style={{ fontFamily: 'regular', fontSize: 14, marginLeft: 10, color: COLORS.gray }}>Add New Address</Text>
+                                    </View>
+                                </View>
+                            </TouchableOpacity>
+                        }
+                    />
 
                 </ModalContent>
             </BottomModal>
