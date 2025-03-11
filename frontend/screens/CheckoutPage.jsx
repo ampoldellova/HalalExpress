@@ -23,6 +23,8 @@ const CheckoutPage = () => {
     const { location, setLocation } = useContext(UserLocationContext);
     const [showAddresses, setShowAddresses] = useState(false);
     const [selectedAddress, setSelectedAddress] = useState(null);
+    const [selectedAddressLat, setSelectedAddressLat] = useState(null);
+    const [selectedAddressLng, setSelectedAddressLng] = useState(null);
 
     const getUserAddresses = async () => {
         try {
@@ -66,14 +68,23 @@ const CheckoutPage = () => {
         const parts = address.split(',');
         return parts.slice(0, 2).join(',');
     };
-    console.log(selectedAddress)
+
+    const formatCity = (address) => {
+        const parts = address.split(',');
+        if (parts.length > 1) {
+            const cityParts = parts[1].trim().split(' ');
+            return cityParts[0];
+        }
+        return parts[0];
+    };
+
     return (
         <SafeAreaView>
             <View style={{ marginHorizontal: 20, marginTop: 15 }}>
                 <BackBtn onPress={() => navigation.goBack()} />
                 <Text style={styles.heading}>Check Out</Text>
 
-                <View style={{ borderColor: COLORS.gray2, height: SIZES.height / 2.05, borderWidth: 1, borderRadius: 10, marginTop: 20, padding: 10 }}>
+                <View style={{ borderColor: COLORS.gray2, height: 'auto', borderWidth: 1, borderRadius: 10, marginTop: 20, padding: 10 }}>
                     <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10, width: '100%', justifyContent: 'space-between', marginTop: 10 }}>
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                             <Image source={require('../assets/images/location.png')} style={{ width: 25, height: 25 }} />
@@ -87,14 +98,26 @@ const CheckoutPage = () => {
                     </View>
 
                     <View style={styles.mapContainer}>
-                        <MapView style={{ height: SIZES.height / 5.2 }} region={{ latitude: location?.coords?.latitude, longitude: location?.coords?.longitude, latitudeDelta: 0.01, longitudeDelta: 0.01 }}>
-                            <Marker title='Your Location' coordinate={{ latitude: location?.coords?.latitude, longitude: location?.coords?.longitude }} />
+                        <MapView
+                            style={{ height: SIZES.height / 5.2 }}
+                            region={{
+                                latitude: selectedAddressLat === null ? location?.coords?.latitude : selectedAddressLat,
+                                longitude: selectedAddressLng === null ? location?.coords?.longitude : selectedAddressLng,
+                                latitudeDelta: 0.01,
+                                longitudeDelta: 0.01
+                            }}>
+                            <Marker
+                                title='Your Location'
+                                coordinate={{
+                                    latitude: selectedAddressLat === null ? location?.coords?.latitude : selectedAddressLat,
+                                    longitude: selectedAddressLng === null ? location?.coords?.longitude : selectedAddressLng,
+                                }} />
                         </MapView>
                     </View>
 
                     <View style={{ flexDirection: 'column', marginBottom: 10 }}>
-                        <Text style={{ fontFamily: 'bold', fontSize: 16, marginTop: 5 }}>{formatAddress(address.formattedAddress)}</Text>
-                        <Text style={{ fontFamily: 'regular', fontSize: 14, marginTop: -5 }}>{address.city}</Text>
+                        <Text style={{ fontFamily: 'bold', fontSize: 16, marginTop: 5 }}>{formatAddress(selectedAddress === null ? address.formattedAddress : selectedAddress)}</Text>
+                        <Text style={{ fontFamily: 'regular', fontSize: 14, marginTop: -5 }}>{formatCity(selectedAddress === null ? address.city : selectedAddress)}</Text>
                     </View>
 
                     <Text style={styles.label}>Delivery note</Text>
@@ -111,6 +134,7 @@ const CheckoutPage = () => {
                     </View>
                 </View>
             </View>
+
             <BottomModal
                 visible={showAddresses}
                 onTouchOutside={() => setShowAddresses(false)}
@@ -126,13 +150,30 @@ const CheckoutPage = () => {
                         showsVerticalScrollIndicator={false}
                         keyExtractor={(item) => item._id}
                         renderItem={({ item }) => (
-                            <TouchableOpacity onPress={() => setSelectedAddress(item.address)} style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10, borderWidth: 1, padding: 10, borderRadius: 10, borderColor: selectedAddress === item.address ? COLORS.primary : COLORS.gray2 }}>
+                            <TouchableOpacity
+                                onPress={() => {
+                                    setSelectedAddress(selectedAddress === item.address ? null : item.address);
+                                    setSelectedAddressLat(selectedAddressLat === item.latitude ? null : item.latitude);
+                                    setSelectedAddressLng(selectedAddressLng === item.longitude ? null : item.longitude);
+                                }}
+                                style={{
+                                    flexDirection: 'row',
+                                    alignItems: 'center',
+                                    marginTop: 10,
+                                    borderWidth: 1,
+                                    padding: 10,
+                                    borderRadius: 10,
+                                    borderColor: selectedAddress === item.address ? COLORS.primary : COLORS.gray2
+                                }}>
                                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                     <Image source={require('../assets/images/location.png')} style={{ width: 30, height: 30, marginLeft: 5 }} />
                                     <View style={{ flex: 1, height: 60, justifyContent: 'center' }}>
                                         <Text style={{ fontFamily: 'regular', fontSize: 14, marginLeft: 10, color: COLORS.gray }} numberOfLines={3} ellipsizeMode='tail'>{item.address}</Text>
                                     </View>
                                 </View>
+                                {console.log(selectedAddress)}
+                                {console.log(selectedAddressLat)}
+                                {console.log(selectedAddressLng)}
                             </TouchableOpacity>
                         )}
                         ListFooterComponent={
@@ -164,7 +205,7 @@ const styles = StyleSheet.create({
     },
     mapContainer: {
         width: "100%",
-        height: "40%",
+        height: "auto",
         borderColor: COLORS.gray2,
         borderWidth: 1,
         borderRadius: 15,
