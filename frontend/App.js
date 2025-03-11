@@ -39,6 +39,8 @@ import AddAddressPage from './screens/User/AddAddressPage';
 import EditAddressPage from './screens/User/EditAddressPage';
 import LoginPage from './screens/User/LoginPage';
 import Toast from 'react-native-toast-message';
+import CheckoutPage from './screens/CheckoutPage';
+import { ModalPortal } from 'react-native-modals';
 
 
 const Stack = createNativeStackNavigator();
@@ -219,7 +221,13 @@ export default function App() {
                         component={EditAddressPage}
                         options={{ headerShown: false }}
                       />
+                      <Stack.Screen
+                        name='checkout-page'
+                        component={CheckoutPage}
+                        options={{ headerShown: false }}
+                      />
                     </Stack.Navigator>
+                    <ModalPortal />
                   </NavigationContainer>
                 </CartCountContext.Provider>
               </LoginContext.Provider>

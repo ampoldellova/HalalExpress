@@ -66,7 +66,7 @@ const CartPage = () => {
                 </Text>
               </View>
 
-              <Button title='C H E C K O U T' isValid={true} onPress={() => { }} />
+              <Button title='C H E C K O U T' isValid={true} onPress={() => { navigation.navigate('checkout-page', { cart }) }} />
             </View>
           ) : (
             <View style={styles.container}>

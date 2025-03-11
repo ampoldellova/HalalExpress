@@ -116,7 +116,7 @@ const BottomTab = () => {
                                     height: 15,
                                     width: 20,
                                     borderRadius: 99,
-                                    backgroundColor: COLORS.secondary,
+                                    backgroundColor: COLORS.red,
                                     justifyContent: 'center',
                                     alignItems: 'center',
                                     right: -15,
