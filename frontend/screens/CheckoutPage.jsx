@@ -162,6 +162,7 @@ const CheckoutPage = () => {
                         onPress={() => {
                             if (restaurant?.delivery) {
                                 setSelectedDeliveryOption('standard');
+                                selectedDeliveryOption === 'standard' ? setSelectedDeliveryOption(null) : setSelectedDeliveryOption('standard')
                                 setError(false)
                             } else {
                                 setSelectedDeliveryOption(null);
