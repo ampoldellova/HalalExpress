@@ -54,8 +54,6 @@ const LoginPage = ({ navigation }) => {
             const endpoint = `${baseUrl}/login`;
             const data = values;
 
-            console.log(data);
-
             const response = await axios.post(endpoint, data);
             if (response.status === 200) {
                 setLoader(false);

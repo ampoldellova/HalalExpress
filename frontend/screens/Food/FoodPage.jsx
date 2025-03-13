@@ -21,6 +21,7 @@ const FoodPage = ({ route, navigation }) => {
   const [preference, setPreference] = useState('');
   const dispatch = useDispatch();
   const { cartCount } = useSelector(state => state.user);
+  const user = useSelector(state => state.user);
 
   const handleAdditives = (newAdditives) => {
     setAdditives((prevAdditives) => {
@@ -77,7 +78,12 @@ const FoodPage = ({ route, navigation }) => {
         });
         dispatch(updateCartCount(cartCount + 1));
       } else {
-        Alert.alert('Error ❌', 'Please login first to add food to cart');
+        navigation.goBack();
+        Toast.show({
+          type: 'error',
+          text1: 'Error ❌',
+          text2: 'You need to logged in first to add food to cart'
+        });
       }
     } catch (error) {
       console.log(error);
