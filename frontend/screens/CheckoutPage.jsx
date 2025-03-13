@@ -13,11 +13,13 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { UserReversedGeoCode } from '../contexts/UserReversedGeoCode';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { BottomModal, ModalContent, SlideAnimation } from 'react-native-modals';
+import Button from '../components/Button';
 
 const CheckoutPage = () => {
     const route = useRoute();
     const navigation = useNavigation();
     const { cart } = route.params;
+    const [restaurant, setRestaurant] = useState(null);
     const [addresses, setAddresses] = useState([]);
     const { address, setAddress } = useContext(UserReversedGeoCode);
     const { location, setLocation } = useContext(UserLocationContext);
@@ -25,6 +27,20 @@ const CheckoutPage = () => {
     const [selectedAddress, setSelectedAddress] = useState(null);
     const [selectedAddressLat, setSelectedAddressLat] = useState(null);
     const [selectedAddressLng, setSelectedAddressLng] = useState(null);
+    const [selectedDeliveryOption, setSelectedDeliveryOption] = useState(null);
+    const [error, setError] = useState(false);
+
+    const fetchRestaurant = async () => {
+        if (cart?.cartItems.length > 0) {
+            const restaurantId = cart.cartItems[0].foodId.restaurant;
+            try {
+                const response = await axios.get(`${baseUrl}/api/restaurant/byId/${restaurantId}`);
+                setRestaurant(response.data.data);
+            } catch (error) {
+                console.error('Error fetching restaurant data:', error);
+            }
+        }
+    };
 
     const getUserAddresses = async () => {
         try {
@@ -46,6 +62,7 @@ const CheckoutPage = () => {
 
     useFocusEffect(
         React.useCallback(() => {
+            fetchRestaurant();
             getUserAddresses();
         }, [])
     );
@@ -84,7 +101,7 @@ const CheckoutPage = () => {
                 <BackBtn onPress={() => navigation.goBack()} />
                 <Text style={styles.heading}>Check Out</Text>
 
-                <View style={{ borderColor: COLORS.gray2, height: 'auto', borderWidth: 1, borderRadius: 10, marginTop: 20, padding: 10 }}>
+                <View style={{ borderColor: COLORS.gray2, height: 'auto', borderWidth: 1, borderRadius: 10, marginTop: 20, padding: 10, marginBottom: 20 }}>
                     <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10, width: '100%', justifyContent: 'space-between', marginTop: 10 }}>
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                             <Image source={require('../assets/images/location.png')} style={{ width: 25, height: 25 }} />
@@ -115,7 +132,7 @@ const CheckoutPage = () => {
                         </MapView>
                     </View>
 
-                    <View style={{ flexDirection: 'column', marginBottom: 10 }}>
+                    <View style={{ flexDirection: 'column' }}>
                         <Text style={{ fontFamily: 'bold', fontSize: 16, marginTop: 5 }}>{formatAddress(selectedAddress === null ? address.formattedAddress : selectedAddress)}</Text>
                         <Text style={{ fontFamily: 'regular', fontSize: 14, marginTop: -5 }}>{formatCity(selectedAddress === null ? address.city : selectedAddress)}</Text>
                     </View>
@@ -133,6 +150,68 @@ const CheckoutPage = () => {
                         />
                     </View>
                 </View>
+
+                {error && <Text style={[styles.label, { color: COLORS.red, textAlign: 'left' }]}>*Please select a delivery option</Text>}
+                <View style={{ borderColor: COLORS.gray2, height: 'auto', borderWidth: 1, borderRadius: 10, padding: 10 }}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
+                        <Image source={require('../assets/images/options.png')} style={{ width: 25, height: 25 }} />
+                        <Text style={{ fontFamily: 'bold', fontSize: 18, marginLeft: 5 }}>Delivery Options</Text>
+                    </View>
+
+                    <TouchableOpacity
+                        onPress={() => {
+                            if (restaurant?.delivery) {
+                                setSelectedDeliveryOption('standard');
+                                setError(false)
+                            } else {
+                                setSelectedDeliveryOption(null);
+                                setError(true);
+                            }
+                        }}
+                        style={{
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            marginTop: 10,
+                            borderWidth: 1,
+                            padding: 10,
+                            borderRadius: 10,
+                            borderColor: selectedDeliveryOption === 'standard' ? COLORS.primary : COLORS.gray2,
+                            opacity: restaurant?.delivery ? 1 : 0.5
+                        }}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                            <Image source={require('../assets/images/delivery.png')} style={{ width: 20, height: 20, marginLeft: 2.5 }} />
+                            <View style={{ flex: 1, height: 30, justifyContent: 'center' }}>
+                                <Text style={{ fontFamily: 'medium', fontSize: 16, marginLeft: 10, color: COLORS.black }}>Standard Delivery</Text>
+                            </View>
+                            <Text style={{ fontFamily: 'bold', fontSize: 16, color: restaurant?.delivery ? COLORS.primary : COLORS.red }}>{restaurant?.delivery ? 'Free' : 'Not Available'}</Text>
+                        </View>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                        onPress={() => {
+                            setSelectedDeliveryOption('pickup');
+                            selectedDeliveryOption === null ? setError(false) : setSelectedDeliveryOption('pickup');
+                            selectedDeliveryOption === 'pickup' ? setSelectedDeliveryOption(null) : setSelectedDeliveryOption('pickup')
+                        }}
+                        style={{
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            marginTop: 10,
+                            borderWidth: 1,
+                            padding: 10,
+                            borderRadius: 10,
+                            borderColor: selectedDeliveryOption === 'pickup' ? COLORS.primary : COLORS.gray2
+                        }}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                            <Image source={require('../assets/images/pickup.png')} style={{ width: 20, height: 20, marginLeft: 2.5 }} />
+                            <View style={{ flex: 1, height: 30, justifyContent: 'center' }}>
+                                <Text style={{ fontFamily: 'medium', fontSize: 16, marginLeft: 10, color: COLORS.black }}>Pickup</Text>
+                            </View>
+                            <Text style={{ fontFamily: 'bold', fontSize: 16, color: COLORS.primary }}>Free</Text>
+                        </View>
+                    </TouchableOpacity>
+                </View>
+                <Button title="P L A C E   O R D E R" onPress={() => { }} />
             </View>
 
             <BottomModal
@@ -142,7 +221,7 @@ const CheckoutPage = () => {
                 modalAnimation={new SlideAnimation({ slideFrom: "bottom" })}
                 onHardwareBackPress={() => setShowAddresses(false)}
             >
-                <ModalContent style={{ height: 300, width: '100%' }}>
+                <ModalContent style={{ height: SIZES.height / 2, width: '100%' }}>
                     <Text style={{ fontFamily: 'bold', fontSize: 20, marginBottom: 5 }}> Saved Addresses</Text>
 
                     <FlatList
@@ -171,9 +250,6 @@ const CheckoutPage = () => {
                                         <Text style={{ fontFamily: 'regular', fontSize: 14, marginLeft: 10, color: COLORS.gray }} numberOfLines={3} ellipsizeMode='tail'>{item.address}</Text>
                                     </View>
                                 </View>
-                                {console.log(selectedAddress)}
-                                {console.log(selectedAddressLat)}
-                                {console.log(selectedAddressLng)}
                             </TouchableOpacity>
                         )}
                         ListFooterComponent={
@@ -190,7 +266,7 @@ const CheckoutPage = () => {
 
                 </ModalContent>
             </BottomModal>
-        </SafeAreaView>
+        </SafeAreaView >
     )
 }
 
