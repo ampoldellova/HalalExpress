@@ -10,11 +10,20 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import BackBtn from '../../components/BackBtn'
 import CartProducts from '../../components/Cart/CartProducts'
 import Button from '../../components/Button'
+import { getProfile } from '../../hook/helpers'
 
 const CartPage = () => {
   const navigation = useNavigation();
+  const [user, setUser] = useState(null)
   const [cart, setCart] = useState({})
+  const [vendorCart, setVendorCart] = useState({})
   const [cartItems, setCartItems] = useState([])
+  const [vendorCartItems, setVendorCartItems] = useState([])
+
+  const fetchProfile = async () => {
+    const profile = await getProfile();
+    setUser(profile);
+  };
 
   const getCartItems = async () => {
     try {
@@ -33,10 +42,29 @@ const CartPage = () => {
     }
   }
 
+
+  const getVendorCartItems = async () => {
+    try {
+      const token = await AsyncStorage.getItem('token')
+      const config = {
+        headers: {
+          Authorization: `Bearer ${JSON.parse(token)}`,
+        }
+      }
+
+      const response = await axios.get(`${baseUrl}/api/cart/vendor/`, config)
+      setVendorCartItems(response.data.cartItems)
+      setVendorCart(response.data.vendorCart)
+    } catch (error) {
+      console.log(error.message)
+    }
+  };
+
   useFocusEffect(
     React.useCallback(() => {
-      getCartItems();
-    }, [])
+      fetchProfile();
+      { user && user.userType === 'Vendor' ? getVendorCartItems() : getCartItems() }
+    }, [cartItems, vendorCartItems])
   );
 
   return (
@@ -66,7 +94,7 @@ const CartPage = () => {
                 </Text>
               </View>
 
-              <Button title='C H E C K O U T' isValid={true} onPress={() => { navigation.navigate('checkout-page', { cart }) }} />
+              <Button title='C H E C K O U T' isValid={true} onPress={() => { navigation.navigate('checkout-page', { cart, vendorCart, user }) }} />
             </View>
           ) : (
             <View style={styles.container}>

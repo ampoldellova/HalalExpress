@@ -1,4 +1,4 @@
-import { FlatList, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { FlatList, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import React, { useContext, useEffect, useState } from 'react'
 import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -14,11 +14,13 @@ import { UserReversedGeoCode } from '../contexts/UserReversedGeoCode';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { BottomModal, ModalContent, SlideAnimation } from 'react-native-modals';
 import Button from '../components/Button';
+import GoogleApiServices from '../hook/GoogleApiServices';
 
 const CheckoutPage = () => {
     const route = useRoute();
     const navigation = useNavigation();
-    const { cart } = route.params;
+    const { cart, vendorCart, user } = route.params;
+    const [supplier, setSupplier] = useState(null);
     const [restaurant, setRestaurant] = useState(null);
     const [addresses, setAddresses] = useState([]);
     const { address, setAddress } = useContext(UserReversedGeoCode);
@@ -28,19 +30,9 @@ const CheckoutPage = () => {
     const [selectedAddressLat, setSelectedAddressLat] = useState(null);
     const [selectedAddressLng, setSelectedAddressLng] = useState(null);
     const [selectedDeliveryOption, setSelectedDeliveryOption] = useState(null);
+    const [distanceTime, setDistanceTime] = useState({});
+    const [deliveryFee, setDeliveryFee] = useState(0);
     const [error, setError] = useState(false);
-
-    const fetchRestaurant = async () => {
-        if (cart?.cartItems.length > 0) {
-            const restaurantId = cart.cartItems[0].foodId.restaurant;
-            try {
-                const response = await axios.get(`${baseUrl}/api/restaurant/byId/${restaurantId}`);
-                setRestaurant(response.data.data);
-            } catch (error) {
-                console.error('Error fetching restaurant data:', error);
-            }
-        }
-    };
 
     const getUserAddresses = async () => {
         try {
@@ -60,18 +52,29 @@ const CheckoutPage = () => {
         }
     };
 
-    useFocusEffect(
-        React.useCallback(() => {
-            fetchRestaurant();
-            getUserAddresses();
-        }, [])
-    );
-
-    useEffect(() => {
-        if (location !== null) {
-            reverseGeoCode(location?.coords?.latitude, location?.coords?.longitude)
+    const fetchRestaurant = async () => {
+        if (cart?.cartItems.length > 0) {
+            const restaurantId = cart.cartItems[0].foodId.restaurant;
+            try {
+                const response = await axios.get(`${baseUrl}/api/restaurant/byId/${restaurantId}`);
+                setRestaurant(response.data.data);
+            } catch (error) {
+                console.error('Error fetching restaurant data:', error);
+            }
         }
-    }, [location]);
+    };
+
+    const fetchSupplier = async () => {
+        if (vendorCart?.cartItems.length > 0) {
+            const supplierId = vendorCart.cartItems[0].productId.supplier;
+            try {
+                const response = await axios.get(`${baseUrl}/api/supplier/byId/${supplierId}`);
+                setSupplier(response.data.data);
+            } catch (error) {
+                console.error('Error fetching supplier data:', error);
+            }
+        }
+    };
 
     const reverseGeoCode = async (latitude, longitude) => {
         const reverseGeoCodedAddress = await Location.reverseGeocodeAsync({
@@ -80,6 +83,36 @@ const CheckoutPage = () => {
         });
         setAddress(reverseGeoCodedAddress[0]);
     };
+
+    useFocusEffect(
+        React.useCallback(() => {
+            getUserAddresses();
+            { user.userType === 'Vendor' ? fetchSupplier() : fetchRestaurant() }
+        }, [cart, vendorCart, user])
+    );
+
+    useEffect(() => {
+        if (location !== null) {
+            reverseGeoCode(location?.coords?.latitude, location?.coords?.longitude)
+        }
+    }, [location]);
+
+    useEffect(() => {
+        const origin = user?.userType === 'Vendor' ? supplier?.coords : restaurant?.coords
+        const userOriginLat = selectedAddressLat === null ? location?.coords?.latitude : selectedAddressLat
+        const userOriginLng = selectedAddressLng === null ? location?.coords?.longitude : selectedAddressLng
+        GoogleApiServices.calculateDistanceAndTime(
+            origin?.latitude,
+            origin?.longitude,
+            userOriginLat,
+            userOriginLng
+        ).then((result) => {
+            if (result) {
+                setDistanceTime(result);
+                setDeliveryFee(result.finalPrice);
+            }
+        });
+    }, [supplier, restaurant, selectedAddress]);
 
     const formatAddress = (address) => {
         const parts = address.split(',');
@@ -95,61 +128,68 @@ const CheckoutPage = () => {
         return parts[0];
     };
 
+    const totalTime = distanceTime.duration + GoogleApiServices.extractNumbers(user.userType === 'Vendor' ? supplier?.time : restaurant?.time)[0];
+
     return (
         <SafeAreaView>
-            <View style={{ marginHorizontal: 20, marginTop: 15 }}>
+            <ScrollView showsVerticalScrollIndicator={false} style={{ marginHorizontal: 20, marginTop: 15 }}>
                 <BackBtn onPress={() => navigation.goBack()} />
                 <Text style={styles.heading}>Check Out</Text>
 
-                <View style={{ borderColor: COLORS.gray2, height: 'auto', borderWidth: 1, borderRadius: 10, marginTop: 20, padding: 10, marginBottom: 20 }}>
-                    <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10, width: '100%', justifyContent: 'space-between', marginTop: 10 }}>
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <Image source={require('../assets/images/location.png')} style={{ width: 25, height: 25 }} />
-                            <Text style={{ fontFamily: 'bold', fontSize: 18, marginLeft: 5 }}>Delivery Address</Text>
+                {restaurant?.delivery || supplier?.delivery ? (
+                    <View style={{ borderColor: COLORS.gray2, height: 'auto', borderWidth: 1, borderRadius: 10, padding: 10, marginBottom: 20 }}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10, width: '100%', justifyContent: 'space-between', marginTop: 10 }}>
+                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                <Image source={require('../assets/images/location.png')} style={{ width: 25, height: 25 }} />
+                                <Text style={{ fontFamily: 'bold', fontSize: 18, marginLeft: 5 }}>Delivery Address</Text>
+                            </View>
+                            <View>
+                                <TouchableOpacity onPress={() => setShowAddresses(true)}>
+                                    <FontAwesome name="pencil" size={20} color={COLORS.black} style={{ marginRight: 5 }} />
+                                </TouchableOpacity>
+                            </View>
                         </View>
-                        <View>
-                            <TouchableOpacity onPress={() => setShowAddresses(true)}>
-                                <FontAwesome name="pencil" size={20} color={COLORS.black} style={{ marginRight: 5 }} />
-                            </TouchableOpacity>
-                        </View>
-                    </View>
 
-                    <View style={styles.mapContainer}>
-                        <MapView
-                            style={{ height: SIZES.height / 5.2 }}
-                            region={{
-                                latitude: selectedAddressLat === null ? location?.coords?.latitude : selectedAddressLat,
-                                longitude: selectedAddressLng === null ? location?.coords?.longitude : selectedAddressLng,
-                                latitudeDelta: 0.01,
-                                longitudeDelta: 0.01
-                            }}>
-                            <Marker
-                                title='Your Location'
-                                coordinate={{
+                        <View style={styles.mapContainer}>
+                            <MapView
+                                style={{ height: SIZES.height / 5.2 }}
+                                region={{
                                     latitude: selectedAddressLat === null ? location?.coords?.latitude : selectedAddressLat,
                                     longitude: selectedAddressLng === null ? location?.coords?.longitude : selectedAddressLng,
-                                }} />
-                        </MapView>
-                    </View>
+                                    latitudeDelta: 0.01,
+                                    longitudeDelta: 0.01
+                                }}>
+                                <Marker
+                                    title='Your Location'
+                                    coordinate={{
+                                        latitude: selectedAddressLat === null ? location?.coords?.latitude : selectedAddressLat,
+                                        longitude: selectedAddressLng === null ? location?.coords?.longitude : selectedAddressLng,
+                                    }} />
+                            </MapView>
+                        </View>
 
-                    <View style={{ flexDirection: 'column' }}>
-                        <Text style={{ fontFamily: 'bold', fontSize: 16, marginTop: 5 }}>{formatAddress(selectedAddress === null ? address.formattedAddress : selectedAddress)}</Text>
-                        <Text style={{ fontFamily: 'regular', fontSize: 14, marginTop: -5 }}>{formatCity(selectedAddress === null ? address.city : selectedAddress)}</Text>
-                    </View>
+                        <View style={{ flexDirection: 'column' }}>
+                            <Text style={{ fontFamily: 'bold', fontSize: 16, marginTop: 5 }}>{formatAddress(selectedAddress === null ? address.formattedAddress : selectedAddress)}</Text>
+                            <Text style={{ fontFamily: 'regular', fontSize: 14, marginTop: -5 }}>{formatCity(selectedAddress === null ? address.city : selectedAddress)}</Text>
+                        </View>
 
-                    <Text style={styles.label}>Delivery note</Text>
-                    <View style={styles.inputWrapper(COLORS.offwhite)}>
-                        <MaterialIcons name="notes" size={20} color={COLORS.gray} style={{ marginTop: 10, marginRight: 5 }} />
-                        <TextInput
-                            multiline
-                            numberOfLines={3}
-                            placeholder="Add your note here..."
-                            autoCapitalize="none"
-                            autoCorrect={false}
-                            style={styles.textInput}
-                        />
+                        <Text style={styles.label}>Delivery note</Text>
+                        <View style={styles.inputWrapper(COLORS.offwhite)}>
+                            <MaterialIcons name="notes" size={20} color={COLORS.gray} style={{ marginTop: 10, marginRight: 5 }} />
+                            <TextInput
+                                multiline
+                                numberOfLines={3}
+                                placeholder="Add your note here..."
+                                autoCapitalize="none"
+                                autoCorrect={false}
+                                style={styles.textInput}
+                            />
+                        </View>
                     </View>
-                </View>
+                ) : (
+                    <>
+                    </>
+                )}
 
                 {error && <Text style={[styles.label, { color: COLORS.red, textAlign: 'left' }]}>*Please select a delivery option</Text>}
                 <View style={{ borderColor: COLORS.gray2, height: 'auto', borderWidth: 1, borderRadius: 10, padding: 10 }}>
@@ -179,12 +219,22 @@ const CheckoutPage = () => {
                             borderColor: selectedDeliveryOption === 'standard' ? COLORS.primary : COLORS.gray2,
                             opacity: restaurant?.delivery ? 1 : 0.5
                         }}>
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <Image source={require('../assets/images/delivery.png')} style={{ width: 20, height: 20, marginLeft: 2.5 }} />
-                            <View style={{ flex: 1, height: 30, justifyContent: 'center' }}>
-                                <Text style={{ fontFamily: 'medium', fontSize: 16, marginLeft: 10, color: COLORS.black }}>Standard Delivery</Text>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                            <View style={{ flexDirection: 'row', alignItems: 'center', height: 30 }}>
+                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                    <Image source={require('../assets/images/delivery.png')} style={{ width: 20, height: 20, marginLeft: 2.5 }} />
+                                    <Text style={{ fontFamily: 'medium', fontSize: 16, marginLeft: 10, color: COLORS.black }}>Standard</Text>
+                                </View>
+                                <Text style={{ fontFamily: 'regular', fontSize: 12, color: COLORS.gray, marginLeft: 5 }}>({totalTime.toFixed(0)} mins)</Text>
                             </View>
-                            <Text style={{ fontFamily: 'bold', fontSize: 16, color: restaurant?.delivery ? COLORS.primary : COLORS.red }}>{restaurant?.delivery ? 'Free' : 'Not Available'}</Text>
+
+                            {restaurant?.delivery ? (
+                                <View style={{ backgroundColor: COLORS.secondary, paddingHorizontal: 5, borderRadius: 10 }}>
+                                    <Text style={{ fontFamily: 'bold', fontSize: 12, color: COLORS.white }}>+ {deliveryFee}</Text>
+                                </View>
+                            ) : (
+                                <Text style={{ fontFamily: 'bold', fontSize: 16, color: COLORS.red }}>Not Available</Text>
+                            )}
                         </View>
                     </TouchableOpacity>
 
@@ -213,7 +263,7 @@ const CheckoutPage = () => {
                     </TouchableOpacity>
                 </View>
                 <Button title="P L A C E   O R D E R" onPress={() => { }} />
-            </View>
+            </ScrollView >
 
             <BottomModal
                 visible={showAddresses}
@@ -278,7 +328,8 @@ const styles = StyleSheet.create({
         fontFamily: 'bold',
         fontSize: 24,
         textAlign: 'center',
-        marginTop: 10
+        marginTop: 10,
+        marginBottom: 20
     },
     mapContainer: {
         width: "100%",
