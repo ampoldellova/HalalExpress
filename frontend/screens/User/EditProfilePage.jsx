@@ -125,7 +125,7 @@ const EditProfilePage = ({ navigation, route }) => {
                                 />
 
                                 <TextInput
-                                    style={{ flex: 1 }}
+                                    style={{ flex: 1, fontFamily: 'regular' }}
                                     placeholder="Enter username"
                                     onChangeText={handleChange('username')}
                                     onFocus={() => { setFieldTouched('username', '') }}
@@ -153,7 +153,7 @@ const EditProfilePage = ({ navigation, route }) => {
                                     style={styles.iconStyle}
                                 />
                                 <TextInput
-                                    style={{ flex: 1 }}
+                                    style={{ flex: 1, fontFamily: 'regular' }}
                                     placeholder="Enter email"
                                     onChangeText={handleChange('email')}
                                     onFocus={() => { setFieldTouched('email', '') }}
@@ -182,7 +182,7 @@ const EditProfilePage = ({ navigation, route }) => {
                                     style={styles.iconStyle}
                                 />
                                 <TextInput
-                                    style={{ flex: 1 }}
+                                    style={{ flex: 1, fontFamily: 'regular' }}
                                     placeholder="Enter phone"
                                     onChangeText={handleChange('phone')}
                                     onFocus={() => { setFieldTouched('phone', '') }}

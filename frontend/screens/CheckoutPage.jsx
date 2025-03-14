@@ -119,7 +119,6 @@ const CheckoutPage = () => {
                     Authorization: `Bearer ${JSON.parse(token)}`,
                 },
             });
-
             Toast.show({
                 type: 'success',
                 text1: 'Success ✅',
@@ -184,8 +183,13 @@ const CheckoutPage = () => {
 
     const totalTime = distanceTime.duration + GoogleApiServices.extractNumbers(user.userType === 'Vendor' ? supplier?.time : restaurant?.time)[0];
 
+    const initialUsername = user?.username;
+    const initialEmail = user?.email;
+    const initialPhone = user?.phone;
+    const initialImage = user?.profile?.url;
+
     const isUserDetailsChanged = () => {
-        return username !== user?.username || email !== user?.email || phone !== user?.phone || image !== user?.profile?.url;
+        return username !== initialUsername || email !== initialEmail || phone !== initialPhone || image !== initialImage;
     };
 
     return (
@@ -359,7 +363,7 @@ const CheckoutPage = () => {
                                         autoCorrect={false}
                                         style={styles.textInput}
                                         value={email}
-                                        onChangeText={(text) => setUsername(text)}
+                                        onChangeText={(text) => setEmail(text)}
                                     />
                                 </View>
                             </View>
@@ -374,12 +378,12 @@ const CheckoutPage = () => {
                                         autoCorrect={false}
                                         style={styles.textInput}
                                         value={phone}
-                                        onChangeText={(text) => setUsername(text)}
+                                        onChangeText={(text) => setPhone(text)}
                                     />
                                 </View>
                             </View>
 
-                            <Button title="S U B M I T" onPress={isUserDetailsChanged() ? handleSubmitForm : null} isValid={isUserDetailsChanged() ? true : false} loader={loading} />
+                            <Button title="S U B M I T" onPress={isUserDetailsChanged() ? handleSubmitForm : null} isValid={isUserDetailsChanged()} loader={loading} />
                         </View>
                     ) : (
                         <View style={{ marginTop: 10, marginBottom: 5, marginLeft: 5 }}>
