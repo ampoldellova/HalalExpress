@@ -183,11 +183,6 @@ const CheckoutPage = () => {
 
     const totalTime = distanceTime.duration + GoogleApiServices.extractNumbers(user.userType === 'Vendor' ? supplier?.time : restaurant?.time)[0];
 
-    const initialUsername = user?.username;
-    const initialEmail = user?.email;
-    const initialPhone = user?.phone;
-    const initialImage = user?.profile?.url;
-
     const isUserDetailsChanged = () => {
         return username !== user?.username || email !== user?.email || phone !== user?.phone || image !== user?.profile?.url;
     };
