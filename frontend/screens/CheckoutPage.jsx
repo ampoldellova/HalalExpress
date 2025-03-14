@@ -19,6 +19,7 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import GoogleApiServices from '../hook/GoogleApiServices';
 import Toast from 'react-native-toast-message';
 import Divider from '../components/Divider';
+import Loader from '../components/Loader';
 
 const CheckoutPage = () => {
     const route = useRoute();
@@ -152,6 +153,7 @@ const CheckoutPage = () => {
     }, [location]);
 
     useEffect(() => {
+        setLoading(true);
         const origin = user?.userType === 'Vendor' ? supplier?.coords : restaurant?.coords
         const userOriginLat = selectedAddressLat === null ? location?.coords?.latitude : selectedAddressLat
         const userOriginLng = selectedAddressLng === null ? location?.coords?.longitude : selectedAddressLng
@@ -163,6 +165,7 @@ const CheckoutPage = () => {
         ).then((result) => {
             if (result) {
                 setDistanceTime(result);
+                setLoading(false);
             }
         });
     }, [supplier, restaurant, selectedAddress]);
@@ -189,286 +192,290 @@ const CheckoutPage = () => {
 
     return (
         <SafeAreaView>
-            <ScrollView showsVerticalScrollIndicator={false} style={{ marginHorizontal: 20, marginTop: 15 }}>
-                <BackBtn onPress={() => navigation.goBack()} />
-                <Text style={styles.heading}>Check Out</Text>
+            {loading ? (
+                <Loader />
+            ) : (
+                <ScrollView showsVerticalScrollIndicator={false} style={{ marginHorizontal: 20, marginTop: 15 }}>
+                    <BackBtn onPress={() => navigation.goBack()} />
+                    <Text style={styles.heading}>Check Out</Text>
 
-                {restaurant?.delivery || supplier?.delivery ? (
-                    <View style={{ borderColor: COLORS.gray2, height: 'auto', borderWidth: 1, borderRadius: 10, padding: 10, marginBottom: 20 }}>
-                        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10, width: '100%', justifyContent: 'space-between', marginTop: 10 }}>
-                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                <Image source={require('../assets/images/location.png')} style={{ width: 25, height: 25 }} />
-                                <Text style={{ fontFamily: 'bold', fontSize: 18, marginLeft: 5 }}>Delivery Address</Text>
+                    {restaurant?.delivery || supplier?.delivery ? (
+                        <View style={{ borderColor: COLORS.gray2, height: 'auto', borderWidth: 1, borderRadius: 10, padding: 10, marginBottom: 20 }}>
+                            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10, width: '100%', justifyContent: 'space-between', marginTop: 10 }}>
+                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                    <Image source={require('../assets/images/location.png')} style={{ width: 25, height: 25 }} />
+                                    <Text style={{ fontFamily: 'bold', fontSize: 18, marginLeft: 5 }}>Delivery Address</Text>
+                                </View>
+                                <View>
+                                    <TouchableOpacity onPress={() => setShowAddresses(true)}>
+                                        <FontAwesome name="pencil" size={20} color={COLORS.black} style={{ marginRight: 5 }} />
+                                    </TouchableOpacity>
+                                </View>
                             </View>
-                            <View>
-                                <TouchableOpacity onPress={() => setShowAddresses(true)}>
-                                    <FontAwesome name="pencil" size={20} color={COLORS.black} style={{ marginRight: 5 }} />
-                                </TouchableOpacity>
-                            </View>
-                        </View>
 
-                        <View style={styles.mapContainer}>
-                            <MapView
-                                style={{ height: SIZES.height / 5.2 }}
-                                region={{
-                                    latitude: selectedAddressLat === null ? location?.coords?.latitude : selectedAddressLat,
-                                    longitude: selectedAddressLng === null ? location?.coords?.longitude : selectedAddressLng,
-                                    latitudeDelta: 0.01,
-                                    longitudeDelta: 0.01
-                                }}>
-                                <Marker
-                                    title='Your Location'
-                                    coordinate={{
+                            <View style={styles.mapContainer}>
+                                <MapView
+                                    style={{ height: SIZES.height / 5.2 }}
+                                    region={{
                                         latitude: selectedAddressLat === null ? location?.coords?.latitude : selectedAddressLat,
                                         longitude: selectedAddressLng === null ? location?.coords?.longitude : selectedAddressLng,
-                                    }} />
-                            </MapView>
-                        </View>
-
-                        <View style={{ flexDirection: 'column' }}>
-                            <Text style={{ fontFamily: 'bold', fontSize: 16, marginTop: 5 }}>{formatAddress(selectedAddress === null ? address.formattedAddress : selectedAddress)}</Text>
-                            <Text style={{ fontFamily: 'regular', fontSize: 14, marginTop: -5 }}>{formatCity(selectedAddress === null ? address.city : selectedAddress)}</Text>
-                        </View>
-
-                        <Text style={styles.label}>Delivery note</Text>
-                        <View style={styles.notesInputWrapper(COLORS.offwhite)}>
-                            <MaterialIcons name="notes" size={20} color={COLORS.gray} style={{ marginTop: 10, marginRight: 5 }} />
-                            <TextInput
-                                multiline
-                                numberOfLines={3}
-                                placeholder="Add your note here..."
-                                autoCapitalize="none"
-                                autoCorrect={false}
-                                style={[styles.textInput, { marginTop: 10 }]}
-                            />
-                        </View>
-                    </View>
-                ) : (
-                    <>
-                    </>
-                )}
-
-                {error && <Text style={[styles.label, { color: COLORS.red, textAlign: 'left' }]}>*Please select a delivery option</Text>}
-                <View style={{ borderColor: COLORS.gray2, height: 'auto', borderWidth: 1, borderRadius: 10, padding: 10, marginBottom: 20 }}>
-                    <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
-                        <Image source={require('../assets/images/options.png')} style={{ width: 25, height: 25 }} />
-                        <Text style={{ fontFamily: 'bold', fontSize: 18, marginLeft: 5 }}>Delivery Options</Text>
-                    </View>
-
-                    <TouchableOpacity
-                        onPress={() => {
-                            if (restaurant?.delivery) {
-                                setSelectedDeliveryOption('standard');
-                                setDeliveryFee(distanceTime.finalPrice);
-                                selectedDeliveryOption === 'standard' ? (setSelectedDeliveryOption(null), setDeliveryFee(0)) : (setSelectedDeliveryOption('standard'), setDeliveryFee(distanceTime.finalPrice));
-                                setError(false)
-                            } else {
-                                setSelectedDeliveryOption(null);
-                                setError(true);
-                            }
-                        }}
-                        style={{
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                            marginTop: 10,
-                            borderWidth: 1,
-                            padding: 10,
-                            borderRadius: 10,
-                            borderColor: selectedDeliveryOption === 'standard' ? COLORS.primary : COLORS.gray2,
-                            opacity: restaurant?.delivery ? 1 : 0.5
-                        }}>
-                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-                            <View style={{ flexDirection: 'row', alignItems: 'center', height: 30 }}>
-                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                    <Image source={require('../assets/images/delivery.png')} style={{ width: 20, height: 20, marginLeft: 2.5 }} />
-                                    <Text style={{ fontFamily: 'medium', fontSize: 16, marginLeft: 10, color: COLORS.black }}>Standard</Text>
-                                </View>
-                                <Text style={{ fontFamily: 'regular', fontSize: 12, color: COLORS.gray, marginLeft: 5 }}>({totalTime.toFixed(0)} mins)</Text>
+                                        latitudeDelta: 0.01,
+                                        longitudeDelta: 0.01
+                                    }}>
+                                    <Marker
+                                        title='Your Location'
+                                        coordinate={{
+                                            latitude: selectedAddressLat === null ? location?.coords?.latitude : selectedAddressLat,
+                                            longitude: selectedAddressLng === null ? location?.coords?.longitude : selectedAddressLng,
+                                        }} />
+                                </MapView>
                             </View>
 
-                            {restaurant?.delivery ? (
-                                <View style={{ backgroundColor: COLORS.secondary, paddingHorizontal: 5, borderRadius: 10 }}>
-                                    <Text style={{ fontFamily: 'bold', fontSize: 12, color: COLORS.white }}>+ ₱{distanceTime.finalPrice}</Text>
-                                </View>
-                            ) : (
-                                <Text style={{ fontFamily: 'bold', fontSize: 16, color: COLORS.red }}>Not Available</Text>
-                            )}
-                        </View>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                        onPress={() => {
-                            setSelectedDeliveryOption('pickup');
-                            setDeliveryFee(0);
-                            selectedDeliveryOption === null ? setError(false) : setSelectedDeliveryOption('pickup');
-                            selectedDeliveryOption === 'pickup' ? setSelectedDeliveryOption(null) : setSelectedDeliveryOption('pickup')
-                        }}
-                        style={{
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                            marginTop: 10,
-                            borderWidth: 1,
-                            padding: 10,
-                            borderRadius: 10,
-                            borderColor: selectedDeliveryOption === 'pickup' ? COLORS.primary : COLORS.gray2
-                        }}>
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <Image source={require('../assets/images/pickup.png')} style={{ width: 20, height: 20, marginLeft: 2.5 }} />
-                            <View style={{ flex: 1, height: 30, justifyContent: 'center' }}>
-                                <Text style={{ fontFamily: 'medium', fontSize: 16, marginLeft: 10, color: COLORS.black }}>Pickup</Text>
+                            <View style={{ flexDirection: 'column' }}>
+                                <Text style={{ fontFamily: 'bold', fontSize: 16, marginTop: 5 }}>{formatAddress(selectedAddress === null ? address.formattedAddress : selectedAddress)}</Text>
+                                <Text style={{ fontFamily: 'regular', fontSize: 14, marginTop: -5 }}>{formatCity(selectedAddress === null ? address.city : selectedAddress)}</Text>
                             </View>
-                            <Text style={{ fontFamily: 'bold', fontSize: 16, color: COLORS.primary }}>Free</Text>
-                        </View>
-                    </TouchableOpacity>
-                </View>
 
-                <View style={{ borderColor: COLORS.gray2, height: 'auto', borderWidth: 1, borderRadius: 10, padding: 10, marginBottom: 20 }}>
-                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                            <Text style={styles.label}>Delivery note</Text>
+                            <View style={styles.notesInputWrapper(COLORS.offwhite)}>
+                                <MaterialIcons name="notes" size={20} color={COLORS.gray} style={{ marginTop: 10, marginRight: 5 }} />
+                                <TextInput
+                                    multiline
+                                    numberOfLines={3}
+                                    placeholder="Add your note here..."
+                                    autoCapitalize="none"
+                                    autoCorrect={false}
+                                    style={[styles.textInput, { marginTop: 10 }]}
+                                />
+                            </View>
+                        </View>
+                    ) : (
+                        <>
+                        </>
+                    )}
+
+                    {error && <Text style={[styles.label, { color: COLORS.red, textAlign: 'left' }]}>*Please select a delivery option</Text>}
+                    <View style={{ borderColor: COLORS.gray2, height: 'auto', borderWidth: 1, borderRadius: 10, padding: 10, marginBottom: 20 }}>
                         <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
-                            <Image source={require('../assets/images/persons.png')} style={{ width: 25, height: 25 }} />
-                            <Text style={{ fontFamily: 'bold', fontSize: 18, marginLeft: 5 }}>Personal Details</Text>
+                            <Image source={require('../assets/images/options.png')} style={{ width: 25, height: 25 }} />
+                            <Text style={{ fontFamily: 'bold', fontSize: 18, marginLeft: 5 }}>Delivery Options</Text>
                         </View>
-                        <TouchableOpacity onPress={() => editProfile ? setEditProfile(false) : setEditProfile(true)}>
-                            <FontAwesome name="pencil" size={20} color={COLORS.black} style={{ marginRight: 5 }} />
+
+                        <TouchableOpacity
+                            onPress={() => {
+                                if (restaurant?.delivery) {
+                                    setSelectedDeliveryOption('standard');
+                                    setDeliveryFee(distanceTime.finalPrice);
+                                    selectedDeliveryOption === 'standard' ? (setSelectedDeliveryOption(null), setDeliveryFee(0)) : (setSelectedDeliveryOption('standard'), setDeliveryFee(distanceTime.finalPrice));
+                                    setError(false)
+                                } else {
+                                    setSelectedDeliveryOption(null);
+                                    setError(true);
+                                }
+                            }}
+                            style={{
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                marginTop: 10,
+                                borderWidth: 1,
+                                padding: 10,
+                                borderRadius: 10,
+                                borderColor: selectedDeliveryOption === 'standard' ? COLORS.primary : COLORS.gray2,
+                                opacity: restaurant?.delivery ? 1 : 0.5
+                            }}>
+                            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                                <View style={{ flexDirection: 'row', alignItems: 'center', height: 30 }}>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                        <Image source={require('../assets/images/delivery.png')} style={{ width: 20, height: 20, marginLeft: 2.5 }} />
+                                        <Text style={{ fontFamily: 'medium', fontSize: 16, marginLeft: 10, color: COLORS.black }}>Standard</Text>
+                                    </View>
+                                    <Text style={{ fontFamily: 'regular', fontSize: 12, color: COLORS.gray, marginLeft: 5 }}>({totalTime.toFixed(0)} mins)</Text>
+                                </View>
+
+                                {restaurant?.delivery ? (
+                                    <View style={{ backgroundColor: COLORS.secondary, paddingHorizontal: 5, borderRadius: 10 }}>
+                                        <Text style={{ fontFamily: 'bold', fontSize: 12, color: COLORS.white }}>+ ₱{distanceTime.finalPrice}</Text>
+                                    </View>
+                                ) : (
+                                    <Text style={{ fontFamily: 'bold', fontSize: 16, color: COLORS.red }}>Not Available</Text>
+                                )}
+                            </View>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                            onPress={() => {
+                                setSelectedDeliveryOption('pickup');
+                                setDeliveryFee(0);
+                                selectedDeliveryOption === null ? setError(false) : setSelectedDeliveryOption('pickup');
+                                selectedDeliveryOption === 'pickup' ? setSelectedDeliveryOption(null) : setSelectedDeliveryOption('pickup')
+                            }}
+                            style={{
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                marginTop: 10,
+                                borderWidth: 1,
+                                padding: 10,
+                                borderRadius: 10,
+                                borderColor: selectedDeliveryOption === 'pickup' ? COLORS.primary : COLORS.gray2
+                            }}>
+                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                <Image source={require('../assets/images/pickup.png')} style={{ width: 20, height: 20, marginLeft: 2.5 }} />
+                                <View style={{ flex: 1, height: 30, justifyContent: 'center' }}>
+                                    <Text style={{ fontFamily: 'medium', fontSize: 16, marginLeft: 10, color: COLORS.black }}>Pickup</Text>
+                                </View>
+                                <Text style={{ fontFamily: 'bold', fontSize: 16, color: COLORS.primary }}>Free</Text>
+                            </View>
                         </TouchableOpacity>
                     </View>
 
-                    {editProfile ? (
-                        <View style={{ marginTop: 10 }}>
-                            <View style={{ marginBottom: 10 }}>
-                                <Text style={styles.label}>Username</Text>
-                                <View style={styles.inputWrapper(COLORS.offwhite)}>
-                                    <Feather name="user" size={20} color={COLORS.gray} style={{ marginRight: 10 }} />
-                                    <TextInput
-                                        placeholder="Enter your username"
-                                        autoCapitalize="none"
-                                        autoCorrect={false}
-                                        style={styles.textInput}
-                                        value={username}
-                                        onChangeText={(text) => setUsername(text)}
-                                    />
-                                </View>
+                    <View style={{ borderColor: COLORS.gray2, height: 'auto', borderWidth: 1, borderRadius: 10, padding: 10, marginBottom: 20 }}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
+                                <Image source={require('../assets/images/persons.png')} style={{ width: 25, height: 25 }} />
+                                <Text style={{ fontFamily: 'bold', fontSize: 18, marginLeft: 5 }}>Personal Details</Text>
                             </View>
-
-                            <View style={{ marginBottom: 10 }}>
-                                <Text style={styles.label}>Email</Text>
-                                <View style={styles.inputWrapper(COLORS.offwhite)}>
-                                    <MaterialCommunityIcons name="email-outline" size={20} color={COLORS.gray} style={{ marginRight: 10 }} />
-                                    <TextInput
-                                        placeholder="Enter your username"
-                                        autoCapitalize="none"
-                                        autoCorrect={false}
-                                        style={styles.textInput}
-                                        value={email}
-                                        onChangeText={(text) => setEmail(text)}
-                                    />
-                                </View>
-                            </View>
-
-                            <View style={{ marginBottom: 10 }}>
-                                <Text style={styles.label}>Phone number</Text>
-                                <View style={styles.inputWrapper(COLORS.offwhite)}>
-                                    <Feather name="phone" size={20} color={COLORS.gray} style={{ marginRight: 10 }} />
-                                    <TextInput
-                                        placeholder="Enter your username"
-                                        autoCapitalize="none"
-                                        autoCorrect={false}
-                                        style={styles.textInput}
-                                        value={phone}
-                                        onChangeText={(text) => setPhone(text)}
-                                    />
-                                </View>
-                            </View>
-
-                            <Button title="S U B M I T" onPress={isUserDetailsChanged() ? handleSubmitForm : null} isValid={isUserDetailsChanged()} loader={loading} />
+                            <TouchableOpacity onPress={() => editProfile ? setEditProfile(false) : setEditProfile(true)}>
+                                <FontAwesome name="pencil" size={20} color={COLORS.black} style={{ marginRight: 5 }} />
+                            </TouchableOpacity>
                         </View>
-                    ) : (
-                        <View style={{ marginTop: 10, marginBottom: 5, marginLeft: 5 }}>
-                            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
-                                <Feather name="user" size={20} color={COLORS.gray} />
-                                <Text style={{ fontFamily: 'regular', fontSize: 14, marginLeft: 5 }}>{username}</Text>
-                            </View>
 
-                            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
-                                <MaterialCommunityIcons name="email-outline" size={20} color={COLORS.gray} />
-                                <Text style={{ fontFamily: 'regular', fontSize: 14, marginLeft: 5 }}>{email}</Text>
-                            </View>
-
-                            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
-                                <Feather name="phone" size={20} color={COLORS.gray} />
-                                <Text style={{ fontFamily: 'regular', fontSize: 14, marginLeft: 5 }}>+{phone}</Text>
-                            </View>
-                        </View>
-                    )}
-
-                </View>
-
-                <View style={{ borderColor: COLORS.gray2, height: 'auto', borderWidth: 1, borderRadius: 10, padding: 10 }}>
-                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 10 }}>
-                        <Text style={{ fontFamily: 'bold', fontSize: 18 }}>Your order from:</Text>
-                    </View>
-                    <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 20 }}>
-                        <Image source={{ uri: user?.userType === 'Vendor' ? supplier?.logoUrl?.url : restaurant?.logoUrl?.url }} style={{ width: 20, height: 20, borderRadius: 5 }} />
-                        <Text style={{ fontFamily: 'regular', fontSize: 14, marginLeft: 5 }}>{user?.userType === 'Vendor' ? supplier?.title : restaurant?.title}</Text>
-                    </View>
-
-                    <FlatList
-                        style={{ marginBottom: 20 }}
-                        data={user?.userType === 'Vendor' ? vendorCart?.cartItems : cart?.cartItems}
-                        keyExtractor={(item) => item?._id}
-                        renderItem={({ item }) => (
-                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 }}>
-                                <View style={{ flexDirection: 'row' }}>
-                                    <Image source={{ uri: item.foodId.imageUrl.url }} style={{ width: 50, height: 50, borderRadius: 10 }} />
-                                    <View style={{ flexDirection: 'column', marginLeft: 10, }}>
-                                        <Text style={{ fontFamily: 'regular', fontSize: 14, color: COLORS.gray }}>
-                                            {item?.quantity}x {vendorCart?.cartItems ? item?.productId?.title : item?.foodId?.title}
-                                        </Text>
-                                        {item?.additives.length > 0 ? (
-                                            <FlatList
-                                                data={item?.additives}
-                                                keyExtractor={(item) => item._id}
-                                                renderItem={({ item }) => (
-                                                    <Text style={{ fontFamily: 'regular', fontSize: 14, color: COLORS.gray, marginLeft: 10 }}>
-                                                        + {item?.title}
-                                                    </Text>
-                                                )}
-                                            />
-                                        ) : (
-                                            <Text style={{ fontFamily: 'regular', fontSize: 14, color: COLORS.gray, marginLeft: 10 }}>
-                                                - No additives
-                                            </Text>
-                                        )}
-
+                        {editProfile ? (
+                            <View style={{ marginTop: 10 }}>
+                                <View style={{ marginBottom: 10 }}>
+                                    <Text style={styles.label}>Username</Text>
+                                    <View style={styles.inputWrapper(COLORS.offwhite)}>
+                                        <Feather name="user" size={20} color={COLORS.gray} style={{ marginRight: 10 }} />
+                                        <TextInput
+                                            placeholder="Enter your username"
+                                            autoCapitalize="none"
+                                            autoCorrect={false}
+                                            style={styles.textInput}
+                                            value={username}
+                                            onChangeText={(text) => setUsername(text)}
+                                        />
                                     </View>
                                 </View>
-                                <Text style={{ fontFamily: 'regular', fontSize: 14, color: COLORS.gray }}>₱ {item?.totalPrice.toFixed(2)}</Text>
+
+                                <View style={{ marginBottom: 10 }}>
+                                    <Text style={styles.label}>Email</Text>
+                                    <View style={styles.inputWrapper(COLORS.offwhite)}>
+                                        <MaterialCommunityIcons name="email-outline" size={20} color={COLORS.gray} style={{ marginRight: 10 }} />
+                                        <TextInput
+                                            placeholder="Enter your username"
+                                            autoCapitalize="none"
+                                            autoCorrect={false}
+                                            style={styles.textInput}
+                                            value={email}
+                                            onChangeText={(text) => setEmail(text)}
+                                        />
+                                    </View>
+                                </View>
+
+                                <View style={{ marginBottom: 10 }}>
+                                    <Text style={styles.label}>Phone number</Text>
+                                    <View style={styles.inputWrapper(COLORS.offwhite)}>
+                                        <Feather name="phone" size={20} color={COLORS.gray} style={{ marginRight: 10 }} />
+                                        <TextInput
+                                            placeholder="Enter your username"
+                                            autoCapitalize="none"
+                                            autoCorrect={false}
+                                            style={styles.textInput}
+                                            value={phone}
+                                            onChangeText={(text) => setPhone(text)}
+                                        />
+                                    </View>
+                                </View>
+
+                                <Button title="S U B M I T" onPress={isUserDetailsChanged() ? handleSubmitForm : null} isValid={isUserDetailsChanged()} loader={loading} />
+                            </View>
+                        ) : (
+                            <View style={{ marginTop: 10, marginBottom: 5, marginLeft: 5 }}>
+                                <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
+                                    <Feather name="user" size={20} color={COLORS.gray} />
+                                    <Text style={{ fontFamily: 'regular', fontSize: 14, marginLeft: 5 }}>{username}</Text>
+                                </View>
+
+                                <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
+                                    <MaterialCommunityIcons name="email-outline" size={20} color={COLORS.gray} />
+                                    <Text style={{ fontFamily: 'regular', fontSize: 14, marginLeft: 5 }}>{email}</Text>
+                                </View>
+
+                                <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
+                                    <Feather name="phone" size={20} color={COLORS.gray} />
+                                    <Text style={{ fontFamily: 'regular', fontSize: 14, marginLeft: 5 }}>+{phone}</Text>
+                                </View>
                             </View>
                         )}
-                    />
 
-                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <Text style={{ fontFamily: 'regular', fontSize: 14, color: COLORS.gray }}>Subtotal:</Text>
-                        <Text style={{ fontFamily: 'regular', fontSize: 14, color: COLORS.gray }}>₱ {cart?.totalAmount.toFixed(2)}</Text>
                     </View>
 
-                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
-                        <Text style={{ fontFamily: 'regular', fontSize: 14, color: COLORS.gray }}>Delivery Fee:</Text>
-                        <Text style={{ fontFamily: 'regular', fontSize: 14, color: COLORS.gray }}>₱ {deliveryFee}</Text>
+                    <View style={{ borderColor: COLORS.gray2, height: 'auto', borderWidth: 1, borderRadius: 10, padding: 10 }}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 10 }}>
+                            <Text style={{ fontFamily: 'bold', fontSize: 18 }}>Your order from:</Text>
+                        </View>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 20 }}>
+                            <Image source={{ uri: user?.userType === 'Vendor' ? supplier?.logoUrl?.url : restaurant?.logoUrl?.url }} style={{ width: 20, height: 20, borderRadius: 5 }} />
+                            <Text style={{ fontFamily: 'regular', fontSize: 14, marginLeft: 5 }}>{user?.userType === 'Vendor' ? supplier?.title : restaurant?.title}</Text>
+                        </View>
+
+                        <FlatList
+                            style={{ marginBottom: 20 }}
+                            data={user?.userType === 'Vendor' ? vendorCart?.cartItems : cart?.cartItems}
+                            keyExtractor={(item) => item?._id}
+                            renderItem={({ item }) => (
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 }}>
+                                    <View style={{ flexDirection: 'row' }}>
+                                        <Image source={{ uri: item.foodId.imageUrl.url }} style={{ width: 50, height: 50, borderRadius: 10 }} />
+                                        <View style={{ flexDirection: 'column', marginLeft: 10, }}>
+                                            <Text style={{ fontFamily: 'regular', fontSize: 14, color: COLORS.gray }}>
+                                                {item?.quantity}x {vendorCart?.cartItems ? item?.productId?.title : item?.foodId?.title}
+                                            </Text>
+                                            {item?.additives.length > 0 ? (
+                                                <FlatList
+                                                    data={item?.additives}
+                                                    keyExtractor={(item) => item._id}
+                                                    renderItem={({ item }) => (
+                                                        <Text style={{ fontFamily: 'regular', fontSize: 14, color: COLORS.gray, marginLeft: 10 }}>
+                                                            + {item?.title}
+                                                        </Text>
+                                                    )}
+                                                />
+                                            ) : (
+                                                <Text style={{ fontFamily: 'regular', fontSize: 14, color: COLORS.gray, marginLeft: 10 }}>
+                                                    - No additives
+                                                </Text>
+                                            )}
+
+                                        </View>
+                                    </View>
+                                    <Text style={{ fontFamily: 'regular', fontSize: 14, color: COLORS.gray }}>₱ {item?.totalPrice.toFixed(2)}</Text>
+                                </View>
+                            )}
+                        />
+
+                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                            <Text style={{ fontFamily: 'regular', fontSize: 14, color: COLORS.gray }}>Subtotal:</Text>
+                            <Text style={{ fontFamily: 'regular', fontSize: 14, color: COLORS.gray }}>₱ {cart?.totalAmount.toFixed(2)}</Text>
+                        </View>
+
+                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
+                            <Text style={{ fontFamily: 'regular', fontSize: 14, color: COLORS.gray }}>Delivery Fee:</Text>
+                            <Text style={{ fontFamily: 'regular', fontSize: 14, color: COLORS.gray }}>₱ {deliveryFee}</Text>
+                        </View>
+
+                        <Divider />
+
+                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                            <Text style={{ fontFamily: 'bold', fontSize: 24 }}>Total:</Text>
+                            <Text style={{ fontFamily: 'bold', fontSize: 24 }}>
+                                ₱ {(parseFloat(user.userType === 'Vendor' ? vendorCart?.totalAmount.toFixed(2) : cart?.totalAmount.toFixed(2)) + parseFloat(deliveryFee)).toFixed(2)}
+                            </Text>
+                        </View>
                     </View>
 
-                    <Divider />
-
-                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <Text style={{ fontFamily: 'bold', fontSize: 24 }}>Total:</Text>
-                        <Text style={{ fontFamily: 'bold', fontSize: 24 }}>
-                            ₱ {(parseFloat(user.userType === 'Vendor' ? vendorCart?.totalAmount.toFixed(2) : cart?.totalAmount.toFixed(2)) + parseFloat(deliveryFee)).toFixed(2)}
-                        </Text>
-                    </View>
-                </View>
-
-                <Button title="P L A C E   O R D E R" onPress={() => { }} />
-            </ScrollView >
+                    <Button title="P L A C E   O R D E R" onPress={() => { }} />
+                </ScrollView >
+            )}
 
             <BottomModal
                 visible={showAddresses}
