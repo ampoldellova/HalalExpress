@@ -189,7 +189,7 @@ const CheckoutPage = () => {
     const initialImage = user?.profile?.url;
 
     const isUserDetailsChanged = () => {
-        return username !== initialUsername || email !== initialEmail || phone !== initialPhone || image !== initialImage;
+        return username !== user?.username || email !== user?.email || phone !== user?.phone || image !== user?.profile?.url;
     };
 
     return (
