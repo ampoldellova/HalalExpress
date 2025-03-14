@@ -14,12 +14,19 @@ import { UserReversedGeoCode } from '../contexts/UserReversedGeoCode';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { BottomModal, ModalContent, SlideAnimation } from 'react-native-modals';
 import Button from '../components/Button';
+import Feather from '@expo/vector-icons/Feather';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import GoogleApiServices from '../hook/GoogleApiServices';
+import Toast from 'react-native-toast-message';
 
 const CheckoutPage = () => {
     const route = useRoute();
     const navigation = useNavigation();
     const { cart, vendorCart, user } = route.params;
+    const [username, setUsername] = useState(user?.username);
+    const [email, setEmail] = useState(user?.email);
+    const [phone, setPhone] = useState(user?.phone);
+    const [image, setImage] = useState(user?.profile?.url);
     const [supplier, setSupplier] = useState(null);
     const [restaurant, setRestaurant] = useState(null);
     const [addresses, setAddresses] = useState([]);
@@ -32,6 +39,8 @@ const CheckoutPage = () => {
     const [selectedDeliveryOption, setSelectedDeliveryOption] = useState(null);
     const [distanceTime, setDistanceTime] = useState({});
     const [deliveryFee, setDeliveryFee] = useState(0);
+    const [editProfile, setEditProfile] = useState(false);
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState(false);
 
     const getUserAddresses = async () => {
@@ -84,6 +93,51 @@ const CheckoutPage = () => {
         setAddress(reverseGeoCodedAddress[0]);
     };
 
+    const handleSubmitForm = async () => {
+        setLoading(true);
+        try {
+            const token = await AsyncStorage.getItem("token");
+
+            const formData = new FormData();
+            if (image.startsWith("file://")) {
+                const filename = image.split('/').pop();
+                const fileType = filename.split('.').pop();
+                formData.append('profile', {
+                    uri: image,
+                    name: filename,
+                    type: `image/${fileType}`,
+                });
+            }
+
+            formData.append('username', username);
+            formData.append('email', email);
+            formData.append('phone', phone);
+
+            await axios.put(`${baseUrl}/api/users/`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    Authorization: `Bearer ${JSON.parse(token)}`,
+                },
+            });
+
+            Toast.show({
+                type: 'success',
+                text1: 'Success ✅',
+                text2: 'Profile updated successfully',
+            });
+            setEditProfile(false);
+        } catch (error) {
+            console.error(error);
+            Toast.show({
+                type: 'error',
+                text1: 'Error ❌',
+                text2: 'Profile update failed',
+            });
+        } finally {
+            setLoading(false);
+        }
+    };
+
     useFocusEffect(
         React.useCallback(() => {
             getUserAddresses();
@@ -130,6 +184,10 @@ const CheckoutPage = () => {
 
     const totalTime = distanceTime.duration + GoogleApiServices.extractNumbers(user.userType === 'Vendor' ? supplier?.time : restaurant?.time)[0];
 
+    const isUserDetailsChanged = () => {
+        return username !== user?.username || email !== user?.email || phone !== user?.phone || image !== user?.profile?.url;
+    };
+
     return (
         <SafeAreaView>
             <ScrollView showsVerticalScrollIndicator={false} style={{ marginHorizontal: 20, marginTop: 15 }}>
@@ -174,7 +232,7 @@ const CheckoutPage = () => {
                         </View>
 
                         <Text style={styles.label}>Delivery note</Text>
-                        <View style={styles.inputWrapper(COLORS.offwhite)}>
+                        <View style={styles.notesInputWrapper(COLORS.offwhite)}>
                             <MaterialIcons name="notes" size={20} color={COLORS.gray} style={{ marginTop: 10, marginRight: 5 }} />
                             <TextInput
                                 multiline
@@ -182,7 +240,7 @@ const CheckoutPage = () => {
                                 placeholder="Add your note here..."
                                 autoCapitalize="none"
                                 autoCorrect={false}
-                                style={styles.textInput}
+                                style={[styles.textInput, { marginTop: 10 }]}
                             />
                         </View>
                     </View>
@@ -192,7 +250,7 @@ const CheckoutPage = () => {
                 )}
 
                 {error && <Text style={[styles.label, { color: COLORS.red, textAlign: 'left' }]}>*Please select a delivery option</Text>}
-                <View style={{ borderColor: COLORS.gray2, height: 'auto', borderWidth: 1, borderRadius: 10, padding: 10 }}>
+                <View style={{ borderColor: COLORS.gray2, height: 'auto', borderWidth: 1, borderRadius: 10, padding: 10, marginBottom: 20 }}>
                     <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
                         <Image source={require('../assets/images/options.png')} style={{ width: 25, height: 25 }} />
                         <Text style={{ fontFamily: 'bold', fontSize: 18, marginLeft: 5 }}>Delivery Options</Text>
@@ -261,6 +319,87 @@ const CheckoutPage = () => {
                             <Text style={{ fontFamily: 'bold', fontSize: 16, color: COLORS.primary }}>Free</Text>
                         </View>
                     </TouchableOpacity>
+                </View>
+
+                <View style={{ borderColor: COLORS.gray2, height: 'auto', borderWidth: 1, borderRadius: 10, padding: 10 }}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
+                            <Image source={require('../assets/images/persons.png')} style={{ width: 25, height: 25 }} />
+                            <Text style={{ fontFamily: 'bold', fontSize: 18, marginLeft: 5 }}>Personal Details</Text>
+                        </View>
+                        <TouchableOpacity onPress={() => editProfile ? setEditProfile(false) : setEditProfile(true)}>
+                            <FontAwesome name="pencil" size={20} color={COLORS.black} style={{ marginRight: 5 }} />
+                        </TouchableOpacity>
+                    </View>
+
+                    {editProfile ? (
+                        <View style={{ marginTop: 10 }}>
+                            <View style={{ marginBottom: 10 }}>
+                                <Text style={styles.label}>Username</Text>
+                                <View style={styles.inputWrapper(COLORS.offwhite)}>
+                                    <Feather name="user" size={20} color={COLORS.gray} style={{ marginRight: 10 }} />
+                                    <TextInput
+                                        placeholder="Enter your username"
+                                        autoCapitalize="none"
+                                        autoCorrect={false}
+                                        style={styles.textInput}
+                                        value={username}
+                                        onChangeText={(text) => setUsername(text)}
+                                    />
+                                </View>
+                            </View>
+
+                            <View style={{ marginBottom: 10 }}>
+                                <Text style={styles.label}>Email</Text>
+                                <View style={styles.inputWrapper(COLORS.offwhite)}>
+                                    <MaterialCommunityIcons name="email-outline" size={20} color={COLORS.gray} style={{ marginRight: 10 }} />
+                                    <TextInput
+                                        placeholder="Enter your username"
+                                        autoCapitalize="none"
+                                        autoCorrect={false}
+                                        style={styles.textInput}
+                                        value={email}
+                                        onChangeText={(text) => setUsername(text)}
+                                    />
+                                </View>
+                            </View>
+
+                            <View style={{ marginBottom: 10 }}>
+                                <Text style={styles.label}>Phone number</Text>
+                                <View style={styles.inputWrapper(COLORS.offwhite)}>
+                                    <Feather name="phone" size={20} color={COLORS.gray} style={{ marginRight: 10 }} />
+                                    <TextInput
+                                        placeholder="Enter your username"
+                                        autoCapitalize="none"
+                                        autoCorrect={false}
+                                        style={styles.textInput}
+                                        value={phone}
+                                        onChangeText={(text) => setUsername(text)}
+                                    />
+                                </View>
+                            </View>
+
+                            <Button title="S U B M I T" onPress={isUserDetailsChanged() ? handleSubmitForm : null} isValid={isUserDetailsChanged() ? true : false} loader={loading} />
+                        </View>
+                    ) : (
+                        <View style={{ marginTop: 10, marginBottom: 5, marginLeft: 5 }}>
+                            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
+                                <Feather name="user" size={20} color={COLORS.gray} />
+                                <Text style={{ fontFamily: 'regular', fontSize: 14, marginLeft: 5 }}>{username}</Text>
+                            </View>
+
+                            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
+                                <MaterialCommunityIcons name="email-outline" size={20} color={COLORS.gray} />
+                                <Text style={{ fontFamily: 'regular', fontSize: 14, marginLeft: 5 }}>{email}</Text>
+                            </View>
+
+                            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
+                                <Feather name="phone" size={20} color={COLORS.gray} />
+                                <Text style={{ fontFamily: 'regular', fontSize: 14, marginLeft: 5 }}>+{phone}</Text>
+                            </View>
+                        </View>
+                    )}
+
                 </View>
                 <Button title="P L A C E   O R D E R" onPress={() => { }} />
             </ScrollView >
@@ -343,15 +482,15 @@ const styles = StyleSheet.create({
         fontFamily: "regular",
         fontSize: SIZES.xSmall,
         marginBottom: 5,
-        textAlign: 'right'
+        marginEnd: 5,
+        textAlign: "right"
     },
     textInput: {
         flex: 1,
         fontFamily: 'regular',
         marginTop: 2,
-        marginTop: 10,
     },
-    inputWrapper: (borderColor) => ({
+    notesInputWrapper: (borderColor) => ({
         borderColor: borderColor,
         backgroundColor: COLORS.lightWhite,
         borderWidth: 1,
@@ -360,5 +499,15 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         paddingHorizontal: 15,
         alignItems: 'flex-start',
+    }),
+    inputWrapper: (borderColor) => ({
+        borderColor: borderColor,
+        backgroundColor: COLORS.lightWhite,
+        borderWidth: 1,
+        height: 50,
+        borderRadius: 12,
+        flexDirection: 'row',
+        paddingHorizontal: 15,
+        alignItems: 'center',
     }),
 })
