@@ -24,7 +24,7 @@ const calculateDistanceAndTime = async (startLat, startLng, destinationLat, dest
     const duration = response.data.sources_to_targets[0][0].time / 60;
     const ratePerKm = 0.0058;
     const price = distance * ratePerKm;
-    const finalPrice = `₱ ${price.toFixed(2)}`
+    const finalPrice = price.toFixed(2)
     return {
       distance,
       duration,
