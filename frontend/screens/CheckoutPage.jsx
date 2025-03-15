@@ -44,7 +44,7 @@ const CheckoutPage = () => {
     const [deliveryFee, setDeliveryFee] = useState(selectedDeliveryOption === 'standard' ? distanceTime.finalPrice : 0);
     const [editProfile, setEditProfile] = useState(false);
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(false);
+    const [deliveryOptionsError, setDeliveryOptionsError] = useState(false);
 
     const getUserAddresses = async () => {
         try {
@@ -136,6 +136,59 @@ const CheckoutPage = () => {
                 text2: 'Profile update failed',
             });
         } finally {
+            setLoading(false);
+        }
+    };
+
+    const handlePlaceOrder = async () => {
+        setLoading(true);
+        try {
+            const token = await AsyncStorage.getItem('token');
+            const config = {
+                headers: {
+                    Authorization: `Bearer ${JSON.parse(token)}`,
+                }
+            }
+
+            const data = {
+                paymentId: 'No online payment',
+                restaurant: user?.userType === 'Vendor' ? supplier?._id : restaurant?._id,
+                orderItems: user?.userType === 'Vendor' ? vendorCart?.cartItems : cart?.cartItems,
+                deliveryOption: selectedDeliveryOption,
+                deliveryAddress: selectedDeliveryOption === 'standard' ? selectedAddress?.address : '',
+                subTotal: user?.userType === 'Vendor' ? vendorCart?.totalAmount.toFixed(2) : cart?.totalAmount.toFixed(2),
+                deliveryFee,
+                totalAmount: parseFloat(user?.userType === 'Vendor' ? vendorCart?.totalAmount.toFixed(2) : cart?.totalAmount.toFixed(2)) + parseFloat(deliveryFee),
+                paymentMethod,
+                paymentStatus: 'Pending',
+                orderStatus: 'Pending',
+                orderNote,
+            };
+
+            if (user.userType === 'Vendor') {
+                const response = await axios.post(`${baseUrl}/api/vendor/orders/check-out`, data, config);
+                if (response.status === 200) {
+                    toast.success('Order placed successfully');
+                    navigate(`/order-page/${user._id}`);
+                    setLoading(false);
+                } else {
+                    toast.error('Failed to place order');
+                    setLoading(false);
+                }
+            } else {
+                const response = await axios.post(`${baseUrl}/api/orders/check-out`, data, config);
+                if (response.status === 200) {
+                    toast.success('Order placed successfully');
+                    navigate(`/order-page/${user._id}`);
+                    setLoading(false);
+                } else {
+                    toast.error('Failed to place order');
+                    setLoading(false);
+                }
+            }
+        } catch (error) {
+            toast.error('An error occurred. Please try again.');
+            console.error(error);
             setLoading(false);
         }
     };
@@ -255,23 +308,23 @@ const CheckoutPage = () => {
                         </>
                     )}
 
-                    {error && <Text style={[styles.label, { color: COLORS.red, textAlign: 'left' }]}>*Please select a delivery option</Text>}
+                    {deliveryOptionsError && <Text style={[styles.label, { color: COLORS.red, textAlign: 'left' }]}>*Please select a delivery option</Text>}
                     <View style={{ borderColor: COLORS.gray2, height: 'auto', borderWidth: 1, borderRadius: 10, padding: 10, marginBottom: 20 }}>
                         <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
                             <Image source={require('../assets/images/options.png')} style={{ width: 25, height: 25 }} />
                             <Text style={{ fontFamily: 'bold', fontSize: 18, marginLeft: 5 }}>Delivery Options</Text>
                         </View>
-
+                        {console.log(selectedDeliveryOption)}
                         <TouchableOpacity
                             onPress={() => {
                                 if (restaurant?.delivery) {
                                     setSelectedDeliveryOption('standard');
                                     setDeliveryFee(distanceTime.finalPrice);
                                     selectedDeliveryOption === 'standard' ? (setSelectedDeliveryOption(null), setDeliveryFee(0)) : (setSelectedDeliveryOption('standard'), setDeliveryFee(distanceTime.finalPrice));
-                                    setError(false)
+                                    setDeliveryOptionsError(false)
                                 } else {
                                     setSelectedDeliveryOption(null);
-                                    setError(true);
+                                    setDeliveryOptionsError(true);
                                 }
                             }}
                             style={{
@@ -307,7 +360,7 @@ const CheckoutPage = () => {
                             onPress={() => {
                                 setSelectedDeliveryOption('pickup');
                                 setDeliveryFee(0);
-                                selectedDeliveryOption === null ? setError(false) : setSelectedDeliveryOption('pickup');
+                                selectedDeliveryOption === null ? setDeliveryOptionsError(false) : setSelectedDeliveryOption('pickup');
                                 selectedDeliveryOption === 'pickup' ? setSelectedDeliveryOption(null) : setSelectedDeliveryOption('pickup')
                             }}
                             style={{
