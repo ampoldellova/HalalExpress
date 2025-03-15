@@ -75,7 +75,7 @@ const HomeHeader = () => {
                     }}
                 />
                 <View style={styles.headerStyle}>
-                    <Text style={styles.heading}>Delivering to:</Text>
+                    <Text style={styles.heading}>Current location:</Text>
                     <Text style={styles.location}>{`${address?.city} ${address?.name}`}</Text>
                 </View>
             </View>
