@@ -521,7 +521,7 @@ const CheckoutPage = () => {
 
                         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
                             <Text style={{ fontFamily: 'regular', fontSize: 14, color: COLORS.gray }}>Delivery Fee:</Text>
-                            <Text style={{ fontFamily: 'regular', fontSize: 14, color: COLORS.gray }}>₱ {deliveryFee}</Text>
+                            <Text style={{ fontFamily: 'regular', fontSize: 14, color: COLORS.gray }}>₱ {selectedDeliveryOption === 'standard' ? distanceTime.finalPrice : 0}</Text>
                         </View>
 
                         <Divider />
