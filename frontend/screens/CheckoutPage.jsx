@@ -45,6 +45,8 @@ const CheckoutPage = () => {
     const [editProfile, setEditProfile] = useState(false);
     const [loading, setLoading] = useState(false);
     const [deliveryOptionsError, setDeliveryOptionsError] = useState(false);
+    const [paymentMethodError, setPaymentMethodError] = useState(false);
+    const [orderNote, setOrderNote] = useState('');
 
     const getUserAddresses = async () => {
         try {
@@ -142,54 +144,86 @@ const CheckoutPage = () => {
 
     const handlePlaceOrder = async () => {
         setLoading(true);
-        try {
-            const token = await AsyncStorage.getItem('token');
-            const config = {
-                headers: {
-                    Authorization: `Bearer ${JSON.parse(token)}`,
-                }
-            }
-
-            const data = {
-                paymentId: 'No online payment',
-                restaurant: user?.userType === 'Vendor' ? supplier?._id : restaurant?._id,
-                orderItems: user?.userType === 'Vendor' ? vendorCart?.cartItems : cart?.cartItems,
-                deliveryOption: selectedDeliveryOption,
-                deliveryAddress: selectedDeliveryOption === 'standard' ? selectedAddress?.address : '',
-                subTotal: user?.userType === 'Vendor' ? vendorCart?.totalAmount.toFixed(2) : cart?.totalAmount.toFixed(2),
-                deliveryFee,
-                totalAmount: parseFloat(user?.userType === 'Vendor' ? vendorCart?.totalAmount.toFixed(2) : cart?.totalAmount.toFixed(2)) + parseFloat(deliveryFee),
-                paymentMethod,
-                paymentStatus: 'Pending',
-                orderStatus: 'Pending',
-                orderNote,
-            };
-
-            if (user.userType === 'Vendor') {
-                const response = await axios.post(`${baseUrl}/api/vendor/orders/check-out`, data, config);
-                if (response.status === 200) {
-                    toast.success('Order placed successfully');
-                    navigate(`/order-page/${user._id}`);
-                    setLoading(false);
-                } else {
-                    toast.error('Failed to place order');
-                    setLoading(false);
-                }
-            } else {
-                const response = await axios.post(`${baseUrl}/api/orders/check-out`, data, config);
-                if (response.status === 200) {
-                    toast.success('Order placed successfully');
-                    navigate(`/order-page/${user._id}`);
-                    setLoading(false);
-                } else {
-                    toast.error('Failed to place order');
-                    setLoading(false);
-                }
-            }
-        } catch (error) {
-            toast.error('An error occurred. Please try again.');
-            console.error(error);
+        if (selectedDeliveryOption === null && selectedPaymentMethod === null) {
+            setPaymentMethodError(true);
+            setDeliveryOptionsError(true);
             setLoading(false);
+        } else if (selectedDeliveryOption === null) {
+            setDeliveryOptionsError(true);
+            setLoading(false);
+        } else if (selectedPaymentMethod === null) {
+            setPaymentMethodError(true);
+            setLoading(false);
+        } else {
+            try {
+                const token = await AsyncStorage.getItem('token');
+                const config = {
+                    headers: {
+                        Authorization: `Bearer ${JSON.parse(token)}`,
+                    }
+                }
+
+                const data = {
+                    paymentId: 'No online payment',
+                    restaurant: user?.userType === 'Vendor' ? supplier?._id : restaurant?._id,
+                    orderItems: user?.userType === 'Vendor' ? vendorCart?.cartItems : cart?.cartItems,
+                    deliveryOption: selectedDeliveryOption,
+                    deliveryAddress: selectedDeliveryOption === 'standard' ? selectedAddress?.address : '',
+                    subTotal: user?.userType === 'Vendor' ? vendorCart?.totalAmount.toFixed(2) : cart?.totalAmount.toFixed(2),
+                    deliveryFee,
+                    totalAmount: parseFloat(user?.userType === 'Vendor' ? vendorCart?.totalAmount.toFixed(2) : cart?.totalAmount.toFixed(2)) + parseFloat(deliveryFee),
+                    paymentMethod: selectedPaymentMethod,
+                    paymentStatus: 'Pending',
+                    orderStatus: 'Pending',
+                    orderNote,
+                };
+
+                if (user.userType === 'Vendor') {
+                    const response = await axios.post(`${baseUrl}/api/vendor/orders/check-out`, data, config);
+                    if (response.status === 200) {
+                        Toast.show({
+                            type: 'success',
+                            text1: 'Success ✅',
+                            text2: 'Order placed successfully',
+                        });
+                        navigation.goBack();
+                        setLoading(false);
+                    } else {
+                        Toast.show({
+                            type: 'error',
+                            text1: 'Error ❌',
+                            text2: 'Failed to place order',
+                        });
+                        setLoading(false);
+                    }
+                } else {
+                    const response = await axios.post(`${baseUrl}/api/orders/check-out`, data, config);
+                    if (response.status === 200) {
+                        Toast.show({
+                            type: 'success',
+                            text1: 'Success ✅',
+                            text2: 'Order placed successfully',
+                        });
+                        navigation.goBack();
+                        setLoading(false);
+                    } else {
+                        Toast.show({
+                            type: 'error',
+                            text1: 'Error ❌',
+                            text2: 'Failed to place order',
+                        });
+                        setLoading(false);
+                    }
+                }
+            } catch (error) {
+                Toast.show({
+                    type: 'error',
+                    text1: 'Error ❌',
+                    text2: error,
+                });
+                console.error(error);
+                setLoading(false);
+            }
         }
     };
 
@@ -299,6 +333,8 @@ const CheckoutPage = () => {
                                     placeholder="Add your note here..."
                                     autoCapitalize="none"
                                     autoCorrect={false}
+                                    value={orderNote}
+                                    onChangeText={(text) => setOrderNote(text)}
                                     style={[styles.textInput, { marginTop: 10 }]}
                                 />
                             </View>
@@ -309,18 +345,18 @@ const CheckoutPage = () => {
                     )}
 
                     {deliveryOptionsError && <Text style={[styles.label, { color: COLORS.red, textAlign: 'left' }]}>*Please select a delivery option</Text>}
-                    <View style={{ borderColor: COLORS.gray2, height: 'auto', borderWidth: 1, borderRadius: 10, padding: 10, marginBottom: 20 }}>
+                    <View style={{ borderColor: deliveryOptionsError ? COLORS.secondary : COLORS.gray2, height: 'auto', borderWidth: 1, borderRadius: 10, padding: 10, marginBottom: 20 }}>
                         <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
                             <Image source={require('../assets/images/options.png')} style={{ width: 25, height: 25 }} />
                             <Text style={{ fontFamily: 'bold', fontSize: 18, marginLeft: 5 }}>Delivery Options</Text>
                         </View>
-                        {console.log(selectedDeliveryOption)}
+
                         <TouchableOpacity
                             onPress={() => {
                                 if (restaurant?.delivery) {
-                                    setSelectedDeliveryOption('standard');
                                     setDeliveryFee(distanceTime.finalPrice);
-                                    selectedDeliveryOption === 'standard' ? (setSelectedDeliveryOption(null), setDeliveryFee(0)) : (setSelectedDeliveryOption('standard'), setDeliveryFee(distanceTime.finalPrice));
+                                    selectedDeliveryOption === 'standard' ? (setSelectedDeliveryOption(null), setDeliveryFee(0))
+                                        : (setSelectedDeliveryOption('standard'), setDeliveryFee(distanceTime.finalPrice));
                                     setDeliveryOptionsError(false)
                                 } else {
                                     setSelectedDeliveryOption(null);
@@ -358,7 +394,6 @@ const CheckoutPage = () => {
 
                         <TouchableOpacity
                             onPress={() => {
-                                setSelectedDeliveryOption('pickup');
                                 setDeliveryFee(0);
                                 selectedDeliveryOption === null ? setDeliveryOptionsError(false) : setSelectedDeliveryOption('pickup');
                                 selectedDeliveryOption === 'pickup' ? setSelectedDeliveryOption(null) : setSelectedDeliveryOption('pickup')
@@ -463,41 +498,80 @@ const CheckoutPage = () => {
 
                     </View>
 
-                    <View style={{ borderColor: COLORS.gray2, height: 'auto', borderWidth: 1, borderRadius: 10, padding: 10, marginBottom: 20 }}>
+                    {paymentMethodError && <Text style={[styles.label, { color: COLORS.red, textAlign: 'left' }]}>*Please select a payment method</Text>}
+                    <View style={{ borderColor: paymentMethodError ? COLORS.secondary : COLORS.gray2, height: 'auto', borderWidth: 1, borderRadius: 10, padding: 10, marginBottom: 20 }}>
                         <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
                             <Image source={require('../assets/images/payment.png')} style={{ width: 25, height: 25 }} />
                             <Text style={{ fontFamily: 'bold', fontSize: 18, marginLeft: 5 }}>Payment Method</Text>
                         </View>
 
-                        <TouchableOpacity
-                            onPress={() => { selectedPaymentMethod === 'cod' ? setSelectedPaymentMethod(null) : setSelectedPaymentMethod('cod') }}
-                            style={{
-                                marginTop: 10,
-                                borderWidth: 1,
-                                padding: 10,
-                                borderRadius: 10,
-                                borderColor: selectedPaymentMethod === 'cod' ? COLORS.primary : COLORS.gray2,
-                                opacity: restaurant?.delivery ? 1 : 0.5
-                            }}>
-                            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-                                <View style={{ flexDirection: 'row', alignItems: 'center', height: 30 }}>
-                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                        <Image source={require('../assets/images/COD.png')} style={{ width: 20, height: 20, marginLeft: 2.5 }} />
-                                        <Text style={{ fontFamily: 'medium', fontSize: 16, marginLeft: 10, color: COLORS.black }}>Cash On Delivery</Text>
+                        {selectedDeliveryOption === 'pickup' ? (
+                            <TouchableOpacity
+                                onPress={() => {
+                                    selectedPaymentMethod === null ? setPaymentMethodError(false) : setSelectedPaymentMethod('Pay at the counter');
+                                    selectedPaymentMethod === 'Pay at the counter' ? setSelectedPaymentMethod(null) : setSelectedPaymentMethod('Pay at the counter');
+                                }}
+                                style={{
+                                    marginTop: 10,
+                                    borderWidth: 1,
+                                    padding: 10,
+                                    borderRadius: 10,
+                                    borderColor: selectedPaymentMethod === 'Pay at the counter' ? COLORS.primary : COLORS.gray2,
+                                    opacity: restaurant?.delivery ? 1 : 0.5
+                                }}>
+                                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center', height: 30 }}>
+                                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                            <Image source={require('../assets/images/COD.png')} style={{ width: 20, height: 20, marginLeft: 2.5 }} />
+                                            <Text style={{ fontFamily: 'medium', fontSize: 16, marginLeft: 10, color: COLORS.black }}>Pay at the counter</Text>
+                                        </View>
                                     </View>
                                 </View>
-                            </View>
 
-                            {selectedPaymentMethod === 'cod' && (
-                                <Text style={{ fontFamily: 'regular', fontSize: 12, color: COLORS.gray }}>
-                                    Consider payment upon ordering for contactless delivery. You cant pay by a card to the rider upon delivery.
-                                </Text>
-                            )}
+                                {selectedPaymentMethod === 'Pay at the counter' && (
+                                    <Text style={{ fontFamily: 'regular', fontSize: 12, color: COLORS.gray }}>
+                                        You can place your order online and make the payment when you pick up your order at the restaurant. This allows you to conveniently reserve your items and pay in person.
+                                    </Text>
+                                )}
 
-                        </TouchableOpacity>
+                            </TouchableOpacity>
+                        ) : (
+                            <TouchableOpacity
+                                onPress={() => {
+                                    selectedPaymentMethod === null ? setPaymentMethodError(false) : setSelectedPaymentMethod('cod');
+                                    selectedPaymentMethod === 'cod' ? setSelectedPaymentMethod(null) : setSelectedPaymentMethod('cod');
+                                }}
+                                style={{
+                                    marginTop: 10,
+                                    borderWidth: 1,
+                                    padding: 10,
+                                    borderRadius: 10,
+                                    borderColor: selectedPaymentMethod === 'cod' ? COLORS.primary : COLORS.gray2,
+                                    opacity: restaurant?.delivery ? 1 : 0.5
+                                }}>
+                                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center', height: 30 }}>
+                                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                            <Image source={require('../assets/images/COD.png')} style={{ width: 20, height: 20, marginLeft: 2.5 }} />
+                                            <Text style={{ fontFamily: 'medium', fontSize: 16, marginLeft: 10, color: COLORS.black }}>Cash On Delivery</Text>
+                                        </View>
+                                    </View>
+                                </View>
+
+                                {selectedPaymentMethod === 'cod' && (
+                                    <Text style={{ fontFamily: 'regular', fontSize: 12, color: COLORS.gray }}>
+                                        Consider payment upon ordering for contactless delivery. You cant pay by a card to the rider upon delivery.
+                                    </Text>
+                                )}
+
+                            </TouchableOpacity>
+                        )}
 
                         <TouchableOpacity
-                            onPress={() => { selectedPaymentMethod === 'gcash' ? setSelectedPaymentMethod(null) : setSelectedPaymentMethod('gcash') }}
+                            onPress={() => {
+                                selectedPaymentMethod === null ? setPaymentMethodError(false) : setSelectedPaymentMethod('gcash');
+                                selectedPaymentMethod === 'gcash' ? setSelectedPaymentMethod(null) : setSelectedPaymentMethod('gcash')
+                            }}
                             style={{
                                 marginTop: 10,
                                 borderWidth: 1,
@@ -587,9 +661,10 @@ const CheckoutPage = () => {
                         </View>
                     </View>
 
-                    <Button title="P L A C E   O R D E R" onPress={() => { }} />
+                    <Button title="P L A C E   O R D E R" onPress={handlePlaceOrder} isValid={true} loader={loading} />
                 </ScrollView >
-            )}
+            )
+            }
 
             <BottomModal
                 visible={showAddresses}
