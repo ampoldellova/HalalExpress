@@ -9,14 +9,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import baseUrl from '../assets/common/baseUrl';
 import axios from 'axios';
 import { COLORS, SIZES } from '../styles/theme';
-import { BottomModal, ModalContent, SlideAnimation } from 'react-native-modals';
-
-
 
 const HomeHeader = () => {
-    const [showAddresses, setShowAddresses] = useState(false);
     const { address, setAddress } = useContext(UserReversedGeoCode);
-    const [addresses, setAddresses] = useState([]);
     const { location, setLocation } = useContext(UserLocationContext);
     const navigation = useNavigation();
     const [user, setUser] = useState(null);
@@ -41,31 +36,14 @@ const HomeHeader = () => {
         }
     };
 
-    const getUserAddresses = async () => {
-        try {
-            const token = await AsyncStorage.getItem('token');
-            if (token) {
-                const config = {
-                    headers: {
-                        Authorization: `Bearer ${JSON.parse(token)}`,
-                    }
-                }
-
-                const response = await axios.get(`${baseUrl}/api/users/address/list`, config);
-                setAddresses(response.data.addresses);
-            }
-        } catch (error) {
-            console.error(error);
-        }
-    };
 
     useFocusEffect(
         React.useCallback(() => {
+            setUser(null)
             getProfile();
-            getUserAddresses();
         }, [])
     )
-    console.log(addresses);
+
 
     useEffect(() => {
         if (location !== null) {
@@ -83,7 +61,7 @@ const HomeHeader = () => {
 
     return (
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 10 }}>
-            <TouchableOpacity onPress={() => setShowAddresses(true)} style={styles.outerStyle}>
+            <View style={styles.outerStyle}>
                 <Image
                     source={{
                         uri: user?.profile?.url
@@ -100,7 +78,7 @@ const HomeHeader = () => {
                     <Text style={styles.heading}>Delivering to:</Text>
                     <Text style={styles.location}>{`${address?.city} ${address?.name}`}</Text>
                 </View>
-            </TouchableOpacity>
+            </View>
 
             {user && (
                 <View style={styles.message}>
@@ -109,25 +87,6 @@ const HomeHeader = () => {
                     </TouchableOpacity>
                 </View>
             )}
-
-            <BottomModal
-                visible={showAddresses}
-                onTouchOutside={() => setShowAddresses(false)}
-                swipeThreshold={100}
-                modalAnimation={new SlideAnimation({ slideFrom: "bottom" })}
-                onHardwareBackPress={() => setShowAddresses(false)}
-            >
-                <View style={{ height: 10, backgroundColor: COLORS.primary, width: SIZES.width, justifyContent: 'center', alignItems:'center' }} >
-                    <View style={{ height: 3, backgroundColor: COLORS.secondary, width: SIZES.width / 5, borderRadius: 10 }} />
-                </View>
-                <ModalContent style={{ height: SIZES.height / 2, width: '100%' }}>
-                    {user ? (
-                        <Text>Logined and have addresses</Text>
-                    ) : (
-                        <Text>Please login first</Text>
-                    )}
-                </ModalContent>
-            </BottomModal>
         </View>
     )
 }

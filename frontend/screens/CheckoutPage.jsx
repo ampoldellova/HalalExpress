@@ -485,7 +485,7 @@ const CheckoutPage = () => {
                 onHardwareBackPress={() => setShowAddresses(false)}
             >
                 <View style={{ height: 10, backgroundColor: COLORS.primary, width: SIZES.width, justifyContent: 'center', alignItems: 'center' }} >
-                    <View style={{ height: 3, backgroundColor: COLORS.secondary, width: SIZES.width / 5, borderRadius: 10 }} />
+                    <View style={{ height: 3, backgroundColor: COLORS.white, width: SIZES.width / 5, borderRadius: 10 }} />
                 </View>
                 <ModalContent style={{ height: SIZES.height / 2, width: '100%' }}>
                     <Text style={{ fontFamily: 'bold', fontSize: 20, marginBottom: 5 }}> Saved Addresses</Text>

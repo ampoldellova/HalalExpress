@@ -60,7 +60,6 @@ const GoogleMapView = ({ placeList, title }) => {
             <MapView
                 style={styles.map}
                 provider={PROVIDER_GOOGLE}
-                showsUserLocation={true}
                 region={mapRegion}
             >
                 <Marker
