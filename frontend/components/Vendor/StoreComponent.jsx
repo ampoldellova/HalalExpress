@@ -27,8 +27,8 @@ const StoreComponent = ({ item, onPress }) => {
                 />
                 <Text style={styles.heading}>{item.title}</Text>
                 <View style={{ flex: 1 }} />
-                <View style={{ backgroundColor: item.isAvailable ? 'green' : 'red', borderRadius: 30, height: 20, justifyContent: 'center' }}>
-                    <Text style={[styles.small, { color: 'white', marginHorizontal: 5 }]}>{item.isAvailable ? 'Open' : 'Closed'}</Text>
+                <View style={{ backgroundColor: item.isAvailable ? COLORS.primary : 'red', borderRadius: 30, justifyContent: 'center', paddingHorizontal: 10 }}>
+                    <Text style={[styles.small, { color: 'white', fontFamily:'medium' }]}>{item.isAvailable ? 'Open' : 'Closed'}</Text>
                 </View>
             </View>
             <View style={{ flexDirection: "row", justifyContent: 'space-between' }}>

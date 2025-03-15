@@ -484,6 +484,9 @@ const CheckoutPage = () => {
                 modalAnimation={new SlideAnimation({ slideFrom: "bottom" })}
                 onHardwareBackPress={() => setShowAddresses(false)}
             >
+                <View style={{ height: 10, backgroundColor: COLORS.primary, width: SIZES.width, justifyContent: 'center', alignItems: 'center' }} >
+                    <View style={{ height: 3, backgroundColor: COLORS.secondary, width: SIZES.width / 5, borderRadius: 10 }} />
+                </View>
                 <ModalContent style={{ height: SIZES.height / 2, width: '100%' }}>
                     <Text style={{ fontFamily: 'bold', fontSize: 20, marginBottom: 5 }}> Saved Addresses</Text>
 
@@ -515,18 +518,16 @@ const CheckoutPage = () => {
                                 </View>
                             </TouchableOpacity>
                         )}
-                        ListFooterComponent={
-                            <TouchableOpacity onPress={() => { navigation.navigate('add-address-page'); setShowAddresses(false) }} style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10, borderWidth: 1, borderRadius: 10, borderColor: COLORS.gray2 }}>
-                                <View style={{ flexDirection: 'row', alignItems: 'center', marginHorizontal: 10 }}>
-                                    <MaterialIcons name="add" size={30} color={COLORS.gray2} />
-                                    <View style={{ flex: 1, height: 50, justifyContent: 'center' }}>
-                                        <Text style={{ fontFamily: 'regular', fontSize: 14, marginLeft: 10, color: COLORS.gray }}>Add New Address</Text>
-                                    </View>
-                                </View>
-                            </TouchableOpacity>
-                        }
-                    />
 
+                    />
+                    <TouchableOpacity onPress={() => { navigation.navigate('add-address-page'); setShowAddresses(false) }} style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10, borderWidth: 1, borderRadius: 10, borderColor: COLORS.gray2, marginBottom: -15 }}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', marginHorizontal: 10 }}>
+                            <MaterialIcons name="add" size={30} color={COLORS.gray2} />
+                            <View style={{ flex: 1, height: 50, justifyContent: 'center' }}>
+                                <Text style={{ fontFamily: 'regular', fontSize: 14, marginLeft: 10, color: COLORS.gray }}>Add New Address</Text>
+                            </View>
+                        </View>
+                    </TouchableOpacity>
                 </ModalContent>
             </BottomModal>
         </SafeAreaView >
