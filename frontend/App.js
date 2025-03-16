@@ -41,6 +41,7 @@ import LoginPage from './screens/User/LoginPage';
 import Toast from 'react-native-toast-message';
 import CheckoutPage from './screens/CheckoutPage';
 import { ModalPortal } from 'react-native-modals';
+import PaymentConfirmationPage from './screens/PaymentConfirmationPage';
 
 
 const Stack = createNativeStackNavigator();
@@ -224,6 +225,11 @@ export default function App() {
                       <Stack.Screen
                         name='checkout-page'
                         component={CheckoutPage}
+                        options={{ headerShown: false }}
+                      />
+                      <Stack.Screen
+                        name='payment-confirmation'
+                        component={PaymentConfirmationPage}
                         options={{ headerShown: false }}
                       />
                     </Stack.Navigator>

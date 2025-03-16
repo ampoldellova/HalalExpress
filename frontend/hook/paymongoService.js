@@ -1,7 +1,10 @@
+import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
+import { Linking } from 'react-native';
 
 const PAYMONGO_API_URL = 'https://api.paymongo.com/v1';
 const PAYMONGO_URL = 'https://api.paymongo.com';
+const PAYMONGO_SECRET_KEY = 'sk_test_5Ach5aZsrXzFmdv1MDaPiaVc';
 
 const createPaymentIntent = async (amount, currency = 'PHP') => {
     const response = await axios.post(
@@ -17,7 +20,7 @@ const createPaymentIntent = async (amount, currency = 'PHP') => {
         },
         {
             headers: {
-                Authorization: `Basic ${btoa(process.env.REACT_APP_PAYMONGO_SECRET_KEY)}`,
+                Authorization: `Basic ${btoa(PAYMONGO_SECRET_KEY)}`,
                 'Content-Type': 'application/json',
             },
         }
@@ -27,6 +30,7 @@ const createPaymentIntent = async (amount, currency = 'PHP') => {
 };
 
 const attachPaymentMethod = async (paymentIntentId, paymentMethodId, data) => {
+    const navigation = useNavigation();
     const response = await axios.post(
         `${PAYMONGO_API_URL}/payment_intents/${paymentIntentId}/attach`,
         {
@@ -39,13 +43,16 @@ const attachPaymentMethod = async (paymentIntentId, paymentMethodId, data) => {
         },
         {
             headers: {
-                Authorization: `Basic ${btoa(process.env.REACT_APP_PAYMONGO_SECRET_KEY)}`,
+                Authorization: `Basic ${btoa(PAYMONGO_SECRET_KEY)}`,
                 'Content-Type': 'application/json',
             },
         }
     );
 
-    console.log(response.data);
+    console.log(response.data.data.attributes.next_action.redirect.url);
+    if (response.data.data.attributes.next_action.redirect.url) {
+        Linking.openURL(response.data.data.attributes.next_action.redirect.url);
+    }
     return response.data;
 };
 
@@ -66,7 +73,7 @@ const createPaymentMethod = async (phone, email, name) => {
         },
         {
             headers: {
-                Authorization: `Basic ${btoa(process.env.REACT_APP_PAYMONGO_SECRET_KEY)}`,
+                Authorization: `Basic ${btoa(PAYMONGO_SECRET_KEY)}`,
                 'Content-Type': 'application/json',
             },
         }
@@ -80,7 +87,7 @@ const retrievePaymentIntent = async (paymentIntentId) => {
         `${PAYMONGO_API_URL}/payment_intents/${paymentIntentId}`,
         {
             headers: {
-                Authorization: `Basic ${btoa(process.env.REACT_APP_PAYMONGO_SECRET_KEY)}`,
+                Authorization: `Basic ${btoa(PAYMONGO_SECRET_KEY)}`,
                 'Content-Type': 'application/json',
             },
         });
@@ -104,7 +111,7 @@ const createRefund = async (amount, notes, paymentId) => {
             },
             {
                 headers: {
-                    Authorization: `Basic ${btoa(process.env.REACT_APP_PAYMONGO_SECRET_KEY)}`,
+                    Authorization: `Basic ${btoa(PAYMONGO_SECRET_KEY)}`,
                     'Content-Type': 'application/json',
                 },
             }
@@ -121,7 +128,7 @@ const retrieveRefund = async (refundId) => {
         `${PAYMONGO_URL}/refunds/${refundId}`,
         {
             headers: {
-                Authorization: `Basic ${btoa(process.env.REACT_APP_PAYMONGO_SECRET_KEY)}`,
+                Authorization: `Basic ${btoa(PAYMONGO_SECRET_KEY)}`,
                 'Content-Type': 'application/json',
             },
         });

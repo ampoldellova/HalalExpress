@@ -20,6 +20,7 @@ import GoogleApiServices from '../hook/GoogleApiServices';
 import Toast from 'react-native-toast-message';
 import Divider from '../components/Divider';
 import Loader from '../components/Loader';
+import { attachPaymentMethod, createPaymentIntent, createPaymentMethod } from '../hook/paymongoService';
 
 const CheckoutPage = () => {
     const route = useRoute();
@@ -154,6 +155,30 @@ const CheckoutPage = () => {
         } else if (selectedPaymentMethod === null) {
             setPaymentMethodError(true);
             setLoading(false);
+        } else if (selectedPaymentMethod === 'gcash') {
+            console.log('gcash')
+            try {
+                const amount = Math.round(parseFloat(user?.userType === 'Vendor' ? vendorCart?.totalAmount.toFixed(2) : cart?.totalAmount.toFixed(2)) + parseFloat(deliveryFee));
+                const paymentIntent = await createPaymentIntent(amount);
+                const paymentMethodResponse = await createPaymentMethod(phone, email, username);
+                const data = {
+                    restaurant: user?.userType === 'Vendor' ? supplier?._id : restaurant?._id,
+                    orderItems: user?.userType === 'Vendor' ? vendorCart?.cartItems : cart?.cartItems,
+                    deliveryOption: selectedDeliveryOption,
+                    deliveryAddress: selectedDeliveryOption === 'standard' ? selectedAddress?.address : '',
+                    subTotal: user?.userType === 'Vendor' ? vendorCart?.totalAmount.toFixed(2) : cart?.totalAmount.toFixed(2),
+                    deliveryFee,
+                    totalAmount: parseFloat(user?.userType === 'Vendor' ? vendorCart?.totalAmount.toFixed(2) : cart?.totalAmount.toFixed(2)) + parseFloat(deliveryFee),
+                    paymentMethod: selectedPaymentMethod,
+                    paymentStatus: 'Paid',
+                    orderStatus: 'Pending',
+                    orderNote,
+                };
+                await attachPaymentMethod(paymentIntent.data.id, paymentMethodResponse.data.id, data);
+            } catch (error) {
+                console.error('Error processing payment:', error);
+                setLoading(false);
+            }
         } else {
             try {
                 const token = await AsyncStorage.getItem('token');
