@@ -30,7 +30,6 @@ const createPaymentIntent = async (amount, currency = 'PHP') => {
 };
 
 const attachPaymentMethod = async (paymentIntentId, paymentMethodId, data) => {
-    const navigation = useNavigation();
     const response = await axios.post(
         `${PAYMONGO_API_URL}/payment_intents/${paymentIntentId}/attach`,
         {

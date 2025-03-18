@@ -156,7 +156,6 @@ const CheckoutPage = () => {
             setPaymentMethodError(true);
             setLoading(false);
         } else if (selectedPaymentMethod === 'gcash') {
-            console.log('gcash')
             try {
                 const amount = Math.round(parseFloat(user?.userType === 'Vendor' ? vendorCart?.totalAmount.toFixed(2) : cart?.totalAmount.toFixed(2)) + parseFloat(deliveryFee));
                 const paymentIntent = await createPaymentIntent(amount);
