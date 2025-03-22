@@ -197,6 +197,7 @@ const CheckoutPage = () => {
           email,
           username
         );
+
         const data = {
           restaurant:
             user?.userType === "Vendor" ? supplier?._id : restaurant?._id,
@@ -206,9 +207,9 @@ const CheckoutPage = () => {
               : cart?.cartItems,
           deliveryOption: selectedDeliveryOption,
           deliveryAddress:
-            selectedDeliveryOption === "standard"
-              ? selectedAddress?.address
-              : "",
+            selectedDeliveryOption === "standard" && selectedAddress === null
+              ? address.formattedAddress
+              : selectedAddress,
           subTotal:
             user?.userType === "Vendor"
               ? vendorCart?.totalAmount.toFixed(2)
@@ -232,7 +233,7 @@ const CheckoutPage = () => {
 
         if (payment.data.attributes.next_action.redirect.url) {
           Linking.openURL(payment.data.attributes.next_action.redirect.url);
-          navigation.navigate("payment-confirmation", { payment, data });
+          navigation.navigate("payment-confirmation", { payment, data, user });
         }
       } catch (error) {
         console.error("Error processing payment:", error);
@@ -257,9 +258,9 @@ const CheckoutPage = () => {
               : cart?.cartItems,
           deliveryOption: selectedDeliveryOption,
           deliveryAddress:
-            selectedDeliveryOption === "standard"
-              ? selectedAddress?.address
-              : "",
+            selectedDeliveryOption === "standard" && selectedAddress === null
+              ? address.formattedAddress
+              : selectedAddress,
           subTotal:
             user?.userType === "Vendor"
               ? vendorCart?.totalAmount.toFixed(2)
