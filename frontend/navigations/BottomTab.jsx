@@ -53,8 +53,6 @@ const BottomTab = () => {
         }, [])
     );
 
-    console.log(cartItems.length)
-
     return (
         <Tab.Navigator
             initialRouteName="HomePage"

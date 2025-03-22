@@ -190,7 +190,6 @@ const AddAddressPage = () => {
                                     placeholder="Search for your address..."
                                     placeholderTextColor={COLORS.gray}
                                     value={values.coords.address}
-                                    multiline
                                     onChangeText={(text) => {
                                         handleAddressChange(text)
                                         setFieldValue('coords.address', text)
