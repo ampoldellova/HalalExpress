@@ -3,7 +3,7 @@ export default {
   "expo": {
     "name": "HalalExpress",
     "slug": "frontend",
-    "scheme": "frontend",
+    "scheme": "exp+frontend",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",

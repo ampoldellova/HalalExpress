@@ -1,5 +1,6 @@
 import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
+import { useEffect } from "react";
 import { Linking } from "react-native";
 
 const PAYMONGO_API_URL = "https://api.paymongo.com/v1";
@@ -29,14 +30,14 @@ const createPaymentIntent = async (amount, currency = "PHP") => {
   return response.data;
 };
 
-const attachPaymentMethod = async (paymentIntentId, paymentMethodId, data) => {
+const attachPaymentMethod = async (paymentIntentId, paymentMethodId) => {
   const response = await axios.post(
     `${PAYMONGO_API_URL}/payment_intents/${paymentIntentId}/attach`,
     {
       data: {
         attributes: {
           payment_method: paymentMethodId,
-          return_url: `https://frontend/payment-confirmation?data=${data}`,
+          return_url: `https://www.paymongo.com/`,
         },
       },
     },
@@ -48,10 +49,6 @@ const attachPaymentMethod = async (paymentIntentId, paymentMethodId, data) => {
     }
   );
 
-  console.log(response.data.data.attributes.next_action.redirect.url);
-  if (response.data.data.attributes.next_action.redirect.url) {
-    Linking.openURL(response.data.data.attributes.next_action.redirect.url);
-  }
   return response.data;
 };
 

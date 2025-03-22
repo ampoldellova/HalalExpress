@@ -38,7 +38,6 @@ import {
   attachPaymentMethod,
   createPaymentIntent,
   createPaymentMethod,
-  retrievePaymentIntent,
 } from "../hook/paymongoService";
 
 const CheckoutPage = () => {
@@ -226,11 +225,15 @@ const CheckoutPage = () => {
           orderStatus: "Pending",
           orderNote,
         };
-        await attachPaymentMethod(
+        const payment = await attachPaymentMethod(
           paymentIntent.data.id,
-          paymentMethodResponse.data.id,
-          data
+          paymentMethodResponse.data.id
         );
+
+        if (payment.data.attributes.next_action.redirect.url) {
+          Linking.openURL(payment.data.attributes.next_action.redirect.url);
+          navigation.navigate("payment-confirmation", { payment, data });
+        }
       } catch (error) {
         console.error("Error processing payment:", error);
         setLoading(false);

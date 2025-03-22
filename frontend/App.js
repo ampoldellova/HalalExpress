@@ -1,7 +1,11 @@
 import "react-native-gesture-handler";
 import "react-native-reanimated";
 import { Linking, StyleSheet, Text, View } from "react-native";
-import { NavigationContainer, useFocusEffect } from "@react-navigation/native";
+import {
+  NavigationContainer,
+  useFocusEffect,
+  useNavigation,
+} from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useFonts } from "expo-font";
 import BottomTab from "./navigations/BottomTab";
@@ -42,6 +46,7 @@ import Toast from "react-native-toast-message";
 import CheckoutPage from "./screens/CheckoutPage";
 import { ModalPortal } from "react-native-modals";
 import PaymentConfirmationPage from "./screens/PaymentConfirmationPage";
+import OrderPage from "./screens/Cart/OrderPage";
 
 const Stack = createNativeStackNavigator();
 
@@ -243,6 +248,11 @@ export default function App() {
                       <Stack.Screen
                         name="payment-confirmation"
                         component={PaymentConfirmationPage}
+                        options={{ headerShown: false }}
+                      />
+                      <Stack.Screen
+                        name="order-page"
+                        component={OrderPage}
                         options={{ headerShown: false }}
                       />
                     </Stack.Navigator>
