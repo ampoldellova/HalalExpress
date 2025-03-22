@@ -184,13 +184,12 @@ const CheckoutPage = () => {
       setLoading(false);
     } else if (selectedPaymentMethod === "gcash") {
       try {
-        const amount = Math.round(
+        const amount =
           parseFloat(
             user?.userType === "Vendor"
               ? vendorCart?.totalAmount.toFixed(2)
               : cart?.totalAmount.toFixed(2)
-          ) + parseFloat(deliveryFee)
-        );
+          ) + parseFloat(deliveryFee);
         const paymentIntent = await createPaymentIntent(amount);
         const paymentMethodResponse = await createPaymentMethod(
           phone,
@@ -215,12 +214,7 @@ const CheckoutPage = () => {
               ? vendorCart?.totalAmount.toFixed(2)
               : cart?.totalAmount.toFixed(2),
           deliveryFee,
-          totalAmount:
-            parseFloat(
-              user?.userType === "Vendor"
-                ? vendorCart?.totalAmount.toFixed(2)
-                : cart?.totalAmount.toFixed(2)
-            ) + parseFloat(deliveryFee),
+          totalAmount: amount.toFixed(2),
           paymentMethod: selectedPaymentMethod,
           paymentStatus: "Paid",
           orderStatus: "Pending",

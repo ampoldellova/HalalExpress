@@ -1,5 +1,5 @@
 import { Linking, StyleSheet, Text, View } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   useFocusEffect,
   useNavigation,
@@ -19,6 +19,7 @@ const PaymentConfirmationPage = () => {
   const [user, setUser] = useState(null);
   const { payment, data } = route.params;
   const [isPaymentSuccessful, setIsPaymentSuccessful] = useState(false);
+  const intervalRef = useRef(null);
 
   const fetchProfile = async () => {
     const profile = await getProfile();
@@ -30,6 +31,9 @@ const PaymentConfirmationPage = () => {
       const response = await retrievePaymentIntent(payment.data.id);
 
       if (response.data.attributes.status === "succeeded") {
+        clearInterval(intervalRef.current); // Clear the interval
+        setIsPaymentSuccessful(true);
+
         try {
           const token = await AsyncStorage.getItem("token");
           const config = {
@@ -38,53 +42,31 @@ const PaymentConfirmationPage = () => {
             },
           };
 
-          if (user?.userType === "Vendor") {
-            const response = await axios.post(
-              `${baseUrl}/api/vendor/orders/check-out`,
-              data,
-              config
-            );
-            if (response.status === 200) {
-              setIsPaymentSuccessful(true);
-              navigation.navigate("bottom-navigation");
-              Toast.show({
-                type: "success",
-                text1: "Payment Successful ✅",
-                text2: "Your order has been placed.",
-              });
-            } else {
-              Toast.show({
-                type: "error",
-                text1: "Error ❌",
-                text2: "Failed to place order",
-              });
-            }
+          const endpoint =
+            user?.userType === "Vendor"
+              ? `${baseUrl}/api/vendor/orders/check-out`
+              : `${baseUrl}/api/orders/check-out`;
+
+          const response = await axios.post(endpoint, data, config);
+          if (response.status === 200) {
+            navigation.navigate("bottom-navigation");
+            Toast.show({
+              type: "success",
+              text1: "Payment Successful ✅",
+              text2: "Your order has been placed.",
+            });
           } else {
-            const response = await axios.post(
-              `${baseUrl}/api/orders/check-out`,
-              data,
-              config
-            );
-            if (response.status === 200) {
-              setIsPaymentSuccessful(true);
-              navigation.navigate("bottom-navigation");
-              Toast.show({
-                type: "success",
-                text1: "Payment Successful ✅",
-                text2: "Your order has been placed.",
-              });
-            } else {
-              Toast.show({
-                type: "error",
-                text1: "Error ❌",
-                text2: "Failed to place order",
-              });
-            }
+            Toast.show({
+              type: "error",
+              text1: "Error ❌",
+              text2: "Failed to place order",
+            });
           }
         } catch (error) {
           console.log(error);
         }
       } else if (response.data.attributes.status === "failed") {
+        clearInterval(intervalRef.current); // Clear the interval
         navigation.navigate("HomePage");
         Toast.show({
           type: "error",
@@ -106,11 +88,11 @@ const PaymentConfirmationPage = () => {
 
   useEffect(() => {
     if (!isPaymentSuccessful) {
-      const interval = setInterval(() => {
+      intervalRef.current = setInterval(() => {
         paymentStatus();
       }, 1000);
 
-      return () => clearInterval(interval);
+      return () => clearInterval(intervalRef.current);
     }
   }, [isPaymentSuccessful]);
 
