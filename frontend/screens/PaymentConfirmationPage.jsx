@@ -6,6 +6,7 @@ const PaymentConfirmationPage = () => {
     const route = useRoute();
     const { data } = route.params;
     console.log(data);
+    
     return (
         <View>
             <Text>PaymentConfirmationPage</Text>

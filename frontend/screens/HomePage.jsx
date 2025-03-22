@@ -78,7 +78,7 @@ const HomePage = () => {
                 .catch((err) => console.error(err));
         }, [])
     );
-    console.log(process.env.REACT_APP_PAYMONGO_SECRET_KEY)
+    
     return (
         <SafeAreaView>
             {loading ? (
