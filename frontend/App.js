@@ -1,6 +1,6 @@
 import "react-native-gesture-handler";
 import "react-native-reanimated";
-import { Linking, StyleSheet, Text, View } from "react-native";
+import { Linking, StyleSheet, Text, View, StatusBar } from "react-native";
 import {
   NavigationContainer,
   useFocusEffect,
@@ -115,6 +115,7 @@ export default function App() {
 
   return (
     <Provider store={store}>
+      <StatusBar barStyle="dark-content" backgroundColor="#F3F4F8" />
       <UserLocationContext.Provider value={{ location, setLocation }}>
         <UserReversedGeoCode.Provider value={{ address, setAddress }}>
           <RestaurantContext.Provider
@@ -128,6 +129,11 @@ export default function App() {
                       <Stack.Screen
                         name="bottom-navigation"
                         component={BottomTab}
+                        options={{ headerShown: false }}
+                      />
+                      <Stack.Screen
+                        name="food-navigation"
+                        component={FoodNavigator}
                         options={{ headerShown: false }}
                       />
                       <Stack.Screen
