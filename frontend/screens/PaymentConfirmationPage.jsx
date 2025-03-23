@@ -20,6 +20,7 @@ const PaymentConfirmationPage = () => {
   const { payment, data } = route.params;
   const [isPaymentSuccessful, setIsPaymentSuccessful] = useState(false);
   const intervalRef = useRef(null);
+  let parsedData = {};
 
   const fetchProfile = async () => {
     const profile = await getProfile();
@@ -29,9 +30,12 @@ const PaymentConfirmationPage = () => {
   const paymentStatus = async () => {
     try {
       const response = await retrievePaymentIntent(payment.data.id);
+      parsedData = { ...data };
 
       if (response.data.attributes.status === "succeeded") {
-        clearInterval(intervalRef.current); // Clear the interval
+        parsedData.paymentId = response.data.attributes.payments[0].id;
+        console.log(parsedData);
+        clearInterval(intervalRef.current);
         setIsPaymentSuccessful(true);
 
         try {
@@ -47,9 +51,9 @@ const PaymentConfirmationPage = () => {
               ? `${baseUrl}/api/vendor/orders/check-out`
               : `${baseUrl}/api/orders/check-out`;
 
-          const response = await axios.post(endpoint, data, config);
+          const response = await axios.post(endpoint, parsedData, config);
           if (response.status === 200) {
-            navigation.navigate("bottom-navigation");
+            navigation.navigate("order-page");
             Toast.show({
               type: "success",
               text1: "Payment Successful ✅",
@@ -66,8 +70,8 @@ const PaymentConfirmationPage = () => {
           console.log(error);
         }
       } else if (response.data.attributes.status === "failed") {
-        clearInterval(intervalRef.current); // Clear the interval
-        navigation.navigate("HomePage");
+        clearInterval(intervalRef.current);
+        navigation.navigate("bottom-navigation");
         Toast.show({
           type: "error",
           text1: "Payment Failed",

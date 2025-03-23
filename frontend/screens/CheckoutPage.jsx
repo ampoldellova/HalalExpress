@@ -272,50 +272,25 @@ const CheckoutPage = () => {
           orderNote,
         };
 
-        if (user.userType === "Vendor") {
-          const response = await axios.post(
-            `${baseUrl}/api/vendor/orders/check-out`,
-            data,
-            config
-          );
-          if (response.status === 200) {
-            Toast.show({
-              type: "success",
-              text1: "Success ✅",
-              text2: "Order placed successfully",
-            });
-            navigation.goBack();
-            setLoading(false);
-          } else {
-            Toast.show({
-              type: "error",
-              text1: "Error ❌",
-              text2: "Failed to place order",
-            });
-            setLoading(false);
-          }
+        const endpoint =
+          user?.userType === "Vendor"
+            ? `${baseUrl}/api/vendor/orders/check-out`
+            : `${baseUrl}/api/orders/check-out`;
+
+        const response = await axios.post(endpoint, data, config);
+        if (response.status === 200) {
+          navigation.navigate("order-page");
+          Toast.show({
+            type: "success",
+            text1: "Payment Successful ✅",
+            text2: "Your order has been placed.",
+          });
         } else {
-          const response = await axios.post(
-            `${baseUrl}/api/orders/check-out`,
-            data,
-            config
-          );
-          if (response.status === 200) {
-            Toast.show({
-              type: "success",
-              text1: "Success ✅",
-              text2: "Order placed successfully",
-            });
-            navigation.goBack();
-            setLoading(false);
-          } else {
-            Toast.show({
-              type: "error",
-              text1: "Error ❌",
-              text2: "Failed to place order",
-            });
-            setLoading(false);
-          }
+          Toast.show({
+            type: "error",
+            text1: "Error ❌",
+            text2: "Failed to place order",
+          });
         }
       } catch (error) {
         Toast.show({
