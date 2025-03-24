@@ -17,7 +17,7 @@ const Button = ({ title, onPress, isValid, loader }) => {
       {!loader ? (
         <Text style={styles.btnTxt}>{title}</Text>
       ) : (
-        <ActivityIndicator />
+        <ActivityIndicator color={COLORS.white} />
       )}
     </TouchableOpacity>
   );
