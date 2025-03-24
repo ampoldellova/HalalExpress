@@ -24,6 +24,7 @@ import baseUrl from "../../assets/common/baseUrl";
 import { COLORS, SIZES } from "../../styles/theme";
 import Loader from "../../components/Loader";
 import Fontisto from "react-native-vector-icons/Fontisto";
+import Heading from "../../components/Heading";
 
 const OrderPage = () => {
   const navigation = useNavigation();
@@ -119,21 +120,21 @@ const OrderPage = () => {
       {loading ? (
         <Loader />
       ) : (
-        <View style={{ marginHorizontal: 20, marginTop: 15 }}>
-          <BackBtn
-            onPress={() =>
-              navigation.navigate("bottom-navigation", {
-                screen: "ProfilePage",
-              })
-            }
-          />
-          <Text style={styles.heading}>Your Orders</Text>
+        <View style={{ marginTop: 15 }}>
+          <View style={{ marginHorizontal: 20 }}>
+            <BackBtn
+              onPress={() =>
+                navigation.navigate("bottom-navigation", {
+                  screen: "ProfilePage",
+                })
+              }
+            />
+            <Text style={styles.heading}>Your Orders</Text>
+          </View>
 
           {pendingOrders.length > 0 && (
             <>
-              <Text style={{ fontFamily: "bold", fontSize: 16, marginTop: 20 }}>
-                Active Order(s)
-              </Text>
+              <Heading heading={`Active Order(s)`} />
               <FlatList
                 data={pendingOrders}
                 scrollEnabled={false}
@@ -148,6 +149,7 @@ const OrderPage = () => {
                       flexDirection: "row",
                       justifyContent: "space-between",
                       backgroundColor: COLORS.white,
+                      marginHorizontal: 20,
                     }}
                   >
                     <View style={{ flexDirection: "row" }}>
@@ -243,9 +245,7 @@ const OrderPage = () => {
 
           {pastOrders.length > 0 && (
             <>
-              <Text style={{ fontFamily: "bold", fontSize: 16, marginTop: 20 }}>
-                Past Order(s)
-              </Text>
+              <Heading heading={`Past Order(s)`} />
               <FlatList
                 data={pastOrders}
                 scrollEnabled={false}
@@ -260,6 +260,7 @@ const OrderPage = () => {
                       flexDirection: "row",
                       justifyContent: "space-between",
                       backgroundColor: COLORS.white,
+                      marginHorizontal: 20,
                     }}
                   >
                     <View style={{ flexDirection: "row" }}>
@@ -344,9 +345,7 @@ const OrderPage = () => {
 
           {cancelledOrders.length > 0 && (
             <>
-              <Text style={{ fontFamily: "bold", fontSize: 16, marginTop: 20 }}>
-                Cancelled Order(s)
-              </Text>
+              <Heading heading={`Cancelled Order(s)`} />
               <FlatList
                 data={cancelledOrders}
                 scrollEnabled={false}
@@ -361,6 +360,7 @@ const OrderPage = () => {
                       flexDirection: "row",
                       justifyContent: "space-between",
                       backgroundColor: COLORS.white,
+                      marginHorizontal: 20,
                     }}
                   >
                     <View style={{ flexDirection: "row" }}>
