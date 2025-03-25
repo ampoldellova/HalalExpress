@@ -266,7 +266,7 @@ const OrderPage = () => {
                           </View>
                         </View>
                         <Text style={{ fontFamily: "bold", fontSize: 16 }}>
-                          ₱{item?.totalAmount}
+                          ₱{(item?.totalAmount).toFixed(2)}
                         </Text>
                       </TouchableOpacity>
                     )}
@@ -368,7 +368,7 @@ const OrderPage = () => {
                           </View>
                         </View>
                         <Text style={{ fontFamily: "bold", fontSize: 16 }}>
-                          ₱{item?.totalAmount}
+                          ₱{(item?.totalAmount).toFixed(2)}
                         </Text>
                       </TouchableOpacity>
                     )}
@@ -470,7 +470,7 @@ const OrderPage = () => {
                           </View>
                         </View>
                         <Text style={{ fontFamily: "bold", fontSize: 16 }}>
-                          ₱{item?.totalAmount}
+                          ₱{(item?.totalAmount).toFixed(2)}
                         </Text>
                       </TouchableOpacity>
                     )}
