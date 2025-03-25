@@ -47,6 +47,7 @@ import CheckoutPage from "./screens/CheckoutPage";
 import { ModalPortal } from "react-native-modals";
 import PaymentConfirmationPage from "./screens/PaymentConfirmationPage";
 import OrderPage from "./screens/Cart/OrderPage";
+import OrderDetails from "./screens/Order/OrderDetails";
 
 const Stack = createNativeStackNavigator();
 
@@ -259,6 +260,11 @@ export default function App() {
                       <Stack.Screen
                         name="order-page"
                         component={OrderPage}
+                        options={{ headerShown: false }}
+                      />
+                      <Stack.Screen
+                        name="order-details-page"
+                        component={OrderDetails}
                         options={{ headerShown: false }}
                       />
                     </Stack.Navigator>

@@ -176,6 +176,11 @@ const OrderPage = () => {
                           backgroundColor: COLORS.white,
                           marginHorizontal: 20,
                         }}
+                        onPress={() =>
+                          navigation.navigate("order-details-page", {
+                            order: item,
+                          })
+                        }
                       >
                         <View style={{ flexDirection: "row" }}>
                           <Image
