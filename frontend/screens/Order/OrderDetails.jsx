@@ -1,4 +1,5 @@
 import {
+  ActivityIndicator,
   Image,
   ScrollView,
   StyleSheet,
@@ -16,12 +17,107 @@ import Divider from "../../components/Divider";
 import { Button } from "react-native";
 import { BottomModal, ModalContent, SlideAnimation } from "react-native-modals";
 import { MaterialIcons } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { createRefund } from "../../hook/paymongoService";
+import axios from "axios";
+import baseUrl from "../../assets/common/baseUrl";
+import Toast from "react-native-toast-message";
 
 const OrderDetails = () => {
   const route = useRoute();
   const { order } = route.params;
   const navigation = useNavigation();
   const [showCancelOrderModal, setShowCancelOrderModal] = useState(false);
+  const [reason, setReason] = useState("");
+  const [reasonError, setReasonError] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const cancelOrder = async () => {
+    setLoading(true);
+    if (!reason) {
+      setLoading(false);
+      setReasonError(true);
+    } else {
+      try {
+        const token = await AsyncStorage.getItem("token");
+        if (token) {
+          const config = {
+            headers: {
+              Authorization: `Bearer ${JSON.parse(token)}`,
+            },
+          };
+
+          if (
+            order.paymentStatus === "Paid" &&
+            order.paymentMethod === "gcash" &&
+            order.orderStatus === "Pending"
+          ) {
+            const amount = order.subTotal * 100;
+            const paymentId = order.paymentId;
+            const refundPayment = await createRefund(amount, reason, paymentId);
+            console.log(refundPayment);
+            if (refundPayment.data.attributes.status === "pending") {
+              await axios.post(
+                `${baseUrl}/api/orders/cancel`,
+                { orderId: order._id },
+                config
+              );
+              navigation.navigate("order-page");
+              Toast.show({
+                type: "success",
+                text1: "Success ✅",
+                text2: "Your order has been cancelled successfully",
+              });
+              setReason("");
+              setLoading(false);
+              setShowCancelOrderModal(false);
+            } else {
+              throw new Error("Failed to process refund");
+            }
+          } else if (
+            order.paymentStatus === "Pending" &&
+            order.orderStatus === "Pending"
+          ) {
+            await axios.post(
+              `${baseUrl}/api/orders/cancel`,
+              { orderId: order._id },
+              config
+            );
+            navigation.navigate("order-page");
+            Toast.show({
+              type: "success",
+              text1: "Success ✅",
+              text2: "Your order has been cancelled successfully",
+            });
+            setReason("");
+            setLoading(false);
+            setShowCancelOrderModal(false);
+          } else {
+            Toast.show({
+              type: "error",
+              text1: "Error ❌",
+              text2:
+                "You cannot cancel this order as it is not in a cancellable state",
+            });
+            setLoading(false);
+            setShowCancelOrderModal(false);
+          }
+        } else {
+          Toast.show({
+            type: "error",
+            text1: "Error ❌",
+            text2: "You must be logged in to cancel an order",
+          });
+        }
+      } catch (error) {
+        Toast.show({
+          type: "error",
+          text1: "Error ❌",
+          text2: error.message,
+        });
+      }
+    }
+  };
 
   return (
     <View>
@@ -450,10 +546,18 @@ const OrderDetails = () => {
 
       <BottomModal
         visible={showCancelOrderModal}
-        onTouchOutside={() => setShowCancelOrderModal(false)}
+        onTouchOutside={() => {
+          setShowCancelOrderModal(false);
+          setReason("");
+          setReasonError(false);
+        }}
         swipeThreshold={100}
         modalAnimation={new SlideAnimation({ slideFrom: "bottom" })}
-        onHardwareBackPress={() => setShowCancelOrderModal(false)}
+        onHardwareBackPress={() => {
+          setShowCancelOrderModal(false);
+          setReason("");
+          setReasonError(false);
+        }}
       >
         <View
           style={{
@@ -486,7 +590,9 @@ const OrderDetails = () => {
 
           <View
             style={[
-              styles.inputWrapper(COLORS.offwhite),
+              styles.inputWrapper(
+                reasonError ? COLORS.secondary : COLORS.offwhite
+              ),
               { height: 100, alignItems: "flex-start" },
             ]}
           >
@@ -497,28 +603,42 @@ const OrderDetails = () => {
               style={[styles.iconStyle, { marginTop: 13 }]}
             />
             <TextInput
-              style={[
-                styles.textInput,
-                {
-                  marginVertical: 5,
-                  marginTop: 15,
-                  fontFamily: "regular",
-                  marginLeft: 5,
-                },
-              ]}
+              style={{
+                marginVertical: 5,
+                marginTop: 15,
+                fontFamily: "regular",
+                marginLeft: 5,
+              }}
               placeholderTextColor={COLORS.gray}
               placeholder="Enter your reason here..."
-              numberOfLines={5}
+              numberOfLines={3}
+              value={reason}
+              onChangeText={(e) => {
+                setReason(e);
+                setReasonError(false);
+              }}
               multiline
             />
           </View>
+          {reasonError && (
+            <Text
+              style={{
+                fontFamily: "regular",
+                fontSize: 14,
+                color: COLORS.red,
+                mt: 1,
+              }}
+            >
+              *Please provide a reason for cancellation
+            </Text>
+          )}
           <TouchableOpacity
-            onPress={() => {}}
+            onPress={() => cancelOrder()}
             style={{
               backgroundColor: COLORS.primary,
               padding: 10,
               borderRadius: 15,
-              marginTop: 20,
+              marginTop: 10,
             }}
           >
             <Text
@@ -529,7 +649,13 @@ const OrderDetails = () => {
                 fontSize: 16,
               }}
             >
-              C A N C E L{"   "} O R D E R
+              {loading ? (
+                <ActivityIndicator
+                  style={{ color: COLORS.white, fontSize: 16 }}
+                />
+              ) : (
+                "C A N C E L    O R D E R"
+              )}
             </Text>
           </TouchableOpacity>
         </ModalContent>
