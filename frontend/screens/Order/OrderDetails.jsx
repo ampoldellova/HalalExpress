@@ -3,21 +3,25 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import BackBtn from "../../components/BackBtn";
-import { COLORS } from "../../styles/theme";
+import { COLORS, SIZES } from "../../styles/theme";
 import Octicons from "@expo/vector-icons/Octicons";
 import Divider from "../../components/Divider";
 import { Button } from "react-native";
+import { BottomModal, ModalContent, SlideAnimation } from "react-native-modals";
+import { MaterialIcons } from "@expo/vector-icons";
 
 const OrderDetails = () => {
   const route = useRoute();
   const { order } = route.params;
   const navigation = useNavigation();
+  const [showCancelOrderModal, setShowCancelOrderModal] = useState(false);
 
   return (
     <View>
@@ -106,11 +110,11 @@ const OrderDetails = () => {
                 style={{ marginTop: 20, flexDirection: "row", width: "100%" }}
               >
                 <Octicons name="location" size={20} color={COLORS.gray} />
-                <View style={{ marginLeft: 10 }}>
+                <View style={{ marginLeft: 10, width: "80%" }}>
                   <Text style={{ fontFamily: "regular", color: COLORS.gray }}>
                     To be delivered at:
                   </Text>
-                  <Text style={{ fontFamily: "medium", width: "80%" }}>
+                  <Text style={{ fontFamily: "medium" }}>
                     {order?.deliveryAddress}
                   </Text>
                 </View>
@@ -419,6 +423,7 @@ const OrderDetails = () => {
                 </Text>
 
                 <TouchableOpacity
+                  onPress={() => setShowCancelOrderModal(true)}
                   style={{
                     backgroundColor: COLORS.primary,
                     padding: 10,
@@ -442,6 +447,93 @@ const OrderDetails = () => {
           </View>
         </View>
       </ScrollView>
+
+      <BottomModal
+        visible={showCancelOrderModal}
+        onTouchOutside={() => setShowCancelOrderModal(false)}
+        swipeThreshold={100}
+        modalAnimation={new SlideAnimation({ slideFrom: "bottom" })}
+        onHardwareBackPress={() => setShowCancelOrderModal(false)}
+      >
+        <View
+          style={{
+            height: 10,
+            backgroundColor: COLORS.primary,
+            width: SIZES.width,
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <View
+            style={{
+              height: 3,
+              backgroundColor: COLORS.white,
+              width: SIZES.width / 5,
+              borderRadius: 10,
+            }}
+          />
+        </View>
+        <ModalContent style={{ height: SIZES.height / 2.5, width: "100%" }}>
+          <Text style={{ fontFamily: "bold", fontSize: 20, marginBottom: 5 }}>
+            Cancel this order?
+          </Text>
+          <Text
+            style={{ fontFamily: "regular", fontSize: 14, color: COLORS.gray }}
+          >
+            Are you sure you want to cancel this order? This action cannot be
+            undone.
+          </Text>
+
+          <View
+            style={[
+              styles.inputWrapper(COLORS.offwhite),
+              { height: 100, alignItems: "flex-start" },
+            ]}
+          >
+            <MaterialIcons
+              name="description"
+              size={20}
+              color={COLORS.gray}
+              style={[styles.iconStyle, { marginTop: 13 }]}
+            />
+            <TextInput
+              style={[
+                styles.textInput,
+                {
+                  marginVertical: 5,
+                  marginTop: 15,
+                  fontFamily: "regular",
+                  marginLeft: 5,
+                },
+              ]}
+              placeholderTextColor={COLORS.gray}
+              placeholder="Enter your reason here..."
+              numberOfLines={5}
+              multiline
+            />
+          </View>
+          <TouchableOpacity
+            onPress={() => {}}
+            style={{
+              backgroundColor: COLORS.primary,
+              padding: 10,
+              borderRadius: 15,
+              marginTop: 20,
+            }}
+          >
+            <Text
+              style={{
+                color: COLORS.white,
+                fontFamily: "bold",
+                textAlign: "center",
+                fontSize: 16,
+              }}
+            >
+              C A N C E L{"   "} O R D E R
+            </Text>
+          </TouchableOpacity>
+        </ModalContent>
+      </BottomModal>
     </View>
   );
 };
@@ -455,4 +547,15 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginTop: 10,
   },
+  inputWrapper: (borderColor) => ({
+    borderColor: borderColor,
+    backgroundColor: COLORS.lightWhite,
+    borderWidth: 1,
+    height: 50,
+    borderRadius: 12,
+    flexDirection: "row",
+    paddingHorizontal: 15,
+    alignItems: "center",
+    marginTop: 10,
+  }),
 });
