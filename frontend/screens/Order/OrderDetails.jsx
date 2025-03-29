@@ -32,6 +32,9 @@ const OrderDetails = () => {
   const [reason, setReason] = useState("");
   const [reasonError, setReasonError] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [rating, setRating] = useState(0);
+  const [feedback, setFeedback] = useState("");
+  const [ratingError, setRatingError] = useState(false);
 
   const cancelOrder = async () => {
     setLoading(true);
@@ -49,18 +52,18 @@ const OrderDetails = () => {
           };
 
           if (
-            order.paymentStatus === "Paid" &&
-            order.paymentMethod === "gcash" &&
-            order.orderStatus === "Pending"
+            order?.paymentStatus === "Paid" &&
+            order?.paymentMethod === "gcash" &&
+            order?.orderStatus === "Pending"
           ) {
-            const amount = order.subTotal * 100;
-            const paymentId = order.paymentId;
+            const amount = order?.subTotal * 100;
+            const paymentId = order?.paymentId;
             const refundPayment = await createRefund(amount, reason, paymentId);
             console.log(refundPayment);
             if (refundPayment.data.attributes.status === "pending") {
               await axios.post(
                 `${baseUrl}/api/orders/cancel`,
-                { orderId: order._id },
+                { orderId: order?._id },
                 config
               );
               navigation.navigate("order-page");
@@ -76,12 +79,12 @@ const OrderDetails = () => {
               throw new Error("Failed to process refund");
             }
           } else if (
-            order.paymentStatus === "Pending" &&
-            order.orderStatus === "Pending"
+            order?.paymentStatus === "Pending" &&
+            order?.orderStatus === "Pending"
           ) {
             await axios.post(
               `${baseUrl}/api/orders/cancel`,
-              { orderId: order._id },
+              { orderId: order?._id },
               config
             );
             navigation.navigate("order-page");
@@ -108,6 +111,54 @@ const OrderDetails = () => {
             type: "error",
             text1: "Error ❌",
             text2: "You must be logged in to cancel an order",
+          });
+        }
+      } catch (error) {
+        Toast.show({
+          type: "error",
+          text1: "Error ❌",
+          text2: error.message,
+        });
+      }
+    }
+  };
+
+  const submitRating = async () => {
+    setLoading(true);
+
+    if (rating === 0) {
+      setLoading(false);
+      setRatingError(true);
+    } else {
+      try {
+        const token = await AsyncStorage.getItem("token");
+        if (token) {
+          const config = {
+            headers: {
+              Authorization: `Bearer ${JSON.parse(token)}`,
+            },
+          };
+
+          await axios.post(
+            `${baseUrl}/api/orders/rate`,
+            { orderId: order?._id, stars: rating, feedback },
+            config
+          );
+          navigation.navigate("order-page");
+          Toast.show({
+            type: "success",
+            text1: "Success ✅",
+            text2: "Your feedback has been submitted successfully",
+          });
+          setRating(0);
+          setFeedback("");
+          setLoading(false);
+          setShowRateOrderModal(false);
+        } else {
+          Toast.show({
+            type: "error",
+            text1: "Error ❌",
+            text2: "You must be logged in to submit a rating",
           });
         }
       } catch (error) {
@@ -173,7 +224,7 @@ const OrderDetails = () => {
               </Text>
             </View>
 
-            {order.orderStatus === "Pending" && (
+            {order?.orderStatus === "Pending" && (
               <>
                 <Text
                   style={{
@@ -209,7 +260,7 @@ const OrderDetails = () => {
               </>
             )}
 
-            {order.orderStatus === "Preparing" && (
+            {order?.orderStatus === "Preparing" && (
               <Text
                 style={{
                   fontFamily: "regular",
@@ -222,8 +273,8 @@ const OrderDetails = () => {
               </Text>
             )}
 
-            {order.deliveryOption === "standard" &&
-              order.orderStatus === "Ready for pickup" && (
+            {order?.deliveryOption === "standard" &&
+              order?.orderStatus === "Ready for pickup" && (
                 <Text
                   style={{
                     fontFamily: "regular",
@@ -237,8 +288,8 @@ const OrderDetails = () => {
                 </Text>
               )}
 
-            {order.deliveryOption === "pickup" &&
-              order.orderStatus === "Ready for pickup" && (
+            {order?.deliveryOption === "pickup" &&
+              order?.orderStatus === "Ready for pickup" && (
                 <Text
                   style={{
                     fontFamily: "regular",
@@ -251,8 +302,8 @@ const OrderDetails = () => {
                 </Text>
               )}
 
-            {order.deliveryOption === "standard" &&
-              order.orderStatus === "Out for delivery" && (
+            {order?.deliveryOption === "standard" &&
+              order?.orderStatus === "Out for delivery" && (
                 <Text
                   style={{
                     fontFamily: "regular",
@@ -265,8 +316,8 @@ const OrderDetails = () => {
                 </Text>
               )}
 
-            {order.orderStatus === "cancelled by customer" &&
-              order.paymentStatus === "Refunded" && (
+            {order?.orderStatus === "cancelled by customer" &&
+              order?.paymentStatus === "Refunded" && (
                 <Text
                   style={{
                     fontFamily: "regular",
@@ -280,8 +331,8 @@ const OrderDetails = () => {
                 </Text>
               )}
 
-            {order.orderStatus === "cancelled by customer" &&
-              order.paymentStatus === "Cancelled" && (
+            {order?.orderStatus === "cancelled by customer" &&
+              order?.paymentStatus === "Cancelled" && (
                 <Text
                   style={{
                     fontFamily: "regular",
@@ -294,7 +345,7 @@ const OrderDetails = () => {
                 </Text>
               )}
 
-            {order.orderStatus === "Delivered" && (
+            {order?.orderStatus === "Delivered" && (
               <>
                 <Text
                   style={{
@@ -307,26 +358,53 @@ const OrderDetails = () => {
                   feedback about your order.
                 </Text>
 
-                <TouchableOpacity
-                  onPress={() => setShowRateOrderModal(true)}
-                  style={{
-                    backgroundColor: COLORS.primary,
-                    padding: 10,
-                    borderRadius: 15,
-                    marginTop: 10,
-                  }}
-                >
-                  <Text
+                {order?.orderStatus === "Delivered" &&
+                order?.rating?.status === "submitted" ? (
+                  <View
                     style={{
-                      color: COLORS.white,
-                      fontFamily: "bold",
-                      textAlign: "center",
-                      fontSize: 16,
+                      flexDirection: "row",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      marginTop: 5,
                     }}
                   >
-                    R A T E{"   "} O R D E R
-                  </Text>
-                </TouchableOpacity>
+                    <Text
+                      style={{
+                        fontFamily: "regular",
+                        fontSize: 12,
+                        color: COLORS.gray,
+                        marginTop: 5,
+                      }}
+                    >
+                      You rated this order {order?.rating?.stars} stars.
+                    </Text>
+                    <RatingInput
+                      rating={order?.rating?.stars}
+                      color={COLORS.primary}
+                    />
+                  </View>
+                ) : (
+                  <TouchableOpacity
+                    onPress={() => setShowRateOrderModal(true)}
+                    style={{
+                      backgroundColor: COLORS.primary,
+                      padding: 10,
+                      borderRadius: 15,
+                      marginTop: 10,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        color: COLORS.white,
+                        fontFamily: "bold",
+                        textAlign: "center",
+                        fontSize: 16,
+                      }}
+                    >
+                      R A T E{"   "} O R D E R
+                    </Text>
+                  </TouchableOpacity>
+                )}
               </>
             )}
           </View>
@@ -407,7 +485,7 @@ const OrderDetails = () => {
               </View>
             </View>
 
-            {order.deliveryOption === "standard" && (
+            {order?.deliveryOption === "standard" && (
               <View
                 style={{ marginTop: 20, flexDirection: "row", width: "100%" }}
               >
@@ -602,7 +680,7 @@ const OrderDetails = () => {
                   justifyContent: "space-between",
                 }}
               >
-                {order.paymentMethod === "cod" && (
+                {order?.paymentMethod === "cod" && (
                   <View style={{ flexDirection: "row", alignItems: "center" }}>
                     <Image
                       source={require("../../assets/images/COD.png")}
@@ -624,7 +702,7 @@ const OrderDetails = () => {
                   </View>
                 )}
 
-                {order.paymentMethod === "Pay at the counter" && (
+                {order?.paymentMethod === "Pay at the counter" && (
                   <View style={{ flexDirection: "row", alignItems: "center" }}>
                     <Image
                       source={require("../../assets/images/COD.png")}
@@ -646,7 +724,7 @@ const OrderDetails = () => {
                   </View>
                 )}
 
-                {order.paymentMethod === "gcash" && (
+                {order?.paymentMethod === "gcash" && (
                   <View style={{ flexDirection: "row", alignItems: "center" }}>
                     <Image
                       source={require("../../assets/images/gcash.png")}
@@ -780,7 +858,8 @@ const OrderDetails = () => {
             >
               {loading ? (
                 <ActivityIndicator
-                  style={{ color: COLORS.white, fontSize: 16 }}
+                  style={{ fontSize: 16 }}
+                  color={COLORS.white}
                 />
               ) : (
                 "C A N C E L    O R D E R"
@@ -794,11 +873,15 @@ const OrderDetails = () => {
         visible={showRateOrderModal}
         onTouchOutside={() => {
           setShowRateOrderModal(false);
+          setRatingError(false);
+          setRating(0);
         }}
         swipeThreshold={100}
         modalAnimation={new SlideAnimation({ slideFrom: "bottom" })}
         onHardwareBackPress={() => {
           setShowRateOrderModal(false);
+          setRatingError(false);
+          setRating(0);
         }}
       >
         <View
@@ -819,7 +902,7 @@ const OrderDetails = () => {
             }}
           />
         </View>
-        <ModalContent style={{ height: SIZES.height / 2.5, width: "100%" }}>
+        <ModalContent style={{ height: SIZES.height / 2.3, width: "100%" }}>
           <View
             style={{
               flexDirection: "row",
@@ -831,7 +914,13 @@ const OrderDetails = () => {
               Rate this order
             </Text>
 
-            <RatingInput rating={0} size={30} />
+            <RatingInput
+              rating={rating}
+              setRating={setRating}
+              size={30}
+              maxStars={5}
+              color={COLORS.primary}
+            />
           </View>
           <Text
             style={{ fontFamily: "regular", fontSize: 14, color: COLORS.gray }}
@@ -864,12 +953,29 @@ const OrderDetails = () => {
               placeholderTextColor={COLORS.gray}
               placeholder="Enter your feedback here..."
               numberOfLines={3}
+              value={feedback}
+              onChangeText={(e) => {
+                setFeedback(e);
+              }}
               multiline
             />
           </View>
 
+          {ratingError && (
+            <Text
+              style={{
+                fontFamily: "regular",
+                fontSize: 14,
+                color: COLORS.red,
+                mt: 1,
+              }}
+            >
+              *Please input atleast a rating
+            </Text>
+          )}
+
           <TouchableOpacity
-            onPress={() => {}}
+            onPress={() => submitRating()}
             style={{
               backgroundColor: COLORS.primary,
               padding: 10,
@@ -887,10 +993,11 @@ const OrderDetails = () => {
             >
               {loading ? (
                 <ActivityIndicator
-                  style={{ color: COLORS.white, fontSize: 16 }}
+                  style={{ fontSize: 16 }}
+                  color={COLORS.white}
                 />
               ) : (
-                "R A T E    O R D E R"
+                "S U B M I T"
               )}
             </Text>
           </TouchableOpacity>

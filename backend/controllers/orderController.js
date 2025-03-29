@@ -118,4 +118,42 @@ module.exports = {
       res.status(500).json({ status: false, message: error });
     }
   },
+
+  submitRating: async (req, res) => {
+    const { orderId, stars, feedback } = req.body;
+
+    try {
+      const order = await Order.findById(orderId);
+
+      if (!order) {
+        return res
+          .status(404)
+          .json({ status: false, message: "Order not found" });
+      }
+
+      if (order.rating.status === "submitted") {
+        return res.status(400).json({
+          status: false,
+          message: "Rating has already been submitted",
+        });
+      }
+
+      order.rating = {
+        stars,
+        feedback,
+        status: "submitted",
+      };
+
+      await order.save();
+
+      res.status(200).json({
+        status: true,
+        message: "Rating submitted successfully",
+        order,
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ status: false, message: error.message });
+    }
+  },
 };
