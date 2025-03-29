@@ -23,7 +23,7 @@ import Toast from "react-native-toast-message";
 import baseUrl from "../../assets/common/baseUrl";
 import { COLORS, SIZES } from "../../styles/theme";
 import Loader from "../../components/Loader";
-import Fontisto from "react-native-vector-icons/Fontisto";
+import { RatingInput } from "react-native-stock-star-rating";
 import Heading from "../../components/Heading";
 
 const OrderPage = () => {
@@ -314,43 +314,99 @@ const OrderPage = () => {
                             <Text style={{ fontFamily: "bold", fontSize: 16 }}>
                               {item?.restaurant?.title}
                             </Text>
-                            {item?.orderStatus === "Delivered" && (
-                              <View>
-                                <Text
+
+                            <View
+                              style={{
+                                flexDirection: "row",
+                                alignItems: "center",
+                              }}
+                            >
+                              <Text
+                                style={{
+                                  color: COLORS.gray,
+                                  fontSize: 12,
+                                  fontFamily: "regular",
+                                }}
+                              >
+                                Rating:
+                              </Text>
+
+                              {item?.rating?.status === "pending" ? (
+                                <View
                                   style={{
-                                    color: COLORS.gray,
-                                    fontSize: 12,
-                                    fontFamily: "regular",
+                                    marginLeft: 5,
+                                    flexDirection: "row",
+                                    alignItems: "center",
                                   }}
                                 >
-                                  Ordered on:
-                                </Text>
-                                <Text
-                                  style={{
-                                    color: COLORS.gray,
-                                    fontSize: 12,
-                                    fontFamily: "regular",
-                                  }}
+                                  <View
+                                    style={{
+                                      height: 10,
+                                      width: 10,
+                                      borderRadius: 99,
+                                      backgroundColor: COLORS.secondary,
+                                    }}
+                                  />
+                                  <Text
+                                    style={{
+                                      marginLeft: 3,
+                                      fontFamily: "bold",
+                                      fontSize: 12,
+                                    }}
+                                  >
+                                    Pending
+                                  </Text>
+                                </View>
+                              ) : (
+                                <View
+                                  pointerEvents="none"
+                                  style={{ marginLeft: 5, marginTop: -5 }}
                                 >
-                                  {new Date(item?.createdAt).toLocaleDateString(
-                                    "en-US",
-                                    {
-                                      month: "long",
-                                      day: "numeric",
-                                    }
-                                  )}{" "}
-                                  at{" "}
-                                  {new Date(item?.createdAt).toLocaleTimeString(
-                                    "en-US",
-                                    {
-                                      hour: "numeric",
-                                      minute: "2-digit",
-                                      hour12: true,
-                                    }
-                                  )}
-                                </Text>
-                              </View>
-                            )}
+                                  <RatingInput
+                                    rating={item?.rating?.stars}
+                                    color={COLORS.primary}
+                                    size={15}
+                                  />
+                                </View>
+                              )}
+                            </View>
+
+                            <View>
+                              <Text
+                                style={{
+                                  color: COLORS.gray,
+                                  fontSize: 12,
+                                  fontFamily: "regular",
+                                  marginTop: 5,
+                                }}
+                              >
+                                Ordered on:
+                              </Text>
+                              <Text
+                                style={{
+                                  color: COLORS.gray,
+                                  fontSize: 12,
+                                  fontFamily: "regular",
+                                }}
+                              >
+                                {new Date(item?.createdAt).toLocaleDateString(
+                                  "en-US",
+                                  {
+                                    month: "long",
+                                    day: "numeric",
+                                  }
+                                )}{" "}
+                                at{" "}
+                                {new Date(item?.createdAt).toLocaleTimeString(
+                                  "en-US",
+                                  {
+                                    hour: "numeric",
+                                    minute: "2-digit",
+                                    hour12: true,
+                                  }
+                                )}
+                              </Text>
+                            </View>
 
                             <FlatList
                               data={item?.orderItems}
