@@ -21,12 +21,14 @@ import { createRefund } from "../../hook/paymongoService";
 import axios from "axios";
 import baseUrl from "../../assets/common/baseUrl";
 import Toast from "react-native-toast-message";
+import { RatingInput } from "react-native-stock-star-rating";
 
 const OrderDetails = () => {
   const route = useRoute();
   const { order } = route.params;
   const navigation = useNavigation();
   const [showCancelOrderModal, setShowCancelOrderModal] = useState(false);
+  const [showRateOrderModal, setShowRateOrderModal] = useState(false);
   const [reason, setReason] = useState("");
   const [reasonError, setReasonError] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -165,6 +167,8 @@ const OrderDetails = () => {
               >
                 {order?.orderStatus === "cancelled by customer"
                   ? "Cancelled by you"
+                  : order?.orderStatus === "Delivered"
+                  ? "Delivered ✔"
                   : order?.orderStatus}
               </Text>
             </View>
@@ -289,6 +293,42 @@ const OrderDetails = () => {
                   questions, please contact the restaurant.
                 </Text>
               )}
+
+            {order.orderStatus === "Delivered" && (
+              <>
+                <Text
+                  style={{
+                    fontFamily: "regular",
+                    fontSize: 12,
+                    color: COLORS.gray,
+                  }}
+                >
+                  Your order has been delivered! Please leave us a review and
+                  feedback about your order.
+                </Text>
+
+                <TouchableOpacity
+                  onPress={() => setShowRateOrderModal(true)}
+                  style={{
+                    backgroundColor: COLORS.primary,
+                    padding: 10,
+                    borderRadius: 15,
+                    marginTop: 10,
+                  }}
+                >
+                  <Text
+                    style={{
+                      color: COLORS.white,
+                      fontFamily: "bold",
+                      textAlign: "center",
+                      fontSize: 16,
+                    }}
+                  >
+                    R A T E{"   "} O R D E R
+                  </Text>
+                </TouchableOpacity>
+              </>
+            )}
           </View>
 
           <View
@@ -744,6 +784,113 @@ const OrderDetails = () => {
                 />
               ) : (
                 "C A N C E L    O R D E R"
+              )}
+            </Text>
+          </TouchableOpacity>
+        </ModalContent>
+      </BottomModal>
+
+      <BottomModal
+        visible={showRateOrderModal}
+        onTouchOutside={() => {
+          setShowRateOrderModal(false);
+        }}
+        swipeThreshold={100}
+        modalAnimation={new SlideAnimation({ slideFrom: "bottom" })}
+        onHardwareBackPress={() => {
+          setShowRateOrderModal(false);
+        }}
+      >
+        <View
+          style={{
+            height: 10,
+            backgroundColor: COLORS.primary,
+            width: SIZES.width,
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <View
+            style={{
+              height: 3,
+              backgroundColor: COLORS.white,
+              width: SIZES.width / 5,
+              borderRadius: 10,
+            }}
+          />
+        </View>
+        <ModalContent style={{ height: SIZES.height / 2.5, width: "100%" }}>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
+            <Text style={{ fontFamily: "bold", fontSize: 20, marginTop: 10 }}>
+              Rate this order
+            </Text>
+
+            <RatingInput rating={0} size={30} />
+          </View>
+          <Text
+            style={{ fontFamily: "regular", fontSize: 14, color: COLORS.gray }}
+          >
+            Please rate your order and leave a review. Your feedback is
+            important to us. Thank you!
+          </Text>
+
+          <View
+            style={[
+              styles.inputWrapper(
+                reasonError ? COLORS.secondary : COLORS.offwhite
+              ),
+              { height: 100, alignItems: "flex-start" },
+            ]}
+          >
+            <MaterialIcons
+              name="description"
+              size={20}
+              color={COLORS.gray}
+              style={[styles.iconStyle, { marginTop: 13 }]}
+            />
+            <TextInput
+              style={{
+                marginVertical: 5,
+                marginTop: 15,
+                fontFamily: "regular",
+                marginLeft: 5,
+              }}
+              placeholderTextColor={COLORS.gray}
+              placeholder="Enter your feedback here..."
+              numberOfLines={3}
+              multiline
+            />
+          </View>
+
+          <TouchableOpacity
+            onPress={() => {}}
+            style={{
+              backgroundColor: COLORS.primary,
+              padding: 10,
+              borderRadius: 15,
+              marginTop: 10,
+            }}
+          >
+            <Text
+              style={{
+                color: COLORS.white,
+                fontFamily: "bold",
+                textAlign: "center",
+                fontSize: 16,
+              }}
+            >
+              {loading ? (
+                <ActivityIndicator
+                  style={{ color: COLORS.white, fontSize: 16 }}
+                />
+              ) : (
+                "R A T E    O R D E R"
               )}
             </Text>
           </TouchableOpacity>

@@ -283,6 +283,11 @@ const OrderPage = () => {
                     keyExtractor={(item) => item._id}
                     renderItem={({ item }) => (
                       <TouchableOpacity
+                        onPress={() =>
+                          navigation.navigate("order-details-page", {
+                            order: item,
+                          })
+                        }
                         style={{
                           marginVertical: 10,
                           borderRadius: 15,
