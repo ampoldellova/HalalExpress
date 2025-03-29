@@ -14,7 +14,6 @@ import BackBtn from "../../components/BackBtn";
 import { COLORS, SIZES } from "../../styles/theme";
 import Octicons from "@expo/vector-icons/Octicons";
 import Divider from "../../components/Divider";
-import { Button } from "react-native";
 import { BottomModal, ModalContent, SlideAnimation } from "react-native-modals";
 import { MaterialIcons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -152,6 +151,8 @@ const OrderDetails = () => {
                   backgroundColor:
                     order?.orderStatus === "Pending"
                       ? COLORS.gray2
+                      : order?.orderStatus === "cancelled by customer"
+                      ? COLORS.gray2
                       : order?.orderStatus === "Preparing"
                       ? COLORS.secondary
                       : order?.orderStatus === "Ready for pickup"
@@ -162,7 +163,9 @@ const OrderDetails = () => {
                   borderRadius: 15,
                 }}
               >
-                {order?.orderStatus}
+                {order?.orderStatus === "cancelled by customer"
+                  ? "Cancelled by Customer"
+                  : order?.orderStatus}
               </Text>
             </View>
 
@@ -255,6 +258,35 @@ const OrderDetails = () => {
                 >
                   Your order is out for delivery! The restaurant's in-house
                   delivery rider is on the way to deliver your order to you.
+                </Text>
+              )}
+
+            {order.orderStatus === "cancelled by customer" &&
+              order.paymentStatus === "Refunded" && (
+                <Text
+                  style={{
+                    fontFamily: "regular",
+                    fontSize: 12,
+                    color: COLORS.gray,
+                  }}
+                >
+                  This order has been cancelled by you. If you have any
+                  questions, please contact the restaurant. Refund will be
+                  processed within 3-5 business days.
+                </Text>
+              )}
+
+            {order.orderStatus === "cancelled by customer" &&
+              order.paymentStatus === "Cancelled" && (
+                <Text
+                  style={{
+                    fontFamily: "regular",
+                    fontSize: 12,
+                    color: COLORS.gray,
+                  }}
+                >
+                  This order has been cancelled by you. If you have any
+                  questions, please contact the restaurant.
                 </Text>
               )}
           </View>
