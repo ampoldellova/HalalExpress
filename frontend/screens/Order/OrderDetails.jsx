@@ -360,29 +360,46 @@ const OrderDetails = () => {
 
                 {order?.orderStatus === "Delivered" &&
                 order?.rating?.status === "submitted" ? (
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      marginTop: 5,
-                    }}
-                  >
-                    <Text
+                  <>
+                    <View
                       style={{
-                        fontFamily: "regular",
-                        fontSize: 12,
-                        color: COLORS.gray,
+                        flexDirection: "row",
+                        alignItems: "center",
+                        justifyContent: "space-between",
                         marginTop: 5,
                       }}
                     >
-                      You rated this order {order?.rating?.stars} stars.
-                    </Text>
-                    <RatingInput
-                      rating={order?.rating?.stars}
-                      color={COLORS.primary}
-                    />
-                  </View>
+                      <Text
+                        style={{
+                          fontFamily: "regular",
+                          fontSize: 12,
+                          color: COLORS.gray,
+                          marginTop: 5,
+                        }}
+                      >
+                        You rated this order {order?.rating?.stars} stars.
+                      </Text>
+                      <View style={{ marginTop: -3 }}>
+                        <RatingInput
+                          rating={order?.rating?.stars}
+                          color={COLORS.primary}
+                        />
+                      </View>
+                    </View>
+
+                    {order?.rating?.feedback && (
+                      <Text
+                        style={{
+                          fontFamily: "regular",
+                          fontSize: 12,
+                          color: COLORS.gray,
+                          marginTop: 5,
+                        }}
+                      >
+                        You commented: {order?.rating?.feedback}
+                      </Text>
+                    )}
+                  </>
                 ) : (
                   <TouchableOpacity
                     onPress={() => setShowRateOrderModal(true)}
@@ -875,6 +892,7 @@ const OrderDetails = () => {
           setShowRateOrderModal(false);
           setRatingError(false);
           setRating(0);
+          setFeedback("");
         }}
         swipeThreshold={100}
         modalAnimation={new SlideAnimation({ slideFrom: "bottom" })}
@@ -882,6 +900,7 @@ const OrderDetails = () => {
           setShowRateOrderModal(false);
           setRatingError(false);
           setRating(0);
+          setFeedback("");
         }}
       >
         <View
@@ -932,7 +951,7 @@ const OrderDetails = () => {
           <View
             style={[
               styles.inputWrapper(
-                reasonError ? COLORS.secondary : COLORS.offwhite
+                ratingError ? COLORS.secondary : COLORS.offwhite
               ),
               { height: 100, alignItems: "flex-start" },
             ]}
@@ -949,10 +968,11 @@ const OrderDetails = () => {
                 marginTop: 15,
                 fontFamily: "regular",
                 marginLeft: 5,
+                marginRight: 15,
               }}
               placeholderTextColor={COLORS.gray}
               placeholder="Enter your feedback here..."
-              numberOfLines={3}
+              numberOfLines={4}
               value={feedback}
               onChangeText={(e) => {
                 setFeedback(e);
