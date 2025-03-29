@@ -10,13 +10,10 @@ import {
   View,
 } from "react-native";
 import React, { useContext, useEffect, useState } from "react";
-import { CartCountContext } from "../../contexts/CartCountContext";
 import { COLORS, SIZES } from "../../styles/theme";
 import { Entypo, AntDesign } from "@expo/vector-icons";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
 import Counter from "../../components/Cart/Counter";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { RatingInput } from "react-native-stock-star-rating";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import baseUrl from "../../assets/common/baseUrl";
@@ -31,7 +28,6 @@ const FoodPage = ({ route, navigation }) => {
   const [preference, setPreference] = useState("");
   const dispatch = useDispatch();
   const { cartCount } = useSelector((state) => state.user);
-  const user = useSelector((state) => state.user);
 
   const handleAdditives = (newAdditives) => {
     setAdditives((prevAdditives) => {
@@ -194,7 +190,7 @@ const FoodPage = ({ route, navigation }) => {
             onChangeText={(value) => setPreference(value)}
             autoCapitalize={false}
             autoCorrect={false}
-            style={{ flex: 1 }}
+            style={{ flex: 1, fontFamily: "regular", color: COLORS.black }}
           />
         </View>
 
@@ -324,9 +320,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
   suspended: {
-    // position: 'absolute',
-    // zIndex: 999,
-    // bottom: 50,
     width: "100%",
     alignItems: "center",
   },
