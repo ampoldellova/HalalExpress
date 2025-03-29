@@ -164,7 +164,7 @@ const OrderDetails = () => {
                 }}
               >
                 {order?.orderStatus === "cancelled by customer"
-                  ? "Cancelled by Customer"
+                  ? "Cancelled by you"
                   : order?.orderStatus}
               </Text>
             </View>

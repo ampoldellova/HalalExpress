@@ -167,7 +167,7 @@ const OrderPage = () => {
                     renderItem={({ item }) => (
                       <TouchableOpacity
                         style={{
-                          marginVertical: 10,
+                          marginBottom: 10,
                           borderRadius: 15,
                           boxShadow: "0px 0px 3px rgba(0, 0, 0, 0.1)",
                           padding: 10,
@@ -391,7 +391,7 @@ const OrderPage = () => {
                           })
                         }
                         style={{
-                          marginVertical: 10,
+                          marginBottom: 10,
                           borderRadius: 15,
                           boxShadow: "0px 0px 3px rgba(0, 0, 0, 0.1)",
                           padding: 10,
@@ -416,43 +416,41 @@ const OrderPage = () => {
                             <Text style={{ fontFamily: "bold", fontSize: 16 }}>
                               {item?.restaurant?.title}
                             </Text>
-                            {item?.orderStatus === "Delivered" && (
-                              <View>
-                                <Text
-                                  style={{
-                                    color: COLORS.gray,
-                                    fontSize: 12,
-                                    fontFamily: "regular",
-                                  }}
-                                >
-                                  Ordered on:
-                                </Text>
-                                <Text
-                                  style={{
-                                    color: COLORS.gray,
-                                    fontSize: 12,
-                                    fontFamily: "regular",
-                                  }}
-                                >
-                                  {new Date(item?.createdAt).toLocaleDateString(
-                                    "en-US",
-                                    {
-                                      month: "long",
-                                      day: "numeric",
-                                    }
-                                  )}{" "}
-                                  at{" "}
-                                  {new Date(item?.createdAt).toLocaleTimeString(
-                                    "en-US",
-                                    {
-                                      hour: "numeric",
-                                      minute: "2-digit",
-                                      hour12: true,
-                                    }
-                                  )}
-                                </Text>
-                              </View>
-                            )}
+                            <View>
+                              <Text
+                                style={{
+                                  color: COLORS.gray,
+                                  fontSize: 12,
+                                  fontFamily: "regular",
+                                }}
+                              >
+                                Ordered on:
+                              </Text>
+                              <Text
+                                style={{
+                                  color: COLORS.gray,
+                                  fontSize: 12,
+                                  fontFamily: "regular",
+                                }}
+                              >
+                                {new Date(item?.createdAt).toLocaleDateString(
+                                  "en-US",
+                                  {
+                                    month: "long",
+                                    day: "numeric",
+                                  }
+                                )}{" "}
+                                at{" "}
+                                {new Date(item?.createdAt).toLocaleTimeString(
+                                  "en-US",
+                                  {
+                                    hour: "numeric",
+                                    minute: "2-digit",
+                                    hour12: true,
+                                  }
+                                )}
+                              </Text>
+                            </View>
 
                             <FlatList
                               data={item?.orderItems}
