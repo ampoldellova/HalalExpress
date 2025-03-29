@@ -125,6 +125,7 @@ const OrderDetails = () => {
         <View style={{ marginHorizontal: 20 }}>
           <BackBtn onPress={() => navigation.goBack()} />
           <Text style={styles.heading}>Order Details</Text>
+
           <View
             style={{
               borderColor: COLORS.gray2,
@@ -132,6 +133,139 @@ const OrderDetails = () => {
               padding: 10,
               marginTop: 10,
               backgroundColor: COLORS.white,
+            }}
+          >
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <Text style={{ fontFamily: "bold", fontSize: 18 }}>
+                Order Status
+              </Text>
+              <Text
+                style={{
+                  fontFamily: "bold",
+                  fontSize: 12,
+                  backgroundColor:
+                    order?.orderStatus === "Pending"
+                      ? COLORS.gray2
+                      : order?.orderStatus === "Preparing"
+                      ? COLORS.secondary
+                      : order?.orderStatus === "Ready for pickup"
+                      ? COLORS.tertiary
+                      : COLORS.primary,
+                  color: COLORS.white,
+                  paddingHorizontal: 10,
+                  borderRadius: 15,
+                }}
+              >
+                {order?.orderStatus}
+              </Text>
+            </View>
+
+            {order.orderStatus === "Pending" && (
+              <>
+                <Text
+                  style={{
+                    fontFamily: "regular",
+                    fontSize: 12,
+                    color: COLORS.gray,
+                  }}
+                >
+                  Your order is pending. Please wait for the restaurant to
+                  confirm your order.
+                </Text>
+
+                <TouchableOpacity
+                  onPress={() => setShowCancelOrderModal(true)}
+                  style={{
+                    backgroundColor: COLORS.primary,
+                    padding: 10,
+                    borderRadius: 15,
+                    marginTop: 10,
+                  }}
+                >
+                  <Text
+                    style={{
+                      color: COLORS.white,
+                      fontFamily: "bold",
+                      textAlign: "center",
+                      fontSize: 16,
+                    }}
+                  >
+                    C A N C E L{"   "} O R D E R
+                  </Text>
+                </TouchableOpacity>
+              </>
+            )}
+
+            {order.orderStatus === "Preparing" && (
+              <Text
+                style={{
+                  fontFamily: "regular",
+                  fontSize: 12,
+                  color: COLORS.gray,
+                }}
+              >
+                The restaurant is preparing your order. Please wait for the
+                restaurant to finish your order.
+              </Text>
+            )}
+
+            {order.deliveryOption === "standard" &&
+              order.orderStatus === "Ready for pickup" && (
+                <Text
+                  style={{
+                    fontFamily: "regular",
+                    fontSize: 12,
+                    color: COLORS.gray,
+                  }}
+                >
+                  Your order is prepared and ready for pickup! The restaurant's
+                  in-house delivery rider will be arriving shortly to collect
+                  and deliver it to you.
+                </Text>
+              )}
+
+            {order.deliveryOption === "pickup" &&
+              order.orderStatus === "Ready for pickup" && (
+                <Text
+                  style={{
+                    fontFamily: "regular",
+                    fontSize: 12,
+                    color: COLORS.gray,
+                  }}
+                >
+                  Your order is prepared and ready for pickup! Please head to
+                  the restaurant to collect your order.
+                </Text>
+              )}
+
+            {order.deliveryOption === "standard" &&
+              order.orderStatus === "Out for delivery" && (
+                <Text
+                  style={{
+                    fontFamily: "regular",
+                    fontSize: 12,
+                    color: COLORS.gray,
+                  }}
+                >
+                  Your order is out for delivery! The restaurant's in-house
+                  delivery rider is on the way to deliver your order to you.
+                </Text>
+              )}
+          </View>
+
+          <View
+            style={{
+              borderColor: COLORS.gray2,
+              borderRadius: 15,
+              padding: 10,
+              backgroundColor: COLORS.white,
+              marginTop: 10,
             }}
           >
             <View style={{ flexDirection: "row" }}>
@@ -225,6 +359,7 @@ const OrderDetails = () => {
               padding: 10,
               marginTop: 10,
               backgroundColor: COLORS.white,
+              marginBottom: 20,
             }}
           >
             <Text style={{ fontFamily: "bold", fontSize: 18 }}>
@@ -462,84 +597,6 @@ const OrderDetails = () => {
                 )}
               </View>
             </View>
-          </View>
-
-          <View
-            style={{
-              borderColor: COLORS.gray2,
-              borderRadius: 15,
-              padding: 10,
-              marginTop: 10,
-              backgroundColor: COLORS.white,
-              marginBottom: 20,
-            }}
-          >
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
-            >
-              <Text style={{ fontFamily: "bold", fontSize: 18 }}>
-                Order Status
-              </Text>
-              <Text
-                style={{
-                  fontFamily: "bold",
-                  fontSize: 12,
-                  backgroundColor:
-                    order?.orderStatus === "Pending"
-                      ? COLORS.gray2
-                      : order?.orderStatus === "Preparing"
-                      ? COLORS.secondary
-                      : order?.orderStatus === "Ready for pickup"
-                      ? COLORS.tertiary
-                      : COLORS.primary,
-                  color: COLORS.white,
-                  paddingHorizontal: 10,
-                  borderRadius: 15,
-                }}
-              >
-                {order?.orderStatus}
-              </Text>
-            </View>
-
-            {order.orderStatus === "Pending" && (
-              <>
-                <Text
-                  style={{
-                    fontFamily: "regular",
-                    fontSize: 12,
-                    color: COLORS.gray,
-                  }}
-                >
-                  Your order is pending. Please wait for the restaurant to
-                  confirm your order.
-                </Text>
-
-                <TouchableOpacity
-                  onPress={() => setShowCancelOrderModal(true)}
-                  style={{
-                    backgroundColor: COLORS.primary,
-                    padding: 10,
-                    borderRadius: 15,
-                    marginTop: 10,
-                  }}
-                >
-                  <Text
-                    style={{
-                      color: COLORS.white,
-                      fontFamily: "bold",
-                      textAlign: "center",
-                      fontSize: 16,
-                    }}
-                  >
-                    C A N C E L{"   "} O R D E R
-                  </Text>
-                </TouchableOpacity>
-              </>
-            )}
           </View>
         </View>
       </ScrollView>
