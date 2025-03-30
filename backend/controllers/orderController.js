@@ -1,5 +1,7 @@
+const { Expo } = require("expo-server-sdk");
 const Order = require("../models/Order");
 const Cart = require("../models/Cart");
+const User = require("../models/User");
 
 module.exports = {
   checkoutOrder: async (req, res) => {
@@ -49,6 +51,30 @@ module.exports = {
       cart.cartItems = [];
       cart.totalAmount = 0;
       await cart.save();
+
+      const message = `Order placed successfully! Total: ${totalAmount.toFixed(
+        2
+      )}. Products: ${orderItems.foodId}`;
+
+      const user = await User.findById(req.user.id);
+      const expo = new Expo();
+      const pushToken = user.notificationToken;
+      console.log(pushToken);
+
+      if (Expo.isExpoPushToken(pushToken)) {
+        const messages = [
+          {
+            to: pushToken,
+            sound: "default",
+            body: message,
+            data: newOrder,
+          },
+        ];
+
+        await expo.sendPushNotificationsAsync(messages);
+      } else {
+        console.error("Invalid Expo push token:", pushToken);
+      }
 
       res.status(200).json({
         status: true,
