@@ -146,6 +146,24 @@ module.exports = {
 
       await order.save();
 
+      const restaurant = order.restaurant;
+      if (!restaurant) {
+        return res
+          .status(404)
+          .json({ status: false, message: "Restaurant not found" });
+      }
+
+      const currentRating = restaurant.rating || 0;
+      const currentRatingCount = parseInt(restaurant.ratingCount || 0);
+
+      const newRatingCount = currentRatingCount + 1;
+      const newRating =
+        (currentRating * currentRatingCount + stars) / newRatingCount;
+
+      restaurant.rating = newRating;
+      restaurant.ratingCount = newRatingCount.toString();
+      await restaurant.save();
+
       res.status(200).json({
         status: true,
         message: "Rating submitted successfully",

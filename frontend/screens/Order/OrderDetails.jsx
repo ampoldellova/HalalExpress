@@ -379,7 +379,7 @@ const OrderDetails = () => {
                       >
                         You rated this order {order?.rating?.stars} stars.
                       </Text>
-                      <View style={{ marginTop: -3 }}>
+                      <View pointerEvents="none" style={{ marginTop: -3 }}>
                         <RatingInput
                           rating={order?.rating?.stars}
                           color={COLORS.primary}
