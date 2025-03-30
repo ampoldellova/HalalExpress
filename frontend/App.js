@@ -48,11 +48,12 @@ import { ModalPortal } from "react-native-modals";
 import PaymentConfirmationPage from "./screens/PaymentConfirmationPage";
 import OrderPage from "./screens/Cart/OrderPage";
 import OrderDetails from "./screens/Order/OrderDetails";
+import { registerForPushNotificationsAsync } from "./notificationPermission";
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
-  const [login, setLogin] = useState(null);
+  const [login, setLogin] = useState(false);
   const [location, setLocation] = useState(null);
   const [address, setAddress] = useState(null);
   const [cartCount, setCartCount] = useState(0);
@@ -89,6 +90,15 @@ export default function App() {
     }
   }, [fontsLoaded]);
 
+  const loginStatus = async () => {
+    const userToken = await AsyncStorage.getItem("token");
+    if (userToken !== null) {
+      setLogin(true);
+    } else {
+      setLogin(false);
+    }
+  };
+
   useEffect(() => {
     (async () => {
       setAddress(defaultAddresss);
@@ -102,17 +112,11 @@ export default function App() {
       let location = await Location.getCurrentPositionAsync({});
       setLocation(location);
       loginStatus();
-    })();
-  }, []);
 
-  const loginStatus = async () => {
-    const userToken = await AsyncStorage.getItem("token");
-    if (userToken !== null) {
-      setLogin(true);
-    } else {
-      setLogin(false);
-    }
-  };
+      const pushToken = await registerForPushNotificationsAsync(login);
+      console.log("Push Notification Token:", pushToken);
+    })();
+  }, [login]);
 
   return (
     <Provider store={store}>
