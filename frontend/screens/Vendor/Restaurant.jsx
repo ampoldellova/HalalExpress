@@ -54,12 +54,6 @@ const Restaurant = ({ navigation }) => {
         <View style={styles.rating}>
           <View pointerEvents="none" style={styles.innerRating}>
             <RatingInput rating={Number(item.rating)} size={22} />
-            <TouchableOpacity
-              style={styles.ratingBtn}
-              onPress={() => navigation.navigate("rating")}
-            >
-              <Text style={styles.btnText}>Rate this store</Text>
-            </TouchableOpacity>
           </View>
         </View>
       </View>
