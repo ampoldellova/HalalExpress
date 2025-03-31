@@ -219,7 +219,11 @@ const FoodPage = ({ route, navigation }) => {
               </TouchableOpacity>
 
               <TouchableOpacity
-                onPress={() => {}}
+                onPress={() =>
+                  navigation.navigate("bottom-navigation", {
+                    screen: "CartPage",
+                  })
+                }
                 style={{
                   backgroundColor: COLORS.primary,
                   paddingHorizontal: 60,
