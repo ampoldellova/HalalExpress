@@ -156,7 +156,7 @@ const VendorSearchPage = () => {
                         <ScrollView style={{ paddingBottom: 20 }}>
                             {searchCategory === "ingredients" &&
                                 filteredIngredients.map((item, i) => (
-                                    <SearchedProduct key={i} item={item} onPress={() => navigation.navigate('ingredient-nav', item)} />
+                                    <SearchedProduct key={i} item={item} onPress={() => navigation.navigate('product-navigator', item)} />
                                 ))}
                             {searchCategory === "suppliers" &&
                                 filteredSuppliers.map((item, i) => (

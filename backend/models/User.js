@@ -11,11 +11,6 @@ const UserSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
-    uid: {
-      type: String,
-      required: true,
-      unique: true,
-    },
     password: {
       type: String,
       required: true,
@@ -24,15 +19,15 @@ const UserSchema = new mongoose.Schema(
       {
         latitude: {
           type: Number,
-          required: true,
+          default: "",
         },
         longitude: {
           type: Number,
-          required: true,
+          default: "",
         },
         address: {
           type: String,
-          required: true,
+          default: "",
         },
       },
     ],

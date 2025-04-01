@@ -42,69 +42,31 @@ const SignUp = ({ navigation }) => {
   const animation = useRef(null);
   const [loader, setLoader] = useState(false);
   const [obsecureText, setObsecureText] = useState(false);
-  const { login, setLogin } = useContext(LoginContext)
+  const { login, setLogin } = useContext(LoginContext);
 
   const inValidForm = () => {
-    Alert.alert("Invalid Form", "Please provide all required fields", [
-      {
-        text: "Cancel",
-        onPress: () => { },
-      },
-      {
-        text: "Continue",
-        onPress: () => { },
-      },
-      { defaultIndex: 1 },
-    ]);
+    Alert.alert("Invalid Form 🚨", "Please provide all required fields");
   };
 
   const registerUser = async (values) => {
-    // setLoader(true);
-
     try {
       const endpoint = `${baseUrl}/register`;
       const data = values;
-      
       const response = await axios.post(endpoint, data);
-      console.log(response)
       if (response.status === 201) {
-        setLogin(true);
+        Alert.alert(
+          "Registered Sucessfully ✅",
+          "You can now proceed to login."
+        );
 
-        Alert.alert("Registered Sucessfully ✅", "Please login your credentials ");
-
-        navigation.goBack()
-
+        navigation.goBack();
       } else {
-        setLogin(false);
-
-        Alert.alert("Error Logging in 🚨", "Please provide valid credentials ", [
-          {
-            text: "Cancel",
-            onPress: () => { },
-          },
-          {
-            text: "Continue",
-            onPress: () => { },
-          },
-          { defaultIndex: 1 },
-        ]);
+        Alert.alert("Error Logging in 🚨", "Please provide valid credentials ");
       }
     } catch (error) {
-      setLogin(false);
       Alert.alert(
         "Error ❌",
-        "Oops, Error logging in try again with correct credentials",
-        [
-          {
-            text: "Cancel",
-            onPress: () => { },
-          },
-          {
-            text: "Continue",
-            onPress: () => { },
-          },
-          { defaultIndex: 1 },
-        ]
+        "Oops, Error logging in try again with correct credentials"
       );
     } finally {
       setLoader(false);
@@ -128,7 +90,7 @@ const SignUp = ({ navigation }) => {
             email: "",
             password: "",
             username: "",
-            phone: ""
+            phone: "",
           }}
           validationSchema={validationSchema}
           onSubmit={(values) => registerUser(values)}
@@ -143,6 +105,7 @@ const SignUp = ({ navigation }) => {
             setFieldTouched,
           }) => (
             <View>
+              {console.log(errors)}
               <View style={styles.wrapper}>
                 <Text style={styles.label}>Username</Text>
                 <View

@@ -1,54 +1,30 @@
 const User = require("../models/User");
 const CryptoJS = require("crypto-js");
 const jwt = require("jsonwebtoken");
-const admin = require("firebase-admin");
-const multer = require("../middleware/multerConfig");
-const fs = require("fs");
 
 module.exports = {
   createUser: async (req, res) => {
     console.log(req.body);
-    const user = req.body;
     try {
-      await admin.auth().getUserByEmail(user.email);
+      const user = req.body;
 
-      res.status(400).json({ message: "Email is already registered" });
+      const newUser = new User({
+        username: user.username,
+        email: user.email,
+        password: CryptoJS.AES.encrypt(
+          user.password,
+          process.env.SECRET
+        ).toString(),
+        phone: user.phone,
+        userType: "Client",
+      });
+
+      await newUser.save();
+
+      res.status(201).json({ status: true });
     } catch (error) {
       console.log(error);
-      if (error.code === "auth/user-not-found") {
-        try {
-          const userResponse = await admin.auth().createUser({
-            email: user.email,
-            password: user.password,
-            phone: user.phone,
-            emailVerified: false,
-            disabled: false,
-          });
-
-          // console.log(userResponse.uid);
-
-          const newUser = new User({
-            username: user.username,
-            email: user.email,
-            password: CryptoJS.AES.encrypt(
-              user.password,
-              process.env.SECRET
-            ).toString(),
-            phone: user.phone,
-            uid: userResponse.uid,
-            userType: "Client",
-          });
-
-          await newUser.save();
-
-          res.status(201).json({ status: true });
-        } catch (error) {
-          if (req.file) fs.unlinkSync(req.file.path);
-          res
-            .status(500)
-            .json({ status: false, error: "Error on creating user" });
-        }
-      }
+      res.status(500).json({ status: false, error: error.message });
     }
   },
 
