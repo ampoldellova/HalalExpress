@@ -202,4 +202,34 @@ module.exports = {
       res.status(500).json({ status: false, message: error.message });
     }
   },
+
+  getRestaurantReviews: async (req, res) => {
+    const { restaurantId } = req.params;
+
+    try {
+      const reviews = await Order.find({
+        restaurant: restaurantId,
+        "rating.status": "submitted",
+      }).select("rating userId createdAt");
+
+      if (!reviews || reviews.length === 0) {
+        return res.status(404).json({
+          status: false,
+          message: "No reviews found for this restaurant",
+        });
+      }
+
+      res.status(200).json({
+        status: true,
+        message: "Reviews fetched successfully",
+        reviews,
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({
+        status: false,
+        message: error.message,
+      });
+    }
+  },
 };
