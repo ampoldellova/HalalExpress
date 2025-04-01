@@ -17,10 +17,10 @@ const Restaurant = ({ navigation }) => {
 
   useEffect(() => {
     GoogleApiServices.calculateDistanceAndTime(
-      item.coords.latitude,
-      item.coords.longitude,
-      location.coords.latitude,
-      location.coords.longitude
+      item?.coords?.latitude,
+      item?.coords?.longitude,
+      location?.coords?.latitude,
+      location?.coords?.longitude
     ).then((result) => {
       if (result) {
         setDistanceTime(result);

@@ -496,7 +496,7 @@ const OrderDetails = () => {
                 <Text style={{ fontFamily: "regular", color: COLORS.gray }}>
                   Order from:
                 </Text>
-                <Text style={{ fontFamily: "medium" }}>
+                <Text style={{ fontFamily: "regular" }}>
                   {order?.restaurant?.coords?.address}
                 </Text>
               </View>
@@ -511,7 +511,7 @@ const OrderDetails = () => {
                   <Text style={{ fontFamily: "regular", color: COLORS.gray }}>
                     To be delivered at:
                   </Text>
-                  <Text style={{ fontFamily: "medium" }}>
+                  <Text style={{ fontFamily: "regular" }}>
                     {order?.deliveryAddress}
                   </Text>
                 </View>
