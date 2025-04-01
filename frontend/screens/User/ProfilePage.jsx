@@ -100,7 +100,7 @@ const ProfilePage = () => {
             </TouchableOpacity>
           </TouchableOpacity>
 
-          {user.userType === "Client" && (
+          {user?.userType === "Client" && (
             <View>
               <View
                 style={{
@@ -126,7 +126,7 @@ const ProfilePage = () => {
             </View>
           )}
 
-          {user.userType === "Vendor" && (
+          {user?.userType === "Vendor" && (
             <View>
               <View
                 style={{
@@ -153,7 +153,7 @@ const ProfilePage = () => {
             </View>
           )}
 
-          {user.userType === "Supplier" && (
+          {user?.userType === "Supplier" && (
             <View>
               <View
                 style={{
