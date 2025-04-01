@@ -4,7 +4,6 @@ export const CartSlice = createSlice({
   name: "user",
   initialState: {
     cartCount: 0,
-    user: null,
   },
   reducers: {
     updateCartCount: (state, action) => {

@@ -47,7 +47,7 @@ const FoodPage = ({ route, navigation }) => {
 
   useEffect(() => {
     calculatePrice();
-  }, [additives]);
+  }, [additives, cartCount]);
 
   const calculatePrice = () => {
     const total = additives.reduce((sum, additive) => {
@@ -75,7 +75,7 @@ const FoodPage = ({ route, navigation }) => {
           },
         };
         await axios.post(`${baseUrl}/api/cart/`, cartItem, config);
-        navigation.goBack();
+        // navigation.goBack();
         Toast.show({
           type: "success",
           text1: "Success ✅",
@@ -83,7 +83,7 @@ const FoodPage = ({ route, navigation }) => {
         });
         dispatch(updateCartCount(cartCount + 1));
       } else {
-        navigation.goBack();
+        // navigation.goBack();
         Toast.show({
           type: "error",
           text1: "Error ❌",
@@ -255,7 +255,7 @@ const FoodPage = ({ route, navigation }) => {
                     },
                   ]}
                 >
-                  {0}
+                  {cartCount}
                 </Text>
               </TouchableOpacity>
             </View>
