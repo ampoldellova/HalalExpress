@@ -21,14 +21,34 @@ const Reviews = ({ item }) => {
     }
   };
 
-  console.log(reviews);
   useFocusEffect(
     React.useCallback(() => {
       fetchRestaurantReviews();
     }, [])
   );
 
-  return <ScrollView></ScrollView>;
+  return (
+    <ScrollView>
+      <FlatList
+        data={reviews}
+        keyExtractor={(item) => item._id}
+        renderItem={({ item }) => (
+          <View
+            style={{ padding: 10, borderBottomWidth: 1, borderColor: "#ccc" }}
+          >
+            <Text style={{ fontWeight: "bold" }}>{item.userId.username}</Text>
+            <Text>{item.rating.stars}</Text>
+            <Text>{item.rating.feedback}</Text>
+            <Text style={{ color: "#888" }}>
+              {new Date(item.createdAt).toLocaleDateString()}
+            </Text>
+          </View>
+        )}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 20 }}
+      />
+    </ScrollView>
+  );
 };
 
 export default Reviews;
