@@ -232,4 +232,33 @@ module.exports = {
       });
     }
   },
+
+  getRestaurantOrders: async (req, res) => {
+    const { restaurantId } = req.params;
+
+    try {
+      const orders = await Order.find({ restaurant: restaurantId }).sort({
+        createdAt: -1,
+      });
+
+      if (!orders || orders.length === 0) {
+        return res.status(404).json({
+          status: false,
+          message: "No orders found for this restaurant",
+        });
+      }
+
+      res.status(200).json({
+        status: true,
+        message: "Orders fetched successfully",
+        orders,
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({
+        status: false,
+        message: error.message,
+      });
+    }
+  },
 };

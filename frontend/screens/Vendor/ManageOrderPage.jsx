@@ -7,7 +7,6 @@ const ManageOrderPage = () => {
   const route = useRoute();
   const item = route.params;
   const navigation = useNavigation();
-  console.log(item);
 
   return (
     <View style={{ marginHorizontal: 20, marginTop: 15 }}>
