@@ -19,6 +19,7 @@ import { COLORS, SIZES } from "../../styles/theme";
 import PendingVendorOrders from "../../components/Orders/PendingVendorOrders";
 import Heading from "../../components/Heading";
 import Loader from "../../components/Loader";
+import { AntDesign, FontAwesome } from "@expo/vector-icons";
 
 const ManageOrderPage = () => {
   const route = useRoute();
@@ -63,6 +64,66 @@ const ManageOrderPage = () => {
           <View style={{ marginHorizontal: 20, marginTop: 15 }}>
             <BackBtn onPress={() => navigation.goBack()} />
             <Text style={styles.heading}>Manage Orders</Text>
+          </View>
+
+          <View
+            style={{
+              marginTop: 10,
+              flexDirection: "row",
+              justifyContent: "space-between",
+              marginHorizontal: 20,
+            }}
+          >
+            <TouchableOpacity
+              style={{
+                backgroundColor: COLORS.primary,
+                paddingVertical: 10,
+                paddingHorizontal: 10,
+                borderRadius: 5,
+                marginTop: 10,
+              }}
+              onPress={() => {}}
+            >
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <AntDesign name="checkcircleo" size={16} color={COLORS.white} />
+                <Text
+                  style={{
+                    fontFamily: "bold",
+                    color: COLORS.white,
+                    textAlign: "center",
+                    marginLeft: 5,
+                    marginTop: 2,
+                  }}
+                >
+                  Completed Orders
+                </Text>
+              </View>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={{
+                backgroundColor: COLORS.gray,
+                paddingVertical: 10,
+                paddingHorizontal: 10,
+                borderRadius: 5,
+                marginTop: 10,
+              }}
+              onPress={() => {}}
+            >
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <FontAwesome name="trash-o" size={16} color={COLORS.white} />
+                <Text
+                  style={{
+                    fontFamily: "bold",
+                    color: COLORS.white,
+                    textAlign: "center",
+                    marginLeft: 5,
+                    marginTop: 2,
+                  }}
+                >
+                  Cancelled Orders
+                </Text>
+              </View>
+            </TouchableOpacity>
           </View>
           <FlatList
             data={orders}
