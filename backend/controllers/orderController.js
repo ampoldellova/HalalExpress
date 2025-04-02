@@ -235,7 +235,7 @@ module.exports = {
 
   getRestaurantOrders: async (req, res) => {
     const { restaurantId } = req.params;
-
+    // console.log(restaurantId);
     try {
       const orders = await Order.find({ restaurant: restaurantId }).sort({
         createdAt: -1,
@@ -254,7 +254,7 @@ module.exports = {
         orders,
       });
     } catch (error) {
-      console.error(error);
+      console.log(error);
       res.status(500).json({
         status: false,
         message: error.message,

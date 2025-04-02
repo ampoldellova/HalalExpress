@@ -1,6 +1,9 @@
 const router = require("express").Router();
 const orderController = require("../controllers/orderController");
-const { verifyAndAuthorization } = require("../middleware/verifyToken");
+const {
+  verifyAndAuthorization,
+  verifyVendor,
+} = require("../middleware/verifyToken");
 
 router.post(
   "/check-out",
@@ -17,6 +20,12 @@ router.post("/rate", verifyAndAuthorization, orderController.submitRating);
 router.get(
   "/restaurant/:restaurantId/reviews",
   orderController.getRestaurantReviews
+);
+
+router.get(
+  "/restaurant/:restaurantId/orders",
+  verifyAndAuthorization,
+  orderController.getRestaurantOrders
 );
 
 module.exports = router;
