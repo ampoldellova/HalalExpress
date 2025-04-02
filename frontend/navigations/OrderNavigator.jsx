@@ -10,16 +10,6 @@ import ReadyForPickupOrders from "../components/Orders/ReadyForPickupOrders";
 import DeliveredOrders from "../components/Orders/DeliveredOrders";
 import { COLORS } from "../styles/theme";
 
-const renderScene = SceneMap({
-  first: PendingOrders,
-  second: PreparingOrders,
-  third: ReadyForPickupOrders,
-  fourth: OutForDeliveryOrders,
-  fifth: DeliveredOrders,
-  sixth: CompletedOrders,
-  seventh: CancelledOrders,
-});
-
 const routes = [
   { key: "first", title: "Pending" },
   { key: "second", title: "Preparing" },
@@ -33,6 +23,27 @@ const routes = [
 export default function OrderNavigator({ orders }) {
   const layout = useWindowDimensions();
   const [index, setIndex] = React.useState(0);
+
+  const renderScene = ({ route }) => {
+    switch (route.key) {
+      case "first":
+        return <PendingOrders orders={orders} />;
+      case "second":
+        return <PreparingOrders orders={orders} />;
+      case "third":
+        return <ReadyForPickupOrders orders={orders} />;
+      case "fourth":
+        return <OutForDeliveryOrders orders={orders} />;
+      case "fifth":
+        return <DeliveredOrders orders={orders} />;
+      case "sixth":
+        return <CompletedOrders orders={orders} />;
+      case "seventh":
+        return <CancelledOrders orders={orders} />;
+      default:
+        return null;
+    }
+  };
 
   return (
     <TabView
