@@ -35,7 +35,10 @@ const UserRestaurantPage = () => {
           }}
           style={styles.imageUrl}
         />
-        <TouchableOpacity style={styles.editBtn} onPress={() => {}}>
+        <TouchableOpacity
+          style={styles.editBtn}
+          onPress={() => navigation.navigate("manage-orders-page", item)}
+        >
           <Foundation name="clipboard-notes" size={16} color={COLORS.white} />
           <Text style={styles.editTxt}>Manage Orders</Text>
         </TouchableOpacity>

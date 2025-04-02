@@ -49,6 +49,7 @@ import PaymentConfirmationPage from "./screens/PaymentConfirmationPage";
 import OrderPage from "./screens/Cart/OrderPage";
 import OrderDetails from "./screens/Order/OrderDetails";
 import { registerForPushNotificationsAsync } from "./notificationPermission";
+import ManageOrdersPage from "./screens/Vendor/ManageOrderPage";
 
 const Stack = createNativeStackNavigator();
 
@@ -269,6 +270,11 @@ export default function App() {
                       <Stack.Screen
                         name="order-details-page"
                         component={OrderDetails}
+                        options={{ headerShown: false }}
+                      />
+                      <Stack.Screen
+                        name="manage-orders-page"
+                        component={ManageOrdersPage}
                         options={{ headerShown: false }}
                       />
                     </Stack.Navigator>
