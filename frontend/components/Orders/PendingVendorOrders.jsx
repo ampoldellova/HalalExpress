@@ -10,6 +10,7 @@ const PendingVendorOrders = ({ item }) => {
         borderRadius: 10,
         backgroundColor: "#f8f8f8",
         marginBottom: 10,
+        marginHorizontal: 10,
       }}
     >
       <View style={{ flexDirection: "row" }}>
@@ -24,7 +25,7 @@ const PendingVendorOrders = ({ item }) => {
         />
         <View>
           <Text style={{ fontSize: 16, fontFamily: "bold" }}>
-            Order #: {item?._id ? `${item._id.substring(0, 15)}...` : ""}
+            Order #: {item?._id ? `${item._id.substring(0, 20)}...` : ""}
           </Text>
           <Text
             style={{
@@ -34,6 +35,18 @@ const PendingVendorOrders = ({ item }) => {
             }}
           >
             Customer: {item?.userId?.username}
+          </Text>
+          <Text
+            style={{
+              fontSize: 12,
+              fontFamily: "regular",
+              color: COLORS.gray,
+            }}
+          >
+            Delivery option:{" "}
+            {item?.deliveryOption === "standard"
+              ? "For delivery"
+              : "For pickup"}
           </Text>
           <Text
             style={{

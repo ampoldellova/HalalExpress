@@ -17,12 +17,15 @@ import baseUrl from "../../assets/common/baseUrl";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { COLORS, SIZES } from "../../styles/theme";
 import PendingVendorOrders from "../../components/Orders/PendingVendorOrders";
+import Heading from "../../components/Heading";
+import Loader from "../../components/Loader";
 
 const ManageOrderPage = () => {
   const route = useRoute();
   const item = route.params;
   const navigation = useNavigation();
   const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const fetchRestaurantOrders = async () => {
     try {
@@ -39,6 +42,7 @@ const ManageOrderPage = () => {
       );
       const data = await response.json();
       setOrders(data.orders);
+      setLoading(false);
     } catch (error) {
       console.error("Error fetching orders:", error);
     }
@@ -51,29 +55,39 @@ const ManageOrderPage = () => {
   );
 
   return (
-    <View style={{ marginHorizontal: 20, marginTop: 15 }}>
-      <BackBtn onPress={() => navigation.goBack()} />
-      <Text style={styles.heading}>Manage Orders</Text>
-
-      <FlatList
-        data={orders}
-        showsVerticalScrollIndicator={false}
-        keyExtractor={(item) => item._id}
-        renderItem={({ item }) => (
-          <>
-            {item?.orderStatus === "Pending" ? (
-              <PendingVendorOrders item={item} />
-            ) : (
-              <></>
+    <>
+      {loading ? (
+        <Loader />
+      ) : (
+        <View>
+          <View style={{ marginHorizontal: 20, marginTop: 15 }}>
+            <BackBtn onPress={() => navigation.goBack()} />
+            <Text style={styles.heading}>Manage Orders</Text>
+          </View>
+          <FlatList
+            data={orders}
+            showsVerticalScrollIndicator={false}
+            keyExtractor={(item) => item._id}
+            renderItem={({ item }) => (
+              <>
+                {item?.orderStatus === "Pending" ? (
+                  <>
+                    <Heading heading={"Pending Orders"} />
+                    <PendingVendorOrders item={item} />
+                  </>
+                ) : (
+                  <></>
+                )}
+              </>
             )}
-          </>
-        )}
-        style={{
-          marginTop: 10,
-          marginBottom: SIZES.height / 12,
-        }}
-      />
-    </View>
+            style={{
+              marginTop: 10,
+              marginBottom: SIZES.height / 12,
+            }}
+          />
+        </View>
+      )}
+    </>
   );
 };
 
