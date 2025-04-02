@@ -20,6 +20,7 @@ import PendingVendorOrders from "../../components/Orders/PendingVendorOrders";
 import Heading from "../../components/Heading";
 import Loader from "../../components/Loader";
 import { AntDesign, FontAwesome } from "@expo/vector-icons";
+import OrderNavigator from "../../navigations/OrderNavigator";
 
 const ManageOrderPage = () => {
   const route = useRoute();
@@ -66,7 +67,7 @@ const ManageOrderPage = () => {
             <Text style={styles.heading}>Manage Orders</Text>
           </View>
 
-          <View
+          {/* <View
             style={{
               marginTop: 10,
               flexDirection: "row",
@@ -124,8 +125,12 @@ const ManageOrderPage = () => {
                 </Text>
               </View>
             </TouchableOpacity>
+          </View> */}
+
+          <View style={{ height: SIZES.height, marginTop: 10 }}>
+            <OrderNavigator orders={orders} />
           </View>
-          <FlatList
+          {/* <FlatList
             data={orders}
             showsVerticalScrollIndicator={false}
             keyExtractor={(item) => item._id}
@@ -145,7 +150,7 @@ const ManageOrderPage = () => {
               marginTop: 10,
               marginBottom: SIZES.height / 12,
             }}
-          />
+          /> */}
         </View>
       )}
     </>
