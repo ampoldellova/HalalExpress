@@ -256,8 +256,8 @@ const OrderDetails = () => {
               >
                 {order?.orderStatus === "cancelled by customer"
                   ? "Cancelled by you"
-                  : order?.orderStatus === "Delivered"
-                  ? "Delivered ✔"
+                  : order?.orderStatus === "Completed"
+                  ? "Completed ✔"
                   : order?.orderStatus}
               </Text>
             </View>
@@ -417,8 +417,24 @@ const OrderDetails = () => {
                     R E C E I V E D
                   </Text>
                 </TouchableOpacity>
+              </>
+            )}
 
-                {/* {order?.orderStatus === "Completed" &&
+            {order?.orderStatus === "Completed" && (
+              <>
+                <Text
+                  style={{
+                    fontFamily: "regular",
+                    fontSize: 12,
+                    color: COLORS.gray,
+                  }}
+                >
+                  Your order has been completed! Thank you for your order. We
+                  hope you enjoyed your meal. Please leave a rating and feedback
+                  about your order. Your feedback is important to us. Thank you!
+                </Text>
+
+                {order?.orderStatus === "Completed" &&
                 order?.rating?.status === "submitted" ? (
                   <>
                     <View
@@ -481,7 +497,7 @@ const OrderDetails = () => {
                       R A T E{"   "} O R D E R
                     </Text>
                   </TouchableOpacity>
-                )} */}
+                )}
               </>
             )}
           </View>
