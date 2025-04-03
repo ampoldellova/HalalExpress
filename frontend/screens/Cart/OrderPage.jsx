@@ -180,7 +180,6 @@ const OrderPage = () => {
                         onPress={() =>
                           navigation.navigate("order-details-page", {
                             order: item,
-                            fetchUserOrders,
                           })
                         }
                       >

@@ -25,7 +25,7 @@ import { RatingInput } from "react-native-stock-star-rating";
 
 const OrderDetails = () => {
   const route = useRoute();
-  const { order, fetchUserOrders } = route.params;
+  const [order, setOrder] = useState(route.params.order);
   const navigation = useNavigation();
   const [showCancelOrderModal, setShowCancelOrderModal] = useState(false);
   const [showRateOrderModal, setShowRateOrderModal] = useState(false);
@@ -138,11 +138,17 @@ const OrderDetails = () => {
           { orderId: order?._id },
           config
         );
-        navigation.navigate("order-page");
+
+        setOrder((prevOrder) => ({
+          ...prevOrder,
+          orderStatus: "Completed",
+        }));
+
         Toast.show({
           type: "success",
           text1: "Success ✅",
-          text2: "Your order has been received successfully",
+          text2:
+            "Thank you for your order! Please leave a rating and feedback.",
         });
         setLoading(false);
       } else {
@@ -406,16 +412,23 @@ const OrderDetails = () => {
                     marginTop: 10,
                   }}
                 >
-                  <Text
-                    style={{
-                      color: COLORS.white,
-                      fontFamily: "bold",
-                      textAlign: "center",
-                      fontSize: 16,
-                    }}
-                  >
-                    R E C E I V E D
-                  </Text>
+                  {loading ? (
+                    <ActivityIndicator
+                      style={{ fontSize: 16 }}
+                      color={COLORS.white}
+                    />
+                  ) : (
+                    <Text
+                      style={{
+                        color: COLORS.white,
+                        fontFamily: "bold",
+                        textAlign: "center",
+                        fontSize: 16,
+                      }}
+                    >
+                      R E C E I V E D
+                    </Text>
+                  )}
                 </TouchableOpacity>
               </>
             )}
