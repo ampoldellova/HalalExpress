@@ -67,90 +67,9 @@ const ManageOrderPage = () => {
             <Text style={styles.heading}>Manage Orders</Text>
           </View>
 
-          {/* <View
-            style={{
-              marginTop: 10,
-              flexDirection: "row",
-              justifyContent: "space-between",
-              marginHorizontal: 20,
-            }}
-          >
-            <TouchableOpacity
-              style={{
-                backgroundColor: COLORS.primary,
-                paddingVertical: 10,
-                paddingHorizontal: 10,
-                borderRadius: 5,
-                marginTop: 10,
-              }}
-              onPress={() => {}}
-            >
-              <View style={{ flexDirection: "row", alignItems: "center" }}>
-                <AntDesign name="checkcircleo" size={16} color={COLORS.white} />
-                <Text
-                  style={{
-                    fontFamily: "bold",
-                    color: COLORS.white,
-                    textAlign: "center",
-                    marginLeft: 5,
-                    marginTop: 2,
-                  }}
-                >
-                  Completed Orders
-                </Text>
-              </View>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={{
-                backgroundColor: COLORS.gray,
-                paddingVertical: 10,
-                paddingHorizontal: 10,
-                borderRadius: 5,
-                marginTop: 10,
-              }}
-              onPress={() => {}}
-            >
-              <View style={{ flexDirection: "row", alignItems: "center" }}>
-                <FontAwesome name="trash-o" size={16} color={COLORS.white} />
-                <Text
-                  style={{
-                    fontFamily: "bold",
-                    color: COLORS.white,
-                    textAlign: "center",
-                    marginLeft: 5,
-                    marginTop: 2,
-                  }}
-                >
-                  Cancelled Orders
-                </Text>
-              </View>
-            </TouchableOpacity>
-          </View> */}
-
           <View style={{ height: SIZES.height, marginTop: 10 }}>
             <OrderNavigator orders={orders} />
           </View>
-          {/* <FlatList
-            data={orders}
-            showsVerticalScrollIndicator={false}
-            keyExtractor={(item) => item._id}
-            renderItem={({ item }) => (
-              <>
-                {item?.orderStatus === "Pending" ? (
-                  <>
-                    <Heading heading={"Pending Orders"} />
-                    <PendingVendorOrders item={item} />
-                  </>
-                ) : (
-                  <></>
-                )}
-              </>
-            )}
-            style={{
-              marginTop: 10,
-              marginBottom: SIZES.height / 12,
-            }}
-          /> */}
         </View>
       )}
     </>
