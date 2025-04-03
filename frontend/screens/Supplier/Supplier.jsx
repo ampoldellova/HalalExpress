@@ -40,7 +40,7 @@ const Supplier = ({ navigation }) => {
                 <Image
                     source={{ uri: item.imageUrl.url }}
                     style={{
-                        height: SIZES.height / 3.4,
+                        height: SIZES.height / 4,
                         width: SIZES.width,
                         borderBottomLeftRadius: 15,
                         borderBottomRightRadius: 15,
@@ -98,7 +98,7 @@ const Supplier = ({ navigation }) => {
                     <Text style={[styles.small, { fontFamily: 'regular' }]}>{distanceTime.finalPrice}</Text>
                 </View>
             </View>
-            <View style={{ height: SIZES.height / 1.5 }}>
+            <View style={{ height: SIZES.height / 1.4 }}>
                 <SupplierPage item={item} />
             </View>
 
