@@ -43,8 +43,8 @@ const RestaurantPage = ({ item }) => {
         {...propsWithoutKey}
         indicatorStyle={{ backgroundColor: COLORS.secondary }}
         style={{ backgroundColor: COLORS.primary }}
-        activeColor={COLORS.secondary}
-        inactiveColor={COLORS.white}
+        activeColor={COLORS.white}
+        inactiveColor={COLORS.gray2}
       />
     );
   };
