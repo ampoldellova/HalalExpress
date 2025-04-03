@@ -25,7 +25,7 @@ import { RatingInput } from "react-native-stock-star-rating";
 
 const OrderDetails = () => {
   const route = useRoute();
-  const { order } = route.params;
+  const { order, fetchUserOrders } = route.params;
   const navigation = useNavigation();
   const [showCancelOrderModal, setShowCancelOrderModal] = useState(false);
   const [showRateOrderModal, setShowRateOrderModal] = useState(false);
@@ -120,6 +120,44 @@ const OrderDetails = () => {
           text2: error.message,
         });
       }
+    }
+  };
+
+  const receiveOrder = async () => {
+    setLoading(true);
+    try {
+      const token = await AsyncStorage.getItem("token");
+      if (token) {
+        const config = {
+          headers: {
+            Authorization: `Bearer ${JSON.parse(token)}`,
+          },
+        };
+        await axios.post(
+          `${baseUrl}/api/orders/receive`,
+          { orderId: order?._id },
+          config
+        );
+        navigation.navigate("order-page");
+        Toast.show({
+          type: "success",
+          text1: "Success ✅",
+          text2: "Your order has been received successfully",
+        });
+        setLoading(false);
+      } else {
+        Toast.show({
+          type: "error",
+          text1: "Error ❌",
+          text2: "You must be logged in to receive an order",
+        });
+      }
+    } catch (error) {
+      Toast.show({
+        type: "error",
+        text1: "Error ❌",
+        text2: error.message,
+      });
     }
   };
 
@@ -354,11 +392,33 @@ const OrderDetails = () => {
                     color: COLORS.gray,
                   }}
                 >
-                  Your order has been delivered! Please leave us a review and
-                  feedback about your order.
+                  Your order has been delivered! Did you receive your order? If
+                  not, please contact the restaurant. If you did, please click
+                  the received button below.
                 </Text>
 
-                {order?.orderStatus === "Delivered" &&
+                <TouchableOpacity
+                  onPress={() => receiveOrder()}
+                  style={{
+                    backgroundColor: COLORS.primary,
+                    padding: 10,
+                    borderRadius: 15,
+                    marginTop: 10,
+                  }}
+                >
+                  <Text
+                    style={{
+                      color: COLORS.white,
+                      fontFamily: "bold",
+                      textAlign: "center",
+                      fontSize: 16,
+                    }}
+                  >
+                    R E C E I V E D
+                  </Text>
+                </TouchableOpacity>
+
+                {/* {order?.orderStatus === "Completed" &&
                 order?.rating?.status === "submitted" ? (
                   <>
                     <View
@@ -421,7 +481,7 @@ const OrderDetails = () => {
                       R A T E{"   "} O R D E R
                     </Text>
                   </TouchableOpacity>
-                )}
+                )} */}
               </>
             )}
           </View>

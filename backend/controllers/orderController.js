@@ -147,6 +147,40 @@ module.exports = {
     }
   },
 
+  receiveOrder: async (req, res) => {
+    const userId = req.user.id;
+    const { orderId } = req.body;
+
+    try {
+      const order = await Order.findOne({ _id: orderId, userId });
+
+      if (!order) {
+        return res
+          .status(404)
+          .json({ status: false, message: "Order not found" });
+      }
+
+      if (order.orderStatus === "Completed") {
+        return res.status(400).json({
+          status: false,
+          message: "Order is already marked as Completed",
+        });
+      }
+
+      order.orderStatus = "Completed";
+      await order.save();
+
+      res.status(200).json({
+        status: true,
+        message: "Order status updated to Completed successfully",
+        order,
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ status: false, message: error.message });
+    }
+  },
+
   submitRating: async (req, res) => {
     const { orderId, stars, feedback } = req.body;
 

@@ -108,7 +108,8 @@ const OrderPage = () => {
 
   const pastOrders =
     (user?.userType === "Vendor" ? vendorOrders : orders)?.filter(
-      (order) => order.orderStatus === "Delivered"
+      (order) =>
+        order.orderStatus === "Delivered" || order.orderStatus === "Completed"
     ) || [];
   const cancelledOrders =
     (user?.userType === "Vendor" ? vendorOrders : orders)?.filter(
@@ -179,6 +180,7 @@ const OrderPage = () => {
                         onPress={() =>
                           navigation.navigate("order-details-page", {
                             order: item,
+                            fetchUserOrders,
                           })
                         }
                       >
