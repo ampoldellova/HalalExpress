@@ -117,11 +117,11 @@ const OrderPage = () => {
     ) || [];
 
   return (
-    <ScrollView>
+    <View>
       {loading ? (
         <Loader />
       ) : (
-        <View style={{ marginTop: 15 }}>
+        <ScrollView style={{ marginTop: 15 }}>
           <View style={{ marginHorizontal: 20 }}>
             <BackBtn
               onPress={() =>
@@ -291,7 +291,7 @@ const OrderPage = () => {
                           })
                         }
                         style={{
-                          marginVertical: 10,
+                          marginBottom: 10,
                           borderRadius: 15,
                           boxShadow: "0px 0px 3px rgba(0, 0, 0, 0.1)",
                           padding: 10,
@@ -545,9 +545,9 @@ const OrderPage = () => {
               )}
             </>
           )}
-        </View>
+        </ScrollView>
       )}
-    </ScrollView>
+    </View>
   );
 };
 
