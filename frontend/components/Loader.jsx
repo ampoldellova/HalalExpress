@@ -2,7 +2,6 @@ import { StyleSheet, Text, View } from 'react-native'
 import React, { useRef } from 'react'
 import LottieView from 'lottie-react-native';
 import { SIZES } from '../styles/theme';
-import pages from '../styles/page.style';
 
 const Loader = () => {
     const animation = useRef(null);

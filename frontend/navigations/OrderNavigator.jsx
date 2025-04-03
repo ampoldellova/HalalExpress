@@ -1,6 +1,6 @@
 import * as React from "react";
-import { useWindowDimensions, ScrollView } from "react-native";
-import { TabView, SceneMap, TabBar } from "react-native-tab-view";
+import { useWindowDimensions } from "react-native";
+import { TabView, TabBar } from "react-native-tab-view";
 import PendingOrders from "../components/Orders/PendingOrders";
 import CompletedOrders from "../components/Orders/CompletedOrders";
 import CancelledOrders from "../components/Orders/CancelledOrders";
@@ -9,8 +9,6 @@ import OutForDeliveryOrders from "../components/Orders/OutForDeliveryOrders";
 import ReadyForPickupOrders from "../components/Orders/ReadyForPickupOrders";
 import DeliveredOrders from "../components/Orders/DeliveredOrders";
 import { COLORS } from "../styles/theme";
-import { getProfile } from "../hook/helpers";
-import { useFocusEffect } from "@react-navigation/native";
 
 const routes = [
   { key: "first", title: "Pending" },
@@ -89,8 +87,8 @@ export default function OrderNavigator({ orders }) {
           tabStyle={{ width: layout.width / 3 }}
           indicatorStyle={{ backgroundColor: COLORS.secondary }}
           style={{ backgroundColor: COLORS.primary }}
-          activeColor={COLORS.secondary}
-          inactiveColor={COLORS.white}
+          activeColor={COLORS.white}
+          inactiveColor={COLORS.gray2}
         />
       )}
     />
