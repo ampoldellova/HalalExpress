@@ -170,7 +170,7 @@ const PendingOrderDetails = () => {
                       style={{
                         fontFamily: "bold",
                         fontSize: 20,
-                        marginBottom: 5,
+                        marginBottom: 10,
                         marginTop: -15,
                       }}
                     >
@@ -180,7 +180,6 @@ const PendingOrderDetails = () => {
                       style={{
                         fontFamily: "regular",
                         fontSize: 14,
-                        color: COLORS.gray,
                         textAlign: "justify",
                       }}
                     >
@@ -196,7 +195,53 @@ const PendingOrderDetails = () => {
             style={{
               flexDirection: "row",
               justifyContent: "space-between",
-              marginTop: 10,
+              marginTop: 20,
+            }}
+          >
+            <Text style={{ fontFamily: "regular", fontSize: 12 }}>
+              Delivery Option:
+            </Text>
+            <Text
+              style={{
+                fontFamily: "regular",
+                fontSize: 12,
+              }}
+            >
+              {order?.deliveryOption === "pickup"
+                ? "For pickup"
+                : order?.deliveryOption === "standard"
+                ? "For delivery"
+                : order?.deliveryOption}
+            </Text>
+          </View>
+
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+            }}
+          >
+            <Text style={{ fontFamily: "regular", fontSize: 12 }}>
+              Payment Method:
+            </Text>
+            <Text
+              style={{
+                fontFamily: "regular",
+                fontSize: 12,
+              }}
+            >
+              {order?.paymentMethod === "gcash"
+                ? "Gcash"
+                : order?.paymentMethod === "cod"
+                ? "Cash On Delivery"
+                : order?.paymentMethod}
+            </Text>
+          </View>
+
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
             }}
           >
             <Text style={{ fontFamily: "regular", fontSize: 12 }}>
@@ -288,6 +333,26 @@ const PendingOrderDetails = () => {
             </View>
           )}
         </View>
+
+        <TouchableOpacity
+          onPress={() => {}}
+          style={{
+            backgroundColor: COLORS.primary,
+            padding: 10,
+            borderRadius: 15,
+          }}
+        >
+          <Text
+            style={{
+              color: COLORS.white,
+              fontFamily: "bold",
+              textAlign: "center",
+              fontSize: 16,
+            }}
+          >
+            A C C E P T {"   "} O R D E R
+          </Text>
+        </TouchableOpacity>
       </View>
     </ScrollView>
   );
