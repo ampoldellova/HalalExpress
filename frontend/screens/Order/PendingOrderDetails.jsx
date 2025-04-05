@@ -1,4 +1,5 @@
 import {
+  ActivityIndicator,
   Image,
   ScrollView,
   StyleSheet,
@@ -16,12 +17,51 @@ import Modal, {
   ModalContent,
   SlideAnimation,
 } from "react-native-modals";
+import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import Toast from "react-native-toast-message";
+import baseUrl from "../../assets/common/baseUrl";
 
 const PendingOrderDetails = () => {
   const route = useRoute();
   const order = route.params;
   const navigation = useNavigation();
   const [showNote, setShowNote] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const acceptOrder = async () => {
+    try {
+      setLoading(true);
+      const token = await AsyncStorage.getItem("token");
+      const config = {
+        headers: {
+          Authorization: `Bearer ${JSON.parse(token)}`,
+        },
+      };
+
+      await axios.post(
+        `${baseUrl}/api/orders/accept`,
+        { orderId: order._id },
+        config
+      );
+
+      navigation.goBack();
+      setLoading(false);
+      Toast.show({
+        type: "success",
+        text1: "Success ✅",
+        text2: "Order accepted successfully!",
+      });
+    } catch (error) {
+      console.log(error);
+      setLoading(false);
+      Toast.show({
+        type: "error",
+        text1: "Error ❌",
+        text2: error,
+      });
+    }
+  };
 
   return (
     <ScrollView>
@@ -335,23 +375,27 @@ const PendingOrderDetails = () => {
         </View>
 
         <TouchableOpacity
-          onPress={() => {}}
+          onPress={acceptOrder}
           style={{
             backgroundColor: COLORS.primary,
             padding: 10,
             borderRadius: 15,
           }}
         >
-          <Text
-            style={{
-              color: COLORS.white,
-              fontFamily: "bold",
-              textAlign: "center",
-              fontSize: 16,
-            }}
-          >
-            A C C E P T {"   "} O R D E R
-          </Text>
+          {loading ? (
+            <ActivityIndicator style={{ fontSize: 16 }} color={COLORS.white} />
+          ) : (
+            <Text
+              style={{
+                color: COLORS.white,
+                fontFamily: "bold",
+                textAlign: "center",
+                fontSize: 16,
+              }}
+            >
+              A C C E P T {"   "} O R D E R
+            </Text>
+          )}
         </TouchableOpacity>
       </View>
     </ScrollView>

@@ -29,4 +29,10 @@ router.get(
   orderController.getRestaurantOrders
 );
 
+router.post(
+  "/accept",
+  verifyAndAuthorization,
+  orderController.acceptOrder
+);
+
 module.exports = router;
