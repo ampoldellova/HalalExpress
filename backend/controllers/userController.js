@@ -152,8 +152,6 @@ module.exports = {
   editUserAddress: async (req, res) => {
     const userId = req.user.id;
     const { addressId, newAddress } = req.body;
-    console.log(req.body);
-    console.log(userId);
 
     try {
       const user = await User.findById(userId);
