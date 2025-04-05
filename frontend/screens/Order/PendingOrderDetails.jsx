@@ -6,16 +6,22 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import BackBtn from "../../components/BackBtn";
 import Divider from "../../components/Divider";
-import { COLORS } from "../../styles/theme";
+import { COLORS, SIZES } from "../../styles/theme";
+import Modal, {
+  BottomModal,
+  ModalContent,
+  SlideAnimation,
+} from "react-native-modals";
 
 const PendingOrderDetails = () => {
   const route = useRoute();
   const order = route.params;
   const navigation = useNavigation();
+  const [showNote, setShowNote] = useState(false);
 
   return (
     <ScrollView>
@@ -39,85 +45,150 @@ const PendingOrderDetails = () => {
 
           <View>
             {order?.orderItems?.map((item) => (
-              <TouchableOpacity
-                key={item?._id}
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  marginTop: 10,
-                }}
-              >
-                {item?.instructions && (
-                  <Image
-                    source={require("../../assets/images/note.png")}
-                    style={{
-                      height: 20,
-                      width: 20,
-                      position: "absolute",
-                      zIndex: 1,
-                      top: -8,
-                      left: 25,
-                    }}
-                  />
-                )}
-
-                <View style={{ flexDirection: "row" }}>
-                  <Image
-                    source={{ uri: item?.foodId?.imageUrl?.url }}
-                    style={{
-                      height: 40,
-                      width: 40,
-                      objectFit: "cover",
-                      borderRadius: 10,
-                    }}
-                  />
-                  <View>
-                    <Text
+              <>
+                <TouchableOpacity
+                  key={item?._id}
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    marginTop: 10,
+                  }}
+                  onPress={() => {
+                    if (item?.instructions) {
+                      setShowNote(item?._id);
+                    }
+                  }}
+                >
+                  {item?.instructions && (
+                    <Image
+                      source={require("../../assets/images/note.png")}
                       style={{
-                        fontFamily: "regular",
-                        fontSize: 12,
-                        marginLeft: 10,
+                        height: 20,
+                        width: 20,
+                        position: "absolute",
+                        zIndex: 1,
+                        top: -8,
+                        left: 25,
                       }}
-                    >
-                      {item?.quantity}x {item?.foodId?.title}
-                    </Text>
+                    />
+                  )}
 
-                    {item?.additives?.length > 0 ? (
-                      <>
-                        {item?.additives?.map((additive) => (
-                          <Text
-                            key={additive?._id}
-                            style={{
-                              fontFamily: "regular",
-                              fontSize: 12,
-                              color: COLORS.gray,
-                              marginLeft: 15,
-                            }}
-                          >
-                            + {additive?.title}
-                          </Text>
-                        ))}
-                      </>
-                    ) : (
+                  <View style={{ flexDirection: "row" }}>
+                    <Image
+                      source={{ uri: item?.foodId?.imageUrl?.url }}
+                      style={{
+                        height: 40,
+                        width: 40,
+                        objectFit: "cover",
+                        borderRadius: 10,
+                      }}
+                    />
+                    <View>
                       <Text
                         style={{
                           fontFamily: "regular",
                           fontSize: 12,
-                          color: COLORS.gray,
-                          marginLeft: 15,
+                          marginLeft: 10,
                         }}
                       >
-                        - No Additives
+                        {item?.quantity}x {item?.foodId?.title}
                       </Text>
-                    )}
+
+                      {item?.additives?.length > 0 ? (
+                        <>
+                          {item?.additives?.map((additive) => (
+                            <Text
+                              key={additive?._id}
+                              style={{
+                                fontFamily: "regular",
+                                fontSize: 12,
+                                color: COLORS.gray,
+                                marginLeft: 15,
+                              }}
+                            >
+                              + {additive?.title}
+                            </Text>
+                          ))}
+                        </>
+                      ) : (
+                        <Text
+                          style={{
+                            fontFamily: "regular",
+                            fontSize: 12,
+                            color: COLORS.gray,
+                            marginLeft: 15,
+                          }}
+                        >
+                          - No Additives
+                        </Text>
+                      )}
+                    </View>
                   </View>
-                </View>
-                <View>
-                  <Text style={{ fontFamily: "regular", fontSize: 12 }}>
-                    ₱ {(item?.totalPrice).toFixed(2)}
-                  </Text>
-                </View>
-              </TouchableOpacity>
+                  <View>
+                    <Text style={{ fontFamily: "regular", fontSize: 12 }}>
+                      ₱ {(item?.totalPrice).toFixed(2)}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+
+                <Modal
+                  visible={showNote === item?._id}
+                  onTouchOutside={() => {
+                    setShowNote(null);
+                  }}
+                  modalAnimation={new SlideAnimation({ slideFrom: "bottom" })}
+                  onHardwareBackPress={() => {
+                    setShowNote(null);
+                  }}
+                >
+                  <View
+                    style={{
+                      height: 10,
+                      backgroundColor: COLORS.primary,
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                  />
+                  <Image
+                    source={require("../../assets/images/pin.png")}
+                    style={{
+                      height: 35,
+                      width: 45,
+                      position: "absolute",
+                      zIndex: 2,
+                      right: 5,
+                      top: 5,
+                    }}
+                  />
+                  <ModalContent
+                    style={{
+                      height: "auto",
+                      width: SIZES.width / 1.3,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        fontFamily: "bold",
+                        fontSize: 20,
+                        marginBottom: 5,
+                        marginTop: -15,
+                      }}
+                    >
+                      Preference
+                    </Text>
+                    <Text
+                      style={{
+                        fontFamily: "regular",
+                        fontSize: 14,
+                        color: COLORS.gray,
+                        textAlign: "justify",
+                      }}
+                    >
+                      {item?.instructions}
+                    </Text>
+                  </ModalContent>
+                </Modal>
+              </>
             ))}
           </View>
 
