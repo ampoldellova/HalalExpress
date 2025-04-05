@@ -216,7 +216,7 @@ const OrderDetails = () => {
   };
 
   return (
-    <View>
+    <>
       <ScrollView>
         <View style={{ marginHorizontal: 20 }}>
           <BackBtn onPress={() => navigation.goBack()} />
@@ -224,7 +224,6 @@ const OrderDetails = () => {
 
           <View
             style={{
-              borderColor: COLORS.gray2,
               borderRadius: 15,
               padding: 10,
               marginTop: 10,
@@ -1112,7 +1111,7 @@ const OrderDetails = () => {
           </TouchableOpacity>
         </ModalContent>
       </BottomModal>
-    </View>
+    </>
   );
 };
 

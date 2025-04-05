@@ -62,7 +62,7 @@ const ManageOrderPage = () => {
         <Loader />
       ) : (
         <View>
-          <View style={{ marginHorizontal: 20, marginTop: 15 }}>
+          <View style={{ marginHorizontal: 20 }}>
             <BackBtn onPress={() => navigation.goBack()} />
             <Text style={styles.heading}>Manage Orders</Text>
           </View>

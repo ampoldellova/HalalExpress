@@ -50,6 +50,7 @@ import OrderPage from "./screens/Cart/OrderPage";
 import OrderDetails from "./screens/Order/OrderDetails";
 import { registerForPushNotificationsAsync } from "./notificationPermission";
 import ManageOrdersPage from "./screens/Vendor/ManageOrderPage";
+import PendingOrderDetails from "./screens/Order/PendingOrderDetails";
 
 const Stack = createNativeStackNavigator();
 
@@ -275,6 +276,11 @@ export default function App() {
                       <Stack.Screen
                         name="manage-orders-page"
                         component={ManageOrdersPage}
+                        options={{ headerShown: false }}
+                      />
+                      <Stack.Screen
+                        name="pending-order-details-page"
+                        component={PendingOrderDetails}
                         options={{ headerShown: false }}
                       />
                     </Stack.Navigator>

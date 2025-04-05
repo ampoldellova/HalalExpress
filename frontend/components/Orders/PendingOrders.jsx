@@ -9,8 +9,10 @@ import {
 import React, { useRef } from "react";
 import { COLORS, SIZES } from "../../styles/theme";
 import LottieView from "lottie-react-native";
+import { useNavigation } from "@react-navigation/native";
 
 const PendingOrders = ({ pendingOrders }) => {
+  const navigation = useNavigation();
   const animation = useRef(null);
   return (
     <>
@@ -57,6 +59,9 @@ const PendingOrders = ({ pendingOrders }) => {
                   marginBottom: 10,
                   marginHorizontal: 10,
                 }}
+                onPress={() =>
+                  navigation.navigate("pending-order-details-page", item)
+                }
               >
                 <View style={{ flexDirection: "row" }}>
                   <Image
