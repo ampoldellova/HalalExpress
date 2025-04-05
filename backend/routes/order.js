@@ -29,10 +29,8 @@ router.get(
   orderController.getRestaurantOrders
 );
 
-router.post(
-  "/accept",
-  verifyAndAuthorization,
-  orderController.acceptOrder
-);
+router.post("/accept", verifyAndAuthorization, orderController.acceptOrder);
+
+router.post("/mark-as-ready", verifyVendor, orderController.markOrderAsReady);
 
 module.exports = router;
