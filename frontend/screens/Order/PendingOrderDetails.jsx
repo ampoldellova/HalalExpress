@@ -364,7 +364,7 @@ const PendingOrderDetails = () => {
           {order?.orderNote && (
             <View style={{ marginTop: 10 }}>
               <Text style={{ fontFamily: "bold", fontSize: 18 }}>
-                Order Note:
+                Delivery Note:
               </Text>
 
               <Text style={{ fontFamily: "regular", fontSize: 12 }}>
