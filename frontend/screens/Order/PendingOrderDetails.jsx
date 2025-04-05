@@ -1,4 +1,11 @@
-import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
+import {
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import React from "react";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import BackBtn from "../../components/BackBtn";
@@ -32,7 +39,7 @@ const PendingOrderDetails = () => {
 
           <View>
             {order?.orderItems?.map((item) => (
-              <View
+              <TouchableOpacity
                 key={item?._id}
                 style={{
                   flexDirection: "row",
@@ -40,6 +47,20 @@ const PendingOrderDetails = () => {
                   marginTop: 10,
                 }}
               >
+                {item?.instructions && (
+                  <Image
+                    source={require("../../assets/images/note.png")}
+                    style={{
+                      height: 20,
+                      width: 20,
+                      position: "absolute",
+                      zIndex: 1,
+                      top: -8,
+                      left: 25,
+                    }}
+                  />
+                )}
+
                 <View style={{ flexDirection: "row" }}>
                   <Image
                     source={{ uri: item?.foodId?.imageUrl?.url }}
@@ -96,7 +117,7 @@ const PendingOrderDetails = () => {
                     ₱ {(item?.totalPrice).toFixed(2)}
                   </Text>
                 </View>
-              </View>
+              </TouchableOpacity>
             ))}
           </View>
 
@@ -184,83 +205,17 @@ const PendingOrderDetails = () => {
             </Text>
           </View>
 
-          <View style={{ marginTop: 10 }}>
-            <Text style={{ fontFamily: "bold", fontSize: 18 }}>
-              Payment Method
-            </Text>
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-              }}
-            >
-              {order?.paymentMethod === "cod" && (
-                <View style={{ flexDirection: "row", alignItems: "center" }}>
-                  <Image
-                    source={require("../../assets/images/COD.png")}
-                    style={{
-                      height: 20,
-                      width: 25,
-                      objectFit: "cover",
-                    }}
-                  />
-                  <Text
-                    style={{
-                      fontFamily: "regular",
-                      fontSize: 12,
-                      marginLeft: 5,
-                    }}
-                  >
-                    Cash On Delivery
-                  </Text>
-                </View>
-              )}
+          {order?.orderNote && (
+            <View style={{ marginTop: 10 }}>
+              <Text style={{ fontFamily: "bold", fontSize: 18 }}>
+                Order Note:
+              </Text>
 
-              {order?.paymentMethod === "Pay at the counter" && (
-                <View style={{ flexDirection: "row", alignItems: "center" }}>
-                  <Image
-                    source={require("../../assets/images/COD.png")}
-                    style={{
-                      height: 20,
-                      width: 25,
-                      objectFit: "cover",
-                    }}
-                  />
-                  <Text
-                    style={{
-                      fontFamily: "regular",
-                      fontSize: 12,
-                      marginLeft: 5,
-                    }}
-                  >
-                    Pay at the counter
-                  </Text>
-                </View>
-              )}
-
-              {order?.paymentMethod === "gcash" && (
-                <View style={{ flexDirection: "row", alignItems: "center" }}>
-                  <Image
-                    source={require("../../assets/images/gcash.png")}
-                    style={{
-                      height: 20,
-                      width: 25,
-                      objectFit: "cover",
-                    }}
-                  />
-                  <Text
-                    style={{
-                      fontFamily: "regular",
-                      fontSize: 12,
-                      marginLeft: 5,
-                    }}
-                  >
-                    GCash
-                  </Text>
-                </View>
-              )}
+              <Text style={{ fontFamily: "regular", fontSize: 12 }}>
+                {order?.orderNote}
+              </Text>
             </View>
-          </View>
+          )}
         </View>
       </View>
     </ScrollView>
