@@ -14,58 +14,36 @@ import { COLORS, SIZES } from "../../styles/theme";
 import { AntDesign } from "@expo/vector-icons";
 import ProfileTile from "../../components/User/ProfileTile";
 import RegistrationTile from "../../components/User/RegistrationTile";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
-import { cleanUser } from "../../redux/UserReducer";
+import { cleanCart, cleanCartCount, cleanUser } from "../../redux/UserReducer";
 import baseUrl from "../../assets/common/baseUrl";
 import Heading from "../../components/Heading";
 import UserRestaurants from "../../components/Vendor/UserRestaurants";
 import { SafeAreaView } from "react-native-safe-area-context";
 import pages from "../../styles/page.style";
 import SupplierStores from "../../components/Supplier/SupplierStores";
-import Divider from "../../components/Divider";
+import Toast from "react-native-toast-message";
 
 const ProfilePage = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
-  const [user, setUser] = useState({});
-
-  const getProfile = async () => {
-    try {
-      const token = await AsyncStorage.getItem("token");
-      if (token) {
-        const config = {
-          headers: {
-            Authorization: `Bearer ${JSON.parse(token)}`,
-          },
-        };
-
-        const response = await axios.get(
-          `${baseUrl}/api/users/profile`,
-          config
-        );
-        setUser(response.data);
-      } else {
-        console.log("Authentication token not found");
-      }
-    } catch (error) {
-      console.log("Error fetching profile:", error);
-    }
-  };
-
-  useFocusEffect(
-    React.useCallback(() => {
-      getProfile();
-    }, [])
-  );
+  const { user } = useSelector((state) => state.user);
 
   const handleLogout = async () => {
     await AsyncStorage.removeItem("id");
     await AsyncStorage.removeItem("token");
-    Alert.alert("Logout", "You have been logged out");
     dispatch(cleanUser());
+    dispatch(cleanCart());
+
+    Toast.show({
+      type: "success",
+      text1: "Logout ✅",
+      text2: "Successfully logged out",
+    });
+    navigation.navigate("bottom-navigation", { screen: "LoginPage" });
   };
 
   return (
@@ -80,8 +58,8 @@ const ProfilePage = () => {
               <Image
                 source={{ uri: user?.profile?.url }}
                 style={{
-                  height: 45,
-                  width: 45,
+                  height: 50,
+                  width: 50,
                   borderRadius: 99,
                 }}
               />

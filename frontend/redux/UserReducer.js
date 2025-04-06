@@ -15,9 +15,13 @@ export const CartSlice = createSlice({
     cleanUser: (state) => {
       state.user = null;
     },
+    cleanCart: (state) => {
+      state.cartCount = 0;
+    },
   },
 });
 
-export const { addUser, cleanUser, updateCartCount } = CartSlice.actions;
+export const { addUser, cleanUser, cleanCart, updateCartCount } =
+  CartSlice.actions;
 
 export default CartSlice.reducer;

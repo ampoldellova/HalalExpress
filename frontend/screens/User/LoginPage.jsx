@@ -3,11 +3,8 @@ import {
   Text,
   View,
   TouchableOpacity,
-  Image,
   TextInput,
   Alert,
-  KeyboardAvoidingView,
-  Platform,
 } from "react-native";
 import React, { useState, useRef, useContext } from "react";
 import Button from "../../components/Button";
@@ -23,9 +20,10 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { LoginContext } from "../../contexts/LoginContext";
 import baseUrl from "../../assets/common/baseUrl";
 import { useDispatch } from "react-redux";
-import { addUser } from "../../redux/UserReducer";
+import { addUser, updateCartCount } from "../../redux/UserReducer";
 import { SafeAreaView } from "react-native-safe-area-context";
 import pages from "../../styles/page.style";
+import { useNavigation } from "@react-navigation/native";
 
 const validationSchema = Yup.object().shape({
   password: Yup.string()
@@ -36,12 +34,13 @@ const validationSchema = Yup.object().shape({
     .required("Required"),
 });
 
-const LoginPage = ({ navigation }) => {
+const LoginPage = () => {
   const dispatch = useDispatch();
   const animation = useRef(null);
   const [loader, setLoader] = useState(false);
   const [obsecureText, setObsecureText] = useState(false);
   const { login, setLogin } = useContext(LoginContext);
+  const navigation = useNavigation();
 
   const inValidForm = () => {
     Alert.alert(
@@ -52,13 +51,13 @@ const LoginPage = ({ navigation }) => {
 
   const loginFunc = async (values) => {
     setLoader(true);
-
     try {
       const endpoint = `${baseUrl}/login`;
       const data = values;
 
       const response = await axios.post(endpoint, data);
       if (response.status === 200) {
+        navigation.navigate("HomePage");
         setLoader(false);
         setLogin(true);
         dispatch(addUser(response.data));
@@ -69,7 +68,15 @@ const LoginPage = ({ navigation }) => {
           JSON.stringify(response.data.userToken)
         );
 
-        navigation.navigate("HomePage");
+        const token = await AsyncStorage.getItem("token");
+        const config = {
+          headers: {
+            Authorization: `Bearer ${JSON.parse(token)}`,
+          },
+        };
+
+        const cartResponse = await axios.get(`${baseUrl}/api/cart/`, config);
+        dispatch(updateCartCount(cartResponse.data.cartItems.length));
       } else {
         setLogin(false);
 

@@ -19,59 +19,74 @@ import CartProducts from "../../components/Cart/CartProducts";
 import Button from "../../components/Button";
 import { getProfile } from "../../hook/helpers";
 import Loader from "../../components/Loader";
+import { useSelector } from "react-redux";
 
 const CartPage = () => {
   const navigation = useNavigation();
-  const [user, setUser] = useState(null);
+  const { user } = useSelector((state) => state.user);
   const [cart, setCart] = useState({});
   const [vendorCart, setVendorCart] = useState({});
   const [cartItems, setCartItems] = useState([]);
   const [vendorCartItems, setVendorCartItems] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  const fetchProfile = async () => {
-    const profile = await getProfile();
-    setUser(profile);
-  };
+  const [loading, setLoading] = useState(false);
 
   const getCartItems = async () => {
     try {
       const token = await AsyncStorage.getItem("token");
-      const config = {
-        headers: {
-          Authorization: `Bearer ${JSON.parse(token)}`,
-        },
-      };
+      if (token) {
+        const config = {
+          headers: {
+            Authorization: `Bearer ${JSON.parse(token)}`,
+          },
+        };
 
-      const endpoint =
-        user?.userType === "Vendor"
-          ? `${baseUrl}/api/cart/vendor/`
-          : `${baseUrl}/api/cart/`;
+        const endpoint =
+          user?.userType === "Vendor"
+            ? `${baseUrl}/api/cart/vendor/`
+            : `${baseUrl}/api/cart/`;
 
-      const response = await axios.get(endpoint, config);
-      setVendorCartItems(response.data.cartItems);
-      setCartItems(response.data.cartItems);
-      setVendorCart(response.data.vendorCart);
-      setCart(response.data.cart);
-      setLoading(false);
+        const response = await axios.get(endpoint, config);
+        setVendorCartItems(response.data.cartItems);
+        setCartItems(response.data.cartItems);
+        setVendorCart(response.data.vendorCart);
+        setCart(response.data.cart);
+        setLoading(false);
+      } else {
+        setLoading(false);
+      }
     } catch (error) {
-      console.log(error.message);
+      console.log(error);
     }
   };
 
   useFocusEffect(
     React.useCallback(() => {
-      fetchProfile();
-      {
-        getCartItems();
-      }
+      getCartItems();
     }, [cartItems, vendorCartItems])
   );
-
+  
   return (
     <SafeAreaView>
       {loading ? (
         <Loader />
+      ) : !user ? (
+        <View style={styles.container}>
+          <Image
+            style={styles.image}
+            source={require("../../assets/images/cart.png")}
+          />
+          <Text style={styles.text}>
+            You havent added anything to your cart yet.
+          </Text>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => {
+              navigation.navigate("HomePage");
+            }}
+          >
+            <Text style={styles.buttonText}>Browse Items</Text>
+          </TouchableOpacity>
+        </View>
       ) : (
         <View style={pages.viewOne}>
           <View style={pages.viewTwo}>
