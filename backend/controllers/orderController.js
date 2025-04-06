@@ -315,6 +315,14 @@ module.exports = {
         });
       }
 
+      if (order.paymentStatus === "Paid") {
+        order.paymentStatus = "Refunded";
+      }
+
+      if (order.paymentStatus === "Pending") {
+        order.paymentStatus = "Cancelled";
+      }
+
       order.orderStatus = "Rejected";
       await order.save();
 

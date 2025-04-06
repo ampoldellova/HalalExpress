@@ -120,7 +120,7 @@ const CancelledOrders = ({ cancelledOrders }) => {
                         style={{
                           borderRadius: 99,
                           backgroundColor:
-                            item.paymentStatus === "Pending"
+                            item.paymentStatus === "Processing refund"
                               ? COLORS.secondary
                               : COLORS.primary,
                           width: 10,

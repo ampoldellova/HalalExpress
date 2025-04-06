@@ -23,6 +23,7 @@ import Toast from "react-native-toast-message";
 import baseUrl from "../../assets/common/baseUrl";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import Entypo from "@expo/vector-icons/Entypo";
+import { createRefund } from "../../hook/paymongoService";
 
 const PendingOrderDetails = () => {
   const route = useRoute();
@@ -43,19 +44,48 @@ const PendingOrderDetails = () => {
         },
       };
 
-      await axios.post(
-        `${baseUrl}/api/orders/reject`,
-        { orderId: order._id },
-        config
-      );
+      if (
+        order?.paymentStatus === "Paid" &&
+        order?.paymentMethod === "gcash" &&
+        order?.orderStatus === "Pending"
+      ) {
+        const amount = order?.totalAmount * 100;
+        const reason = "Order rejected by the restaurant";
+        const paymentId = order?.paymentId;
+        const refundPayment = await createRefund(amount, reason, paymentId);
+        console.log(refundPayment);
+        if (refundPayment.data.attributes.status === "pending") {
+          await axios.post(
+            `${baseUrl}/api/orders/reject`,
+            { orderId: order._id },
+            config
+          );
 
-      navigation.goBack();
-      setLoading(false);
-      Toast.show({
-        type: "success",
-        text1: "Success ✅",
-        text2: "Order rejected successfully!",
-      });
+          navigation.goBack();
+          setLoading(false);
+          Toast.show({
+            type: "success",
+            text1: "Success ✅",
+            text2: "Order rejected successfully!",
+          });
+        } else {
+          throw new Error("Failed to process refund");
+        }
+      } else {
+        await axios.post(
+          `${baseUrl}/api/orders/reject`,
+          { orderId: order._id },
+          config
+        );
+
+        navigation.goBack();
+        setLoading(false);
+        Toast.show({
+          type: "success",
+          text1: "Success ✅",
+          text2: "Order rejected successfully!",
+        });
+      }
     } catch (error) {
       console.log(error);
       setLoading(false);
@@ -581,7 +611,7 @@ const PendingOrderDetails = () => {
             >
               {loading ? (
                 <ActivityIndicator
-                  style={{ fontSize: 16 }}
+                  style={{ fontSize: 16, width: SIZES.width / 6 }}
                   color={COLORS.white}
                 />
               ) : (
@@ -591,6 +621,7 @@ const PendingOrderDetails = () => {
                     fontFamily: "bold",
                     textAlign: "center",
                     fontSize: 16,
+                    width: SIZES.width / 6,
                   }}
                 >
                   Confirm

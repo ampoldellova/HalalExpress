@@ -56,7 +56,7 @@ const OrderDetails = () => {
             order?.paymentMethod === "gcash" &&
             order?.orderStatus === "Pending"
           ) {
-            const amount = order?.subTotal * 100;
+            const amount = order?.totalAmount * 100;
             const paymentId = order?.paymentId;
             const refundPayment = await createRefund(amount, reason, paymentId);
             console.log(refundPayment);

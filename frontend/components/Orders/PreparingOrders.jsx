@@ -495,7 +495,7 @@ const PreparingOrders = ({ preparingOrders }) => {
                 >
                   {loading ? (
                     <ActivityIndicator
-                      style={{ fontSize: 16 }}
+                      style={{ fontSize: 16, width: SIZES.width / 6 }}
                       color={COLORS.white}
                     />
                   ) : (
@@ -505,6 +505,7 @@ const PreparingOrders = ({ preparingOrders }) => {
                         fontFamily: "bold",
                         textAlign: "center",
                         fontSize: 14,
+                        width: SIZES.width / 6,
                       }}
                     >
                       Confirm
