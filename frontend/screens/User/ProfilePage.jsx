@@ -40,7 +40,7 @@ const ProfilePage = () => {
 
     Toast.show({
       type: "success",
-      text1: "Logout ✅",
+      text1: "Logged out ✅",
       text2: "Successfully logged out",
     });
     navigation.navigate("bottom-navigation", { screen: "LoginPage" });
