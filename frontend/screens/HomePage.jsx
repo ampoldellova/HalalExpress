@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import axios from "axios";
@@ -85,7 +85,7 @@ const HomePage = () => {
       ) : (
         <View style={pages.viewOne}>
           <View style={pages.viewTwo}>
-            <View>
+            <ScrollView showsVerticalScrollIndicator={false}>
               <HomeHeader />
               <View>
                 <CategoryList
@@ -111,7 +111,7 @@ const HomePage = () => {
                   <Foods foods={filteredFoods} />
                 </View>
               )}
-            </View>
+            </ScrollView>
           </View>
         </View>
       )}
