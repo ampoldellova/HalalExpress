@@ -24,6 +24,7 @@ import { addUser, updateCartCount } from "../../redux/UserReducer";
 import { SafeAreaView } from "react-native-safe-area-context";
 import pages from "../../styles/page.style";
 import { useNavigation } from "@react-navigation/native";
+import Toast from "react-native-toast-message";
 
 const validationSchema = Yup.object().shape({
   password: Yup.string()
@@ -58,6 +59,11 @@ const LoginPage = () => {
       const response = await axios.post(endpoint, data);
       if (response.status === 200) {
         navigation.navigate("HomePage");
+        Toast.show({
+          type: "success",
+          text1: "Logged in ✅",
+          text2: "Successfully logged in",
+        });
         setLoader(false);
         setLogin(true);
         dispatch(addUser(response.data));
