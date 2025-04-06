@@ -85,7 +85,7 @@ const HomePage = () => {
       ) : (
         <View style={pages.viewOne}>
           <View style={pages.viewTwo}>
-            <ScrollView showsVerticalScrollIndicator={false}>
+            <ScrollView>
               <HomeHeader />
               <View>
                 <CategoryList
