@@ -45,8 +45,8 @@ export default function OrderNavigator({ orders }) {
   const cancelledOrders =
     orders?.filter(
       (order) =>
-        order.orderStatus === "cancelled by customer" ||
-        order.orderStatus === "cancelled by resstaurant"
+        order.orderStatus === "Cancelled by customer" ||
+        order.orderStatus === "Rejected"
     ) || [];
 
   const renderScene = ({ route }) => {
@@ -80,6 +80,7 @@ export default function OrderNavigator({ orders }) {
       renderScene={renderScene}
       onIndexChange={setIndex}
       initialLayout={{ width: layout.width }}
+      style={{ backgroundColor: COLORS.offwhite }}
       renderTabBar={(props) => (
         <TabBar
           {...props}

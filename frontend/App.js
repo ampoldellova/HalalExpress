@@ -1,11 +1,7 @@
 import "react-native-gesture-handler";
 import "react-native-reanimated";
-import { Linking, StyleSheet, Text, View, StatusBar } from "react-native";
-import {
-  NavigationContainer,
-  useFocusEffect,
-  useNavigation,
-} from "@react-navigation/native";
+import { StyleSheet, StatusBar } from "react-native";
+import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useFonts } from "expo-font";
 import BottomTab from "./navigations/BottomTab";

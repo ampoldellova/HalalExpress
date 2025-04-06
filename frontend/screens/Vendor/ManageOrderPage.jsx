@@ -15,11 +15,8 @@ import {
 import BackBtn from "../../components/BackBtn";
 import baseUrl from "../../assets/common/baseUrl";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { COLORS, SIZES } from "../../styles/theme";
-import PendingVendorOrders from "../../components/Orders/PendingVendorOrders";
-import Heading from "../../components/Heading";
+import { SIZES } from "../../styles/theme";
 import Loader from "../../components/Loader";
-import { AntDesign, FontAwesome } from "@expo/vector-icons";
 import OrderNavigator from "../../navigations/OrderNavigator";
 
 const ManageOrderPage = () => {

@@ -52,7 +52,7 @@ const OutForDeliveryOrders = ({ outForDeliveryOrders }) => {
                 style={{
                   padding: 10,
                   borderRadius: 10,
-                  backgroundColor: "#f8f8f8",
+                  backgroundColor: COLORS.white,
                   marginBottom: 10,
                   marginHorizontal: 10,
                 }}

@@ -121,7 +121,7 @@ module.exports = {
           .json({ status: false, message: "Order not found" });
       }
 
-      if (order.orderStatus === "cancelled by customer") {
+      if (order.orderStatus === "Cancelled by customer") {
         return res
           .status(400)
           .json({ status: false, message: "Order is already cancelled" });
@@ -135,7 +135,7 @@ module.exports = {
         order.paymentStatus = "Cancelled";
       }
 
-      order.orderStatus = "cancelled by customer";
+      order.orderStatus = "Cancelled by customer";
       await order.save();
 
       res
@@ -293,6 +293,39 @@ module.exports = {
         status: false,
         message: error.message,
       });
+    }
+  },
+
+  rejectOrder: async (req, res) => {
+    const { orderId } = req.body;
+
+    try {
+      const order = await Order.findById(orderId);
+
+      if (!order) {
+        return res
+          .status(404)
+          .json({ status: false, message: "Order not found" });
+      }
+
+      if (order.orderStatus === "Rejected") {
+        return res.status(400).json({
+          status: false,
+          message: "Order is already marked as Rejected",
+        });
+      }
+
+      order.orderStatus = "Rejected";
+      await order.save();
+
+      res.status(200).json({
+        status: true,
+        message: "Order status updated successfully",
+        order,
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ status: false, message: error.message });
     }
   },
 

@@ -21,6 +21,8 @@ import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Toast from "react-native-toast-message";
 import baseUrl from "../../assets/common/baseUrl";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
+import Entypo from "@expo/vector-icons/Entypo";
 
 const PendingOrderDetails = () => {
   const route = useRoute();
@@ -28,6 +30,42 @@ const PendingOrderDetails = () => {
   const navigation = useNavigation();
   const [showNote, setShowNote] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showAcceptConfirmation, setShowAcceptConfirmation] = useState(false);
+  const [showRejectConfirmation, setShowRejectConfirmation] = useState(false);
+
+  const rejectOrder = async () => {
+    try {
+      setLoading(true);
+      const token = await AsyncStorage.getItem("token");
+      const config = {
+        headers: {
+          Authorization: `Bearer ${JSON.parse(token)}`,
+        },
+      };
+
+      await axios.post(
+        `${baseUrl}/api/orders/reject`,
+        { orderId: order._id },
+        config
+      );
+
+      navigation.goBack();
+      setLoading(false);
+      Toast.show({
+        type: "success",
+        text1: "Success ✅",
+        text2: "Order rejected successfully!",
+      });
+    } catch (error) {
+      console.log(error);
+      setLoading(false);
+      Toast.show({
+        type: "error",
+        text1: "Error ❌",
+        text2: error,
+      });
+    }
+  };
 
   const acceptOrder = async () => {
     try {
@@ -374,30 +412,194 @@ const PendingOrderDetails = () => {
           )}
         </View>
 
-        <TouchableOpacity
-          onPress={acceptOrder}
+        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+          <TouchableOpacity
+            onPress={() => setShowRejectConfirmation(true)}
+            style={{
+              backgroundColor: COLORS.secondary,
+              padding: 10,
+              borderRadius: 15,
+              width: SIZES.width / 2.3,
+              alignItems: "center",
+            }}
+          >
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <Entypo name="trash" size={16} color={COLORS.white} />
+              <Text
+                style={{
+                  color: COLORS.white,
+                  fontFamily: "bold",
+                  textAlign: "center",
+                  fontSize: 16,
+                  marginLeft: 5,
+                }}
+              >
+                R E J E C T
+              </Text>
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() => setShowAcceptConfirmation(true)}
+            style={{
+              backgroundColor: COLORS.primary,
+              padding: 10,
+              borderRadius: 15,
+              width: SIZES.width / 2.3,
+              alignItems: "center",
+            }}
+          >
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <FontAwesome
+                name="check-circle-o"
+                size={18}
+                color={COLORS.white}
+              />
+              <Text
+                style={{
+                  color: COLORS.white,
+                  fontFamily: "bold",
+                  textAlign: "center",
+                  fontSize: 16,
+                  marginLeft: 5,
+                }}
+              >
+                A C C E P T
+              </Text>
+            </View>
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      <Modal
+        visible={
+          showAcceptConfirmation
+            ? showAcceptConfirmation
+            : showRejectConfirmation
+        }
+        onTouchOutside={() => {
+          showAcceptConfirmation
+            ? setShowAcceptConfirmation(false)
+            : setShowRejectConfirmation(false);
+        }}
+        modalAnimation={new SlideAnimation({ slideFrom: "bottom" })}
+        onHardwareBackPress={() => {
+          showAcceptConfirmation
+            ? setShowAcceptConfirmation(false)
+            : setShowRejectConfirmation(false);
+        }}
+      >
+        <View
           style={{
+            height: 10,
             backgroundColor: COLORS.primary,
-            padding: 10,
-            borderRadius: 15,
+            justifyContent: "center",
+            alignItems: "center",
           }}
         >
-          {loading ? (
-            <ActivityIndicator style={{ fontSize: 16 }} color={COLORS.white} />
-          ) : (
-            <Text
+          <View
+            style={{
+              height: 3,
+              backgroundColor: COLORS.white,
+              width: SIZES.width / 5,
+              borderRadius: 10,
+            }}
+          />
+        </View>
+        <ModalContent
+          style={{
+            height: SIZES.height / 4.3,
+            width: SIZES.width / 1.3,
+          }}
+        >
+          <Text
+            style={{
+              fontFamily: "bold",
+              fontSize: 20,
+              marginBottom: 10,
+              marginTop: -15,
+            }}
+          >
+            {showAcceptConfirmation ? "Accept Order?" : "Reject Order?"}
+          </Text>
+          <Text
+            style={{
+              fontFamily: "regular",
+              fontSize: 14,
+            }}
+          >
+            {showAcceptConfirmation
+              ? "Are you sure you want to accept this order?"
+              : "Are you sure you want to reject this order?"}
+          </Text>
+
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "flex-end",
+              marginTop: 20,
+            }}
+          >
+            <TouchableOpacity
+              onPress={() => {
+                showAcceptConfirmation
+                  ? setShowAcceptConfirmation(false)
+                  : setShowRejectConfirmation(false);
+              }}
               style={{
-                color: COLORS.white,
-                fontFamily: "bold",
-                textAlign: "center",
-                fontSize: 16,
+                backgroundColor: COLORS.gray,
+                padding: 10,
+                borderRadius: 10,
+                width: "auto",
+                alignItems: "center",
+                marginRight: 10,
               }}
             >
-              A C C E P T {"   "} O R D E R
-            </Text>
-          )}
-        </TouchableOpacity>
-      </View>
+              <Text
+                style={{
+                  color: COLORS.white,
+                  fontFamily: "bold",
+                  textAlign: "center",
+                  fontSize: 16,
+                }}
+              >
+                Cancel
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => {
+                showAcceptConfirmation ? acceptOrder() : rejectOrder();
+              }}
+              style={{
+                backgroundColor: COLORS.primary,
+                padding: 10,
+                borderRadius: 10,
+                width: "auto",
+                alignItems: "center",
+              }}
+            >
+              {loading ? (
+                <ActivityIndicator
+                  style={{ fontSize: 16 }}
+                  color={COLORS.white}
+                />
+              ) : (
+                <Text
+                  style={{
+                    color: COLORS.white,
+                    fontFamily: "bold",
+                    textAlign: "center",
+                    fontSize: 16,
+                  }}
+                >
+                  Confirm
+                </Text>
+              )}
+            </TouchableOpacity>
+          </View>
+        </ModalContent>
+      </Modal>
     </ScrollView>
   );
 };
