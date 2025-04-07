@@ -600,7 +600,7 @@ const OrderDetails = () => {
                     To be delivered at:
                   </Text>
                   <Text style={{ fontFamily: "regular" }}>
-                    {order?.deliveryAddress}
+                    {order?.deliveryAddress?.address}
                   </Text>
                 </View>
               </View>

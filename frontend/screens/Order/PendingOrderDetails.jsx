@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import BackBtn from "../../components/BackBtn";
 import Divider from "../../components/Divider";
@@ -24,11 +24,13 @@ import baseUrl from "../../assets/common/baseUrl";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import Entypo from "@expo/vector-icons/Entypo";
 import { createRefund } from "../../hook/paymongoService";
+import MapView, { Marker } from "react-native-maps";
 
 const PendingOrderDetails = () => {
   const route = useRoute();
   const order = route.params;
   const navigation = useNavigation();
+  const [region, setRegion] = useState(null);
   const [showNote, setShowNote] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showAcceptConfirmation, setShowAcceptConfirmation] = useState(false);
@@ -131,6 +133,17 @@ const PendingOrderDetails = () => {
     }
   };
 
+  useEffect(() => {
+    if (order?.deliveryAddress?.coordinates) {
+      setRegion({
+        latitude: order.deliveryAddress.coordinates.latitude,
+        longitude: order.deliveryAddress.coordinates.longitude,
+        latitudeDelta: 0.01,
+        longitudeDelta: 0.01,
+      });
+    }
+  }, [order?.deliveryAddress?.coordinates]);
+
   return (
     <ScrollView>
       <View style={{ marginHorizontal: 20 }}>
@@ -143,6 +156,48 @@ const PendingOrderDetails = () => {
             borderRadius: 15,
             padding: 10,
             marginTop: 10,
+            backgroundColor: COLORS.white,
+            marginBottom: 20,
+          }}
+        >
+          <Text style={{ fontFamily: "bold", fontSize: 18 }}>
+            To be delivered to:
+          </Text>
+
+          <Text
+            style={{ color: COLORS.gray, fontFamily: "regular", fontSize: 12 }}
+          >
+            {order?.deliveryAddress?.address}
+          </Text>
+
+          <View style={styles.mapContainer}>
+            {region && (
+              <MapView
+                style={{ height: SIZES.height / 5.2 }}
+                region={{
+                  latitude: order?.deliveryAddress?.coordinates?.latitude,
+                  longitude: order?.deliveryAddress?.coordinates?.longitude,
+                  latitudeDelta: 0.01,
+                  longitudeDelta: 0.01,
+                }}
+              >
+                <Marker
+                  title="Your Location"
+                  coordinate={{
+                    latitude: order?.deliveryAddress?.coordinates?.latitude,
+                    longitude: order?.deliveryAddress?.coordinates?.longitude,
+                  }}
+                />
+              </MapView>
+            )}
+          </View>
+        </View>
+
+        <View
+          style={{
+            borderColor: COLORS.gray2,
+            borderRadius: 15,
+            padding: 10,
             backgroundColor: COLORS.white,
             marginBottom: 20,
           }}
@@ -442,7 +497,13 @@ const PendingOrderDetails = () => {
           )}
         </View>
 
-        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            marginBottom: 20,
+          }}
+        >
           <TouchableOpacity
             onPress={() => setShowRejectConfirmation(true)}
             style={{
@@ -643,5 +704,13 @@ const styles = StyleSheet.create({
     fontSize: 24,
     textAlign: "center",
     marginTop: 10,
+  },
+  mapContainer: {
+    width: "100%",
+    height: "auto",
+    borderColor: COLORS.gray2,
+    borderWidth: 1,
+    borderRadius: 15,
+    overflow: "hidden",
   },
 });
