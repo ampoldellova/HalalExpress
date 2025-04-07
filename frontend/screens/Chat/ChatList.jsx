@@ -76,7 +76,7 @@ const ChatList = () => {
 
             <FlatList
                 data={filteredUsers}
-                keyExtractor={(item) => item._id.toString()}
+                keyExtractor={(item) => item._id}
                 renderItem={renderItem}
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={{ paddingBottom: 100 }}

@@ -14,7 +14,7 @@ const Foods = ({ foods }) => {
         showsHorizontalScrollIndicator={false}
         style={{ marginTop: 5, rowGap: 10 }}
         scrollEnabled
-        keyExtractor={(item) => item._id.toString()}
+        keyExtractor={(item) => item._id}
         renderItem={({ item }) => (
           <FoodComponent
             item={item}

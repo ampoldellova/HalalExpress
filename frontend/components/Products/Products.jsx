@@ -14,7 +14,7 @@ const Products = ({ ingredients }) => {
                 showsHorizontalScrollIndicator={false}
                 style={{ marginTop: 5, rowGap: 10 }}
                 scrollEnabled
-                keyExtractor={(item) => item._id.toString()}
+                keyExtractor={(item) => item._id}
                 renderItem={({ item }) => (
                     <ProductComponent item={item} onPress={() => navigation.navigate('product-navigator', item)} />
                 )}

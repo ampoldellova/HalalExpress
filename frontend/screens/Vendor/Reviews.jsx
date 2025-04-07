@@ -128,6 +128,7 @@ const Reviews = ({ item }) => {
               showsHorizontalScrollIndicator={false}
               data={item?.orderItems}
               horizontal
+              keyExtractor={(item) => item._id}
               renderItem={({ item }) => (
                 <View
                   key={item?._id}

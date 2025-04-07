@@ -17,7 +17,7 @@ const HomeProductCategories = ({ ingredients }) => {
       <FlatList
         data={ingredients}
         showsHorizontalScrollIndicator={false}
-        keyExtractor={(item) => item._id.toString()}
+        keyExtractor={(item) => item._id}
         style={{ marginTop: 10 }}
         scrollEnabled
         renderItem={renderIngredientCategoryItem}

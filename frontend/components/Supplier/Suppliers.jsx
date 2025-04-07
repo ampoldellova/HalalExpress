@@ -16,7 +16,7 @@ const Suppliers = ({ suppliers }) => {
                 showsHorizontalScrollIndicator={false}
                 style={{ marginTop: 5, rowGap: 10 }}
                 scrollEnabled
-                keyExtractor={(item) => item._id.toString()}
+                keyExtractor={(item) => item._id}
                 renderItem={({ item }) => (
                     <StoreComponent item={item} onPress={() => { navigation.navigate('supplier-page', item), setSupplierObj(item) }} />
                 )}
