@@ -10,17 +10,11 @@ import { Image } from "react-native";
 const GoogleMapView = ({ placeList, title }) => {
   const [coordinates, setCoordinates] = useState([]);
   const { location, setLocation } = useContext(UserLocationContext);
-
-  const [mapRegion, setMapRegion] = useState({
-    latitude: location?.coords?.latitude,
-    longitude: location?.coords?.longitude,
-    latitudeDelta: 0.1,
-    longitudeDelta: 0.1,
-  });
+  const [mapRegion, setMapRegion] = useState(null);
 
   useFocusEffect(
     React.useCallback(() => {
-      if (location) {
+      if (location?.coords) {
         setMapRegion({
           latitude: location?.coords?.latitude,
           longitude: location?.coords?.longitude,
@@ -66,28 +60,34 @@ const GoogleMapView = ({ placeList, title }) => {
 
   return (
     <View style={styles.mapContainer}>
-      <MapView style={styles.map} provider={PROVIDER_GOOGLE} region={mapRegion}>
-        <Marker title="My location" coordinate={mapRegion}>
-          <Image
-            source={require("../assets/images/location.png")}
-            style={{ width: 30, height: 30 }} // Adjust size here
-            resizeMode="contain"
+      {mapRegion && (
+        <MapView
+          style={styles.map}
+          provider={PROVIDER_GOOGLE}
+          region={mapRegion}
+        >
+          <Marker title="My location" coordinate={mapRegion}>
+            <Image
+              source={require("../assets/images/location.png")}
+              style={{ width: 30, height: 30 }} // Adjust size here
+              resizeMode="contain"
+            />
+          </Marker>
+
+          {placeList.map(
+            (item, index) =>
+              index <= 1 && (
+                <PlaceMarker key={index} coordinates={item} title={title} />
+              )
+          )}
+
+          <Polyline
+            coordinates={coordinates}
+            strokeColor={COLORS.primary}
+            strokeWidth={5}
           />
-        </Marker>
-
-        {placeList.map(
-          (item, index) =>
-            index <= 1 && (
-              <PlaceMarker key={index} coordinates={item} title={title} />
-            )
-        )}
-
-        <Polyline
-          coordinates={coordinates}
-          strokeColor={COLORS.primary}
-          strokeWidth={5}
-        />
-      </MapView>
+        </MapView>
+      )}
     </View>
   );
 };
