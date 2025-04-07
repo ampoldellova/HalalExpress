@@ -177,8 +177,8 @@ const PendingOrderDetails = () => {
               <MapView
                 style={{ height: SIZES.height / 5.2 }}
                 region={{
-                  latitude: order?.deliveryAddress?.coordinates?.latitude,
-                  longitude: order?.deliveryAddress?.coordinates?.longitude,
+                  latitude: region?.latitude,
+                  longitude: region?.longitude,
                   latitudeDelta: 0.01,
                   longitudeDelta: 0.01,
                 }}
@@ -186,8 +186,8 @@ const PendingOrderDetails = () => {
                 <Marker
                   title="Customer Location"
                   coordinate={{
-                    latitude: order?.deliveryAddress?.coordinates?.latitude,
-                    longitude: order?.deliveryAddress?.coordinates?.longitude,
+                    latitude: region?.latitude,
+                    longitude: region?.longitude,
                   }}
                 />
               </MapView>
