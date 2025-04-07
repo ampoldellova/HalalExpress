@@ -136,8 +136,8 @@ const PendingOrderDetails = () => {
   useEffect(() => {
     if (order?.deliveryAddress?.coordinates) {
       setRegion({
-        latitude: order.deliveryAddress.coordinates.latitude,
-        longitude: order.deliveryAddress.coordinates.longitude,
+        latitude: order?.deliveryAddress?.coordinates?.latitude,
+        longitude: order?.deliveryAddress?.coordinates?.longitude,
         latitudeDelta: 0.01,
         longitudeDelta: 0.01,
       });
@@ -339,14 +339,88 @@ const PendingOrderDetails = () => {
                     >
                       Preference
                     </Text>
+
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        alignItems: "center",
+                      }}
+                    >
+                      <View style={{ flexDirection: "row" }}>
+                        <Image
+                          source={{
+                            uri: item?.foodId?.imageUrl?.url,
+                          }}
+                          style={{
+                            height: 40,
+                            width: 40,
+                            objectFit: "cover",
+                            borderRadius: 10,
+                          }}
+                        />
+                        <View>
+                          <Text
+                            style={{
+                              fontFamily: "regular",
+                              fontSize: 12,
+                              marginLeft: 10,
+                            }}
+                          >
+                            {item?.foodId?.title}
+                          </Text>
+
+                          {item?.additives?.length > 0 ? (
+                            <>
+                              {item?.additives?.map((additive) => (
+                                <Text
+                                  key={additive?._id}
+                                  style={{
+                                    fontFamily: "regular",
+                                    fontSize: 12,
+                                    color: COLORS.gray,
+                                    marginLeft: 15,
+                                  }}
+                                >
+                                  + {additive?.title}
+                                </Text>
+                              ))}
+                            </>
+                          ) : (
+                            <Text
+                              style={{
+                                fontFamily: "regular",
+                                fontSize: 12,
+                                color: COLORS.gray,
+                                marginLeft: 15,
+                              }}
+                            >
+                              - No Additives
+                            </Text>
+                          )}
+                        </View>
+                      </View>
+                    </View>
+
                     <Text
                       style={{
                         fontFamily: "regular",
                         fontSize: 14,
                         textAlign: "justify",
+                        marginTop: 10,
                       }}
                     >
                       {item?.instructions}
+                    </Text>
+
+                    <Text
+                      style={{
+                        fontFamily: "regular",
+                        fontSize: 14,
+                        textAlign: "right",
+                        marginTop: 10,
+                      }}
+                    >
+                      - from {order?.userId?.username}
                     </Text>
                   </ModalContent>
                 </Modal>
