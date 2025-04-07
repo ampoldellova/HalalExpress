@@ -7,16 +7,16 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React, { useEffect, useState } from "react";
-import { useNavigation, useRoute } from "@react-navigation/native";
+import React, { useState } from "react";
+import {
+  useFocusEffect,
+  useNavigation,
+  useRoute,
+} from "@react-navigation/native";
 import BackBtn from "../../components/BackBtn";
 import Divider from "../../components/Divider";
 import { COLORS, SIZES } from "../../styles/theme";
-import Modal, {
-  BottomModal,
-  ModalContent,
-  SlideAnimation,
-} from "react-native-modals";
+import Modal, { ModalContent, SlideAnimation } from "react-native-modals";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Toast from "react-native-toast-message";
@@ -133,16 +133,18 @@ const PendingOrderDetails = () => {
     }
   };
 
-  useEffect(() => {
-    if (order?.deliveryAddress?.coordinates) {
-      setRegion({
-        latitude: order?.deliveryAddress?.coordinates?.latitude,
-        longitude: order?.deliveryAddress?.coordinates?.longitude,
-        latitudeDelta: 0.01,
-        longitudeDelta: 0.01,
-      });
-    }
-  }, [order?.deliveryAddress?.coordinates]);
+  useFocusEffect(
+    React.useCallback(() => {
+      if (order?.deliveryAddress?.coordinates) {
+        setRegion({
+          latitude: order?.deliveryAddress?.coordinates?.latitude,
+          longitude: order?.deliveryAddress?.coordinates?.longitude,
+          latitudeDelta: 0.01,
+          longitudeDelta: 0.01,
+        });
+      }
+    }, [order?.deliveryAddress?.coordinates])
+  );
 
   return (
     <ScrollView>
@@ -182,7 +184,7 @@ const PendingOrderDetails = () => {
                 }}
               >
                 <Marker
-                  title="Your Location"
+                  title="Customer Location"
                   coordinate={{
                     latitude: order?.deliveryAddress?.coordinates?.latitude,
                     longitude: order?.deliveryAddress?.coordinates?.longitude,
