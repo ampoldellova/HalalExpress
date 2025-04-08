@@ -249,21 +249,8 @@ const AddAddressPage = () => {
 
               <View style={styles.container}>
                 {region && (
-                  <MapView
-                    style={{ height: SIZES.height / 2 }}
-                    region={{
-                      latitude: region?.latitude,
-                      longitude: region?.longitude,
-                      latitudeDelta: 0.01,
-                      longitudeDelta: 0.01,
-                    }}
-                  >
-                    <Marker
-                      coordinate={{
-                        latitude: region?.latitude,
-                        longitude: region?.longitude,
-                      }}
-                    />
+                  <MapView style={{ height: SIZES.height / 2 }} region={region}>
+                    <Marker coordinate={region} />
                   </MapView>
                 )}
               </View>

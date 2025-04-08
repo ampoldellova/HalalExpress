@@ -73,28 +73,18 @@ const CheckoutPage = () => {
   useFocusEffect(
     React.useCallback(() => {
       if ((selectedAddressLat && selectedAddressLng) || location?.coords) {
-        const latitude =
-          selectedAddressLat === null
-            ? location?.coords?.latitude
-            : selectedAddressLat;
-        const longitude =
-          selectedAddressLng === null
-            ? location?.coords?.longitude
-            : selectedAddressLng;
-
-        if (latitude && longitude) {
-          setRegion({
-            latitude,
-            longitude,
-            latitudeDelta: 0.01,
-            longitudeDelta: 0.01,
-          });
-        } else {
-          console.error("Invalid coordinates for region:", {
-            latitude,
-            longitude,
-          });
-        }
+        setRegion({
+          latitude:
+            selectedAddressLat === null
+              ? location?.coords?.latitude
+              : selectedAddressLat,
+          longitude:
+            selectedAddressLng === null
+              ? location?.coords?.longitude
+              : selectedAddressLng,
+          latitudeDelta: 0.01,
+          longitudeDelta: 0.01,
+        });
       }
     }, [location?.coords, selectedAddressLat, selectedAddressLng])
   );
@@ -462,14 +452,14 @@ const CheckoutPage = () => {
               </View>
 
               <View style={styles.mapContainer}>
-                {region ? (
+                {region && (
                   <MapView
                     style={{ height: SIZES.height / 5.2 }}
                     region={{
                       latitude: region?.latitude,
                       longitude: region?.longitude,
-                      latitudeDelta: region?.latitudeDelta,
-                      longitudeDelta: region?.longitudeDelta,
+                      latitudeDelta: 0.01,
+                      longitudeDelta: 0.01,
                     }}
                   >
                     <Marker
@@ -480,10 +470,6 @@ const CheckoutPage = () => {
                       }}
                     />
                   </MapView>
-                ) : (
-                  <Text style={{ textAlign: "center", color: COLORS.gray }}>
-                    Unable to load map. Please check your location settings.
-                  </Text>
                 )}
               </View>
 
