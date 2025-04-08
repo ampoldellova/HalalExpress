@@ -229,8 +229,20 @@ const CheckoutPage = () => {
           deliveryOption: selectedDeliveryOption,
           deliveryAddress:
             selectedDeliveryOption === "standard" && selectedAddress === null
-              ? address.formattedAddress
-              : selectedAddress,
+              ? {
+                  address: address.formattedAddress,
+                  coordinates: {
+                    latitude: location?.coords?.latitude,
+                    longitude: location?.coords?.longitude,
+                  },
+                }
+              : {
+                  address: selectedAddress,
+                  coordinates: {
+                    latitude: selectedAddressLat,
+                    longitude: selectedAddressLng,
+                  },
+                },
           subTotal:
             user?.userType === "Vendor"
               ? vendorCart?.totalAmount.toFixed(2)
@@ -275,8 +287,20 @@ const CheckoutPage = () => {
           deliveryOption: selectedDeliveryOption,
           deliveryAddress:
             selectedDeliveryOption === "standard" && selectedAddress === null
-              ? address.formattedAddress
-              : selectedAddress,
+              ? {
+                  address: address.formattedAddress,
+                  coordinates: {
+                    latitude: location?.coords?.latitude,
+                    longitude: location?.coords?.longitude,
+                  },
+                }
+              : {
+                  address: selectedAddress,
+                  coordinates: {
+                    latitude: selectedAddressLat,
+                    longitude: selectedAddressLng,
+                  },
+                },
           subTotal:
             user?.userType === "Vendor"
               ? vendorCart?.totalAmount.toFixed(2)
