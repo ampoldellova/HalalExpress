@@ -59,9 +59,11 @@ const Reviews = ({ item }) => {
     }, [])
   );
 
+  console.log(reviews?.reviews);
+
   return (
     <>
-      {reviews ? (
+      {reviews?.reviews === undefined ? (
         <View
           style={{
             width: SIZES.width,
@@ -90,7 +92,7 @@ const Reviews = ({ item }) => {
         </View>
       ) : (
         <FlatList
-          data={reviews}
+          data={reviews?.reviews}
           showsVerticalScrollIndicator={false}
           keyExtractor={(item) => item._id}
           style={{
