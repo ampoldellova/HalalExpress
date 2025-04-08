@@ -68,6 +68,38 @@ const CheckoutPage = () => {
   const [deliveryOptionsError, setDeliveryOptionsError] = useState(false);
   const [paymentMethodError, setPaymentMethodError] = useState(false);
   const [orderNote, setOrderNote] = useState("");
+  const [region, setRegion] = useState(null);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      if ((selectedAddressLat && selectedAddressLng) || location?.coords) {
+        const latitude =
+          selectedAddressLat === null
+            ? location?.coords?.latitude
+            : selectedAddressLat;
+        const longitude =
+          selectedAddressLng === null
+            ? location?.coords?.longitude
+            : selectedAddressLng;
+
+        if (latitude && longitude) {
+          setRegion({
+            latitude,
+            longitude,
+            latitudeDelta: 0.01,
+            longitudeDelta: 0.01,
+          });
+        } else {
+          console.error("Invalid coordinates for region:", {
+            latitude,
+            longitude,
+          });
+        }
+      }
+    }, [location?.coords, selectedAddressLat, selectedAddressLng])
+  );
+
+  console.log(region);
 
   const getUserAddresses = async () => {
     try {
@@ -430,35 +462,29 @@ const CheckoutPage = () => {
               </View>
 
               <View style={styles.mapContainer}>
-                <MapView
-                  style={{ height: SIZES.height / 5.2 }}
-                  region={{
-                    latitude:
-                      selectedAddressLat === null
-                        ? location?.coords?.latitude
-                        : selectedAddressLat,
-                    longitude:
-                      selectedAddressLng === null
-                        ? location?.coords?.longitude
-                        : selectedAddressLng,
-                    latitudeDelta: 0.01,
-                    longitudeDelta: 0.01,
-                  }}
-                >
-                  <Marker
-                    title="Your Location"
-                    coordinate={{
-                      latitude:
-                        selectedAddressLat === null
-                          ? location?.coords?.latitude
-                          : selectedAddressLat,
-                      longitude:
-                        selectedAddressLng === null
-                          ? location?.coords?.longitude
-                          : selectedAddressLng,
+                {region ? (
+                  <MapView
+                    style={{ height: SIZES.height / 5.2 }}
+                    region={{
+                      latitude: region?.latitude,
+                      longitude: region?.longitude,
+                      latitudeDelta: region?.latitudeDelta,
+                      longitudeDelta: region?.longitudeDelta,
                     }}
-                  />
-                </MapView>
+                  >
+                    <Marker
+                      title="Your Location"
+                      coordinate={{
+                        latitude: region?.latitude,
+                        longitude: region?.longitude,
+                      }}
+                    />
+                  </MapView>
+                ) : (
+                  <Text style={{ textAlign: "center", color: COLORS.gray }}>
+                    Unable to load map. Please check your location settings.
+                  </Text>
+                )}
               </View>
 
               <View style={{ flexDirection: "column" }}>

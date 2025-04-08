@@ -6,7 +6,7 @@ import {
   Text,
   View,
 } from "react-native";
-import React, { useContext, useState } from "react";
+import React, { useContext, useRef, useState } from "react";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import baseUrl from "../../assets/common/baseUrl";
 import { COLORS, SIZES } from "../../styles/theme";
@@ -16,10 +16,12 @@ import {
   differenceInMonths,
   differenceInYears,
 } from "date-fns";
+import LottieView from "lottie-react-native";
 
 const Reviews = ({ item }) => {
   const navigation = useNavigation();
   const [reviews, setReviews] = useState([]);
+  const animation = useRef(null);
 
   const fetchRestaurantReviews = async () => {
     try {
@@ -28,7 +30,8 @@ const Reviews = ({ item }) => {
       );
 
       const data = await response.json();
-      setReviews(data.reviews);
+      setReviews(data);
+      console.log(data);
     } catch (error) {
       console.error("Error fetching reviews:", error);
     }
@@ -57,123 +60,156 @@ const Reviews = ({ item }) => {
   );
 
   return (
-    <FlatList
-      data={reviews}
-      showsVerticalScrollIndicator={false}
-      keyExtractor={(item) => item._id}
-      style={{
-        marginTop: 10,
-        marginBottom: 80,
-      }}
-      renderItem={({ item }) => (
+    <>
+      {reviews ? (
         <View
           style={{
-            marginHorizontal: 10,
-            marginBottom: 10,
+            width: SIZES.width,
+            height: SIZES.height / 2,
+            justifyContent: "center",
+            alignItems: "center",
+            top: 0,
           }}
         >
-          <View
+          <LottieView
+            autoPlay
+            ref={animation}
+            style={{ width: "50%", height: "50%" }}
+            source={require("../../assets/anime/emptyOrders.json")}
+          />
+          <Text
             style={{
-              backgroundColor: COLORS.white,
-              padding: 10,
-              borderRadius: 15,
-              marginBottom: 10,
+              fontSize: 16,
+              fontFamily: "regular",
+              marginTop: -20,
+              color: COLORS.gray,
             }}
           >
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
-              <Image
-                source={{ uri: item?.userId?.profile?.url }}
-                style={{ width: 20, height: 20, borderRadius: 25 }}
-              />
-              <Text style={{ fontFamily: "bold", marginLeft: 5, marginTop: 2 }}>
-                {item?.userId?.username}
-              </Text>
-            </View>
+            No reviews yet.
+          </Text>
+        </View>
+      ) : (
+        <FlatList
+          data={reviews}
+          showsVerticalScrollIndicator={false}
+          keyExtractor={(item) => item._id}
+          style={{
+            marginTop: 10,
+            marginBottom: 80,
+          }}
+          renderItem={({ item }) => (
             <View
               style={{
-                marginTop: 5,
-                flexDirection: "row",
-                alignItems: "center",
+                marginHorizontal: 10,
+                marginBottom: 10,
               }}
             >
-              <RatingInput
-                rating={item?.rating?.stars}
-                size={20}
-                color={COLORS.primary}
-              />
-              <Text
+              <View
                 style={{
-                  fontFamily: "regular",
-                  marginLeft: 5,
-                  color: COLORS.gray,
-                  fontSize: 12,
-                  marginTop: 6,
+                  backgroundColor: COLORS.white,
+                  padding: 10,
+                  borderRadius: 15,
+                  marginBottom: 10,
                 }}
               >
-                - {getTimeDifference(item.createdAt)}
-              </Text>
-            </View>
-
-            <Text
-              style={{
-                fontFamily: "regular",
-                marginTop: 5,
-                fontSize: 12,
-              }}
-            >
-              {item.rating.feedback}
-            </Text>
-
-            <FlatList
-              showsHorizontalScrollIndicator={false}
-              data={item?.orderItems}
-              horizontal
-              keyExtractor={(item) => item._id}
-              renderItem={({ item }) => (
+                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                  <Image
+                    source={{ uri: item?.userId?.profile?.url }}
+                    style={{ width: 20, height: 20, borderRadius: 25 }}
+                  />
+                  <Text
+                    style={{ fontFamily: "bold", marginLeft: 5, marginTop: 2 }}
+                  >
+                    {item?.userId?.username}
+                  </Text>
+                </View>
                 <View
-                  key={item?._id}
                   style={{
+                    marginTop: 5,
                     flexDirection: "row",
-                    marginTop: 10,
-                    backgroundColor: COLORS.offwhite,
-                    borderRadius: 5,
                     alignItems: "center",
-                    marginRight: 10,
-                    paddingRight: 10,
                   }}
                 >
-                  <Image
-                    source={{ uri: item?.foodId?.imageUrl?.url }}
-                    style={{ width: 50, height: 50, borderRadius: 5 }}
+                  <RatingInput
+                    rating={item?.rating?.stars}
+                    size={20}
+                    color={COLORS.primary}
                   />
-
-                  <View style={{ flexDirection: "column", marginLeft: 10 }}>
-                    <Text
-                      style={{
-                        fontFamily: "bold",
-                        fontSize: 12,
-                      }}
-                    >
-                      {item?.foodId?.title}
-                    </Text>
-
-                    <Text
-                      style={{
-                        fontFamily: "bold",
-                        fontSize: 12,
-                        color: COLORS.gray,
-                      }}
-                    >
-                      ₱ {item?.foodId?.price}
-                    </Text>
-                  </View>
+                  <Text
+                    style={{
+                      fontFamily: "regular",
+                      marginLeft: 5,
+                      color: COLORS.gray,
+                      fontSize: 12,
+                      marginTop: 6,
+                    }}
+                  >
+                    - {getTimeDifference(item.createdAt)}
+                  </Text>
                 </View>
-              )}
-            />
-          </View>
-        </View>
+
+                <Text
+                  style={{
+                    fontFamily: "regular",
+                    marginTop: 5,
+                    fontSize: 12,
+                  }}
+                >
+                  {item.rating.feedback}
+                </Text>
+
+                <FlatList
+                  showsHorizontalScrollIndicator={false}
+                  data={item?.orderItems}
+                  horizontal
+                  keyExtractor={(item) => item._id}
+                  renderItem={({ item }) => (
+                    <View
+                      key={item?._id}
+                      style={{
+                        flexDirection: "row",
+                        marginTop: 10,
+                        backgroundColor: COLORS.offwhite,
+                        borderRadius: 5,
+                        alignItems: "center",
+                        marginRight: 10,
+                        paddingRight: 10,
+                      }}
+                    >
+                      <Image
+                        source={{ uri: item?.foodId?.imageUrl?.url }}
+                        style={{ width: 50, height: 50, borderRadius: 5 }}
+                      />
+
+                      <View style={{ flexDirection: "column", marginLeft: 10 }}>
+                        <Text
+                          style={{
+                            fontFamily: "bold",
+                            fontSize: 12,
+                          }}
+                        >
+                          {item?.foodId?.title}
+                        </Text>
+
+                        <Text
+                          style={{
+                            fontFamily: "bold",
+                            fontSize: 12,
+                            color: COLORS.gray,
+                          }}
+                        >
+                          ₱ {item?.foodId?.price}
+                        </Text>
+                      </View>
+                    </View>
+                  )}
+                />
+              </View>
+            </View>
+          )}
+        />
       )}
-    />
+    </>
   );
 };
 
