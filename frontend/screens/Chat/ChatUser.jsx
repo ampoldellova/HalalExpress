@@ -1,7 +1,6 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React from "react";
 import { COLORS, SIZES } from "../../styles/theme";
-import Divider from "../../components/Divider";
 
 const ChatUser = ({ restaurant, onPress }) => {
   return (
@@ -11,7 +10,7 @@ const ChatUser = ({ restaurant, onPress }) => {
           flexDirection: "row",
           alignItems: "center",
           marginHorizontal: 20,
-          marginBottom: 10,
+          marginBottom: 20,
         }}
       >
         <Image
@@ -22,8 +21,33 @@ const ChatUser = ({ restaurant, onPress }) => {
           style={styles.profileAvatar}
         />
         <View>
-          <Text style={styles.profileName}>{restaurant?.user?.name}</Text>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
+            <Text
+              style={styles.profileName}
+              numberOfLines={1}
+              ellipsizeMode="tail"
+            >
+              {restaurant?.user?.name}
+            </Text>
+            <Text
+              style={{
+                fontFamily: "regular",
+                color: COLORS.gray,
+                marginLeft: 5,
+              }}
+            >
+              {restaurant?.timeAgo}
+            </Text>
+          </View>
           <Text
+            numberOfLines={1}
+            ellipsizeMode="tail"
             style={{
               fontFamily: "regular",
               color: COLORS.gray,
@@ -42,14 +66,17 @@ export default ChatUser;
 
 const styles = StyleSheet.create({
   profileAvatar: {
-    width: 50,
-    height: 50,
+    width: 60,
+    height: 60,
     borderRadius: 99,
     marginRight: 12,
+    borderColor: COLORS.gray3,
+    borderWidth: 1,
   },
   profileName: {
     fontSize: 18,
     color: COLORS.black,
     fontFamily: "bold",
+    width: SIZES.width / 2,
   },
 });

@@ -2,10 +2,7 @@ import { FlatList, StyleSheet, Text, View } from "react-native";
 import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS, SIZES } from "../../styles/theme";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import axios from "axios";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
-import baseUrl from "../../assets/common/baseUrl";
 import ChatUser from "./ChatUser";
 import BackBtn from "../../components/BackBtn";
 import {
@@ -16,11 +13,23 @@ import {
 } from "@react-native-firebase/firestore";
 import { useSelector } from "react-redux";
 import { database } from "../../config/firebase";
+import { formatDistanceToNow } from "date-fns";
 
 const ChatList = () => {
   const [conversations, setConversations] = useState([]);
   const { user } = useSelector((state) => state.user);
   const navigation = useNavigation();
+  const getShortTimeAgo = (date) => {
+    const fullText = formatDistanceToNow(date, { addSuffix: true });
+    return fullText
+      .replace("about ", "") // Remove "about"
+      .replace(" hours", "h") // Shorten "hours" to "h"
+      .replace(" minutes", "m") // Shorten "minutes" to "m"
+      .replace(" seconds", "s") // Shorten "seconds" to "s"
+      .replace(" days", "d") // Shorten "days" to "d"
+      .replace(" months", "mo") // Shorten "months" to "mo"
+      .replace(" years", "y"); // Shorten "years" to "y"
+  };
 
   useFocusEffect(
     React.useCallback(() => {
@@ -29,10 +38,16 @@ const ChatList = () => {
         const q = query(collectionRef, where("receiverId", "==", user?._id));
 
         const unsubscribe = onSnapshot(q, (snapshot) => {
-          const chats = snapshot.docs.map((doc) => ({
-            _id: doc.id,
-            ...doc.data(),
-          }));
+          const chats = snapshot.docs.map((doc) => {
+            const data = doc.data();
+            const createdAt = data.createdAt?.toDate() || new Date();
+
+            return {
+              _id: doc.id,
+              ...data,
+              timeAgo: getShortTimeAgo(createdAt),
+            };
+          });
 
           const uniqueChats = Object.values(
             chats.reduce((acc, chat) => {
