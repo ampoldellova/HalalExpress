@@ -83,21 +83,13 @@ const LoginPage = () => {
 
         const cartResponse = await axios.get(`${baseUrl}/api/cart/`, config);
         dispatch(updateCartCount(cartResponse.data.cartItems.length));
-      } else {
-        setLogin(false);
-
-        Alert.alert(
-          "Error Logging in 🚨",
-          "Please provide valid credentials ",
-          [
-            {
-              text: "Continue",
-              onPress: () => {},
-            },
-          ]
-        );
       }
     } catch (error) {
+      Toast.show({
+        type: "error",
+        text1: "Error Logging in 🚨",
+        text2: "Please provide valid credentials",
+      });
       setLogin(false);
     } finally {
       setLoader(false);
@@ -107,19 +99,14 @@ const LoginPage = () => {
     <SafeAreaView>
       <ScrollView>
         <View style={[pages.viewOne, { height: SIZES.height - 45 }]}>
-          <View
-            style={[
-              pages.viewTwo,
-              { justifyContent: "center", backgroundColor: COLORS.white },
-            ]}
-          >
+          <View style={[pages.viewTwo, { justifyContent: "center" }]}>
             <View style={{ marginHorizontal: 20 }}>
               <BackBtn onPress={() => navigation.goBack()} />
               <LottieView
                 autoPlay
                 ref={animation}
                 style={{ width: "100%", height: SIZES.height / 3.2 }}
-                source={require("../../assets/anime/delivery.json")}
+                source={require("../../assets/anime/vegetables.json")}
               />
 
               <Text style={styles.titleLogin}>HalalExpress</Text>

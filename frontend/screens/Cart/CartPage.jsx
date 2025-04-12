@@ -64,28 +64,32 @@ const CartPage = () => {
       getCartItems();
     }, [cartItems, vendorCartItems])
   );
-  
+
   return (
     <SafeAreaView>
       {loading ? (
         <Loader />
       ) : !user ? (
-        <View style={styles.container}>
-          <Image
-            style={styles.image}
-            source={require("../../assets/images/cart.png")}
-          />
-          <Text style={styles.text}>
-            You havent added anything to your cart yet.
-          </Text>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => {
-              navigation.navigate("HomePage");
-            }}
-          >
-            <Text style={styles.buttonText}>Browse Items</Text>
-          </TouchableOpacity>
+        <View style={pages.viewOne}>
+          <View style={pages.viewTwo}>
+            <View style={styles.container}>
+              <Image
+                style={styles.image}
+                source={require("../../assets/images/cart.png")}
+              />
+              <Text style={styles.text}>
+                You havent added anything to your cart yet.
+              </Text>
+              <TouchableOpacity
+                style={styles.button}
+                onPress={() => {
+                  navigation.navigate("HomePage");
+                }}
+              >
+                <Text style={styles.buttonText}>Browse Items</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
         </View>
       ) : (
         <View style={pages.viewOne}>

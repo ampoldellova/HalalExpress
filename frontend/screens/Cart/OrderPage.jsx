@@ -32,6 +32,7 @@ const OrderPage = () => {
   const [orders, setOrders] = useState([]);
   const [vendorOrders, setVendorOrders] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [orderType, setOrderType] = useState("Active");
 
   const fetchProfile = async () => {
     const profile = await getProfile();
@@ -158,388 +159,508 @@ const OrderPage = () => {
             </>
           ) : (
             <>
-              {pendingOrders.length > 0 && (
-                <>
-                  <Heading heading={`Active Order(s)`} />
-                  <FlatList
-                    data={pendingOrders}
-                    scrollEnabled={false}
-                    keyExtractor={(item) => item._id}
-                    renderItem={({ item }) => (
-                      <TouchableOpacity
-                        style={{
-                          marginBottom: 10,
-                          borderRadius: 15,
-                          boxShadow: "0px 0px 3px rgba(0, 0, 0, 0.1)",
-                          padding: 10,
-                          flexDirection: "row",
-                          justifyContent: "space-between",
-                          backgroundColor: COLORS.white,
-                          marginHorizontal: 20,
-                        }}
-                        onPress={() =>
-                          navigation.navigate("order-details-page", {
-                            order: item,
-                          })
-                        }
-                      >
-                        <View style={{ flexDirection: "row" }}>
-                          <Image
-                            source={{ uri: item?.restaurant?.logoUrl?.url }}
-                            style={{
-                              height: 70,
-                              width: 70,
-                              borderRadius: 10,
-                            }}
-                          />
-                          <View style={{ marginLeft: 10 }}>
-                            <Text style={{ fontFamily: "bold", fontSize: 16 }}>
-                              {item?.restaurant?.title}
-                            </Text>
+              <View
+                style={{
+                  flexDirection: "row",
+                  marginTop: 20,
+                  justifyContent: "center",
+                  marginHorizontal: 20,
+                  marginBottom: 20,
+                }}
+              >
+                <TouchableOpacity onPress={() => setOrderType("Active")}>
+                  <Text
+                    style={{
+                      fontFamily: "regular",
+                      color:
+                        orderType === "Active" ? COLORS.primary : COLORS.gray,
+                    }}
+                  >
+                    Active
+                  </Text>
+                </TouchableOpacity>
+                <Text style={{ marginHorizontal: 10 }}>|</Text>
+                <TouchableOpacity onPress={() => setOrderType("Previous")}>
+                  <Text
+                    style={{
+                      fontFamily: "regular",
+                      color:
+                        orderType === "Previous" ? COLORS.primary : COLORS.gray,
+                    }}
+                  >
+                    Previous
+                  </Text>
+                </TouchableOpacity>
+                <Text style={{ marginHorizontal: 10 }}>|</Text>
+                <TouchableOpacity onPress={() => setOrderType("Cancelled")}>
+                  <Text
+                    style={{
+                      fontFamily: "regular",
+                      color:
+                        orderType === "Cancelled"
+                          ? COLORS.primary
+                          : COLORS.gray,
+                    }}
+                  >
+                    Cancelled
+                  </Text>
+                </TouchableOpacity>
+              </View>
 
-                            {(item?.orderStatus === "Pending" ||
-                              item?.orderStatus === "Preparing" ||
-                              item?.orderStatus === "Ready for pickup" ||
-                              item?.orderStatus === "Out for delivery") && (
-                              <View>
+              {orderType === "Active" && (
+                <>
+                  {pendingOrders.length > 0 && (
+                    <>
+                      <FlatList
+                        data={pendingOrders}
+                        scrollEnabled={false}
+                        keyExtractor={(item) => item._id}
+                        renderItem={({ item }) => (
+                          <TouchableOpacity
+                            style={{
+                              marginBottom: 10,
+                              borderRadius: 15,
+                              boxShadow: "0px 0px 3px rgba(0, 0, 0, 0.1)",
+                              padding: 10,
+                              flexDirection: "row",
+                              justifyContent: "space-between",
+                              backgroundColor: COLORS.white,
+                              marginHorizontal: 20,
+                            }}
+                            onPress={() =>
+                              navigation.navigate("order-details-page", {
+                                order: item,
+                              })
+                            }
+                          >
+                            <View style={{ flexDirection: "row" }}>
+                              <Image
+                                source={{ uri: item?.restaurant?.logoUrl?.url }}
+                                style={{
+                                  height: 70,
+                                  width: 70,
+                                  borderRadius: 10,
+                                }}
+                              />
+                              <View style={{ marginLeft: 10 }}>
                                 <Text
-                                  style={{
-                                    color: COLORS.gray,
-                                    fontSize: 12,
-                                    fontFamily: "regular",
-                                  }}
+                                  style={{ fontFamily: "bold", fontSize: 16 }}
                                 >
-                                  Order Status:
+                                  {item?.restaurant?.title}
                                 </Text>
-                                <View
-                                  style={{
-                                    flexDirection: "row",
-                                    alignItems: "center",
-                                  }}
-                                >
-                                  <View
-                                    style={{
-                                      height: 12,
-                                      width: 12,
-                                      borderRadius: 99,
-                                      backgroundColor:
-                                        item?.orderStatus === "Pending"
-                                          ? COLORS.gray2
-                                          : item?.orderStatus === "Preparing"
-                                          ? COLORS.secondary
-                                          : item?.orderStatus ===
-                                            "Ready for pickup"
-                                          ? COLORS.tertiary
-                                          : COLORS.primary,
-                                      marginRight: 5,
-                                    }}
-                                  />
-                                  <Text
-                                    style={{
-                                      fontFamily: "bold",
-                                      fontSize: 12,
-                                    }}
-                                  >
-                                    {item?.orderStatus}
-                                  </Text>
-                                </View>
+
+                                {(item?.orderStatus === "Pending" ||
+                                  item?.orderStatus === "Preparing" ||
+                                  item?.orderStatus === "Ready for pickup" ||
+                                  item?.orderStatus === "Out for delivery") && (
+                                  <View>
+                                    <Text
+                                      style={{
+                                        color: COLORS.gray,
+                                        fontSize: 12,
+                                        fontFamily: "regular",
+                                      }}
+                                    >
+                                      Order Status:
+                                    </Text>
+                                    <View
+                                      style={{
+                                        flexDirection: "row",
+                                        alignItems: "center",
+                                      }}
+                                    >
+                                      <View
+                                        style={{
+                                          height: 12,
+                                          width: 12,
+                                          borderRadius: 99,
+                                          backgroundColor:
+                                            item?.orderStatus === "Pending"
+                                              ? COLORS.gray2
+                                              : item?.orderStatus ===
+                                                "Preparing"
+                                              ? COLORS.secondary
+                                              : item?.orderStatus ===
+                                                "Ready for pickup"
+                                              ? COLORS.tertiary
+                                              : COLORS.primary,
+                                          marginRight: 5,
+                                        }}
+                                      />
+                                      <Text
+                                        style={{
+                                          fontFamily: "bold",
+                                          fontSize: 12,
+                                        }}
+                                      >
+                                        {item?.orderStatus}
+                                      </Text>
+                                    </View>
+                                  </View>
+                                )}
+
+                                <FlatList
+                                  data={item?.orderItems}
+                                  style={{ marginTop: 5 }}
+                                  keyExtractor={(item) => item._id}
+                                  renderItem={({ item }) => (
+                                    <View>
+                                      <Text
+                                        style={{
+                                          color: COLORS.gray,
+                                          fontSize: 14,
+                                          fontFamily: "regular",
+                                        }}
+                                      >
+                                        x{item?.quantity} {item?.foodId?.title}
+                                      </Text>
+                                    </View>
+                                  )}
+                                />
                               </View>
-                            )}
+                            </View>
+                            <Text style={{ fontFamily: "bold", fontSize: 16 }}>
+                              ₱{(item?.totalAmount).toFixed(2)}
+                            </Text>
+                          </TouchableOpacity>
+                        )}
+                      />
+                    </>
+                  )}
 
-                            <FlatList
-                              data={item?.orderItems}
-                              style={{ marginTop: 5 }}
-                              keyExtractor={(item) => item._id}
-                              renderItem={({ item }) => (
-                                <View>
-                                  <Text
-                                    style={{
-                                      color: COLORS.gray,
-                                      fontSize: 14,
-                                      fontFamily: "regular",
-                                    }}
-                                  >
-                                    x{item?.quantity} {item?.foodId?.title}
-                                  </Text>
-                                </View>
-                              )}
-                            />
-                          </View>
-                        </View>
-                        <Text style={{ fontFamily: "bold", fontSize: 16 }}>
-                          ₱{(item?.totalAmount).toFixed(2)}
-                        </Text>
-                      </TouchableOpacity>
-                    )}
-                  />
+                  {pendingOrders.length === 0 && (
+                    <View
+                      style={{
+                        justifyContent: "center",
+                        alignItems: "center",
+                        height: SIZES.height / 1.5,
+                      }}
+                    >
+                      <Image
+                        source={require("../../assets/images/emptyOrder.png")}
+                        style={{ width: 200, height: 200 }}
+                      />
+                      <Text style={styles.text}>
+                        You have no active orders.
+                      </Text>
+                    </View>
+                  )}
                 </>
               )}
 
-              {pastOrders.length > 0 && (
+              {orderType === "Previous" && (
                 <>
-                  <Heading heading={`Past Order(s)`} />
-                  <FlatList
-                    data={pastOrders}
-                    scrollEnabled={false}
-                    keyExtractor={(item) => item._id}
-                    renderItem={({ item }) => (
-                      <TouchableOpacity
-                        onPress={() =>
-                          navigation.navigate("order-details-page", {
-                            order: item,
-                          })
-                        }
-                        style={{
-                          marginBottom: 10,
-                          borderRadius: 15,
-                          boxShadow: "0px 0px 3px rgba(0, 0, 0, 0.1)",
-                          padding: 10,
-                          flexDirection: "row",
-                          justifyContent: "space-between",
-                          backgroundColor: COLORS.white,
-                          marginHorizontal: 20,
-                        }}
-                      >
-                        <View style={{ flexDirection: "row" }}>
-                          <Image
-                            source={{ uri: item?.restaurant?.logoUrl?.url }}
+                  {pastOrders.length > 0 && (
+                    <>
+                      <FlatList
+                        data={pastOrders}
+                        scrollEnabled={false}
+                        keyExtractor={(item) => item._id}
+                        renderItem={({ item }) => (
+                          <TouchableOpacity
+                            onPress={() =>
+                              navigation.navigate("order-details-page", {
+                                order: item,
+                              })
+                            }
                             style={{
-                              height: 70,
-                              width: 70,
-                              borderRadius: 10,
+                              marginBottom: 10,
+                              borderRadius: 15,
+                              boxShadow: "0px 0px 3px rgba(0, 0, 0, 0.1)",
+                              padding: 10,
+                              flexDirection: "row",
+                              justifyContent: "space-between",
+                              backgroundColor: COLORS.white,
+                              marginHorizontal: 20,
                             }}
-                          />
-                          <View
-                            style={{ marginLeft: 10, flexDirection: "column" }}
                           >
-                            <Text style={{ fontFamily: "bold", fontSize: 16 }}>
-                              {item?.restaurant?.title}
-                            </Text>
-
-                            <View
-                              style={{
-                                flexDirection: "row",
-                                alignItems: "center",
-                              }}
-                            >
-                              <Text
+                            <View style={{ flexDirection: "row" }}>
+                              <Image
+                                source={{ uri: item?.restaurant?.logoUrl?.url }}
                                 style={{
-                                  color: COLORS.gray,
-                                  fontSize: 12,
-                                  fontFamily: "regular",
+                                  height: 70,
+                                  width: 70,
+                                  borderRadius: 10,
+                                }}
+                              />
+                              <View
+                                style={{
+                                  marginLeft: 10,
+                                  flexDirection: "column",
                                 }}
                               >
-                                Rating:
-                              </Text>
+                                <Text
+                                  style={{ fontFamily: "bold", fontSize: 16 }}
+                                >
+                                  {item?.restaurant?.title}
+                                </Text>
 
-                              {item?.rating?.status === "pending" ? (
                                 <View
                                   style={{
-                                    marginLeft: 5,
                                     flexDirection: "row",
                                     alignItems: "center",
                                   }}
                                 >
-                                  <View
-                                    style={{
-                                      height: 10,
-                                      width: 10,
-                                      borderRadius: 99,
-                                      backgroundColor: COLORS.secondary,
-                                    }}
-                                  />
                                   <Text
                                     style={{
-                                      marginLeft: 3,
-                                      fontFamily: "bold",
+                                      color: COLORS.gray,
                                       fontSize: 12,
+                                      fontFamily: "regular",
                                     }}
                                   >
-                                    Pending
+                                    Rating:
                                   </Text>
-                                </View>
-                              ) : (
-                                <View
-                                  pointerEvents="none"
-                                  style={{ marginLeft: 5, marginTop: -5 }}
-                                >
-                                  <RatingInput
-                                    rating={item?.rating?.stars}
-                                    color={COLORS.primary}
-                                    size={15}
-                                  />
-                                </View>
-                              )}
-                            </View>
 
-                            <View>
-                              <Text
-                                style={{
-                                  color: COLORS.gray,
-                                  fontSize: 12,
-                                  fontFamily: "regular",
-                                  marginTop: 5,
-                                }}
-                              >
-                                Ordered on:
-                              </Text>
-                              <Text
-                                style={{
-                                  color: COLORS.gray,
-                                  fontSize: 12,
-                                  fontFamily: "regular",
-                                }}
-                              >
-                                {new Date(item?.createdAt).toLocaleDateString(
-                                  "en-US",
-                                  {
-                                    month: "long",
-                                    day: "numeric",
-                                  }
-                                )}{" "}
-                                at{" "}
-                                {new Date(item?.createdAt).toLocaleTimeString(
-                                  "en-US",
-                                  {
-                                    hour: "numeric",
-                                    minute: "2-digit",
-                                    hour12: true,
-                                  }
-                                )}
-                              </Text>
-                            </View>
+                                  {item?.rating?.status === "pending" ? (
+                                    <View
+                                      style={{
+                                        marginLeft: 5,
+                                        flexDirection: "row",
+                                        alignItems: "center",
+                                      }}
+                                    >
+                                      <View
+                                        style={{
+                                          height: 10,
+                                          width: 10,
+                                          borderRadius: 99,
+                                          backgroundColor: COLORS.secondary,
+                                        }}
+                                      />
+                                      <Text
+                                        style={{
+                                          marginLeft: 3,
+                                          fontFamily: "bold",
+                                          fontSize: 12,
+                                        }}
+                                      >
+                                        Pending
+                                      </Text>
+                                    </View>
+                                  ) : (
+                                    <View
+                                      pointerEvents="none"
+                                      style={{ marginLeft: 5, marginTop: -5 }}
+                                    >
+                                      <RatingInput
+                                        rating={item?.rating?.stars}
+                                        color={COLORS.primary}
+                                        size={15}
+                                      />
+                                    </View>
+                                  )}
+                                </View>
 
-                            <FlatList
-                              data={item?.orderItems}
-                              style={{ marginTop: 5 }}
-                              keyExtractor={(item) => item._id}
-                              renderItem={({ item }) => (
                                 <View>
                                   <Text
                                     style={{
                                       color: COLORS.gray,
-                                      fontSize: 14,
+                                      fontSize: 12,
+                                      fontFamily: "regular",
+                                      marginTop: 5,
+                                    }}
+                                  >
+                                    Ordered on:
+                                  </Text>
+                                  <Text
+                                    style={{
+                                      color: COLORS.gray,
+                                      fontSize: 12,
                                       fontFamily: "regular",
                                     }}
                                   >
-                                    x{item?.quantity} {item?.foodId?.title}
+                                    {new Date(
+                                      item?.createdAt
+                                    ).toLocaleDateString("en-US", {
+                                      month: "long",
+                                      day: "numeric",
+                                    })}{" "}
+                                    at{" "}
+                                    {new Date(
+                                      item?.createdAt
+                                    ).toLocaleTimeString("en-US", {
+                                      hour: "numeric",
+                                      minute: "2-digit",
+                                      hour12: true,
+                                    })}
                                   </Text>
                                 </View>
-                              )}
-                            />
-                          </View>
-                        </View>
-                        <Text style={{ fontFamily: "bold", fontSize: 16 }}>
-                          ₱{(item?.totalAmount).toFixed(2)}
-                        </Text>
-                      </TouchableOpacity>
-                    )}
-                  />
+
+                                <FlatList
+                                  data={item?.orderItems}
+                                  style={{ marginTop: 5 }}
+                                  keyExtractor={(item) => item._id}
+                                  renderItem={({ item }) => (
+                                    <View>
+                                      <Text
+                                        style={{
+                                          color: COLORS.gray,
+                                          fontSize: 14,
+                                          fontFamily: "regular",
+                                        }}
+                                      >
+                                        x{item?.quantity} {item?.foodId?.title}
+                                      </Text>
+                                    </View>
+                                  )}
+                                />
+                              </View>
+                            </View>
+                            <Text style={{ fontFamily: "bold", fontSize: 16 }}>
+                              ₱{(item?.totalAmount).toFixed(2)}
+                            </Text>
+                          </TouchableOpacity>
+                        )}
+                      />
+                    </>
+                  )}
+
+                  {pastOrders.length === 0 && (
+                    <View
+                      style={{
+                        justifyContent: "center",
+                        alignItems: "center",
+                        height: SIZES.height / 1.5,
+                      }}
+                    >
+                      <Image
+                        source={require("../../assets/images/emptyOrder.png")}
+                        style={{ width: 200, height: 200 }}
+                      />
+                      <Text style={styles.text}>
+                        You have no previous orders.
+                      </Text>
+                    </View>
+                  )}
                 </>
               )}
 
-              {cancelledOrders.length > 0 && (
+              {orderType === "Cancelled" && (
                 <>
-                  <Heading heading={`Cancelled Order(s)`} />
-                  <FlatList
-                    data={cancelledOrders}
-                    scrollEnabled={false}
-                    keyExtractor={(item) => item._id}
-                    renderItem={({ item }) => (
-                      <TouchableOpacity
-                        onPress={() =>
-                          navigation.navigate("order-details-page", {
-                            order: item,
-                          })
-                        }
-                        style={{
-                          marginBottom: 10,
-                          borderRadius: 15,
-                          boxShadow: "0px 0px 3px rgba(0, 0, 0, 0.1)",
-                          padding: 10,
-                          flexDirection: "row",
-                          justifyContent: "space-between",
-                          backgroundColor: COLORS.white,
-                          marginHorizontal: 20,
-                        }}
-                      >
-                        <View style={{ flexDirection: "row" }}>
-                          <Image
-                            source={{ uri: item?.restaurant?.logoUrl?.url }}
+                  {cancelledOrders.length > 0 && (
+                    <>
+                      <FlatList
+                        data={cancelledOrders}
+                        scrollEnabled={false}
+                        keyExtractor={(item) => item._id}
+                        renderItem={({ item }) => (
+                          <TouchableOpacity
+                            onPress={() =>
+                              navigation.navigate("order-details-page", {
+                                order: item,
+                              })
+                            }
                             style={{
-                              height: 70,
-                              width: 70,
-                              borderRadius: 10,
+                              marginBottom: 10,
+                              borderRadius: 15,
+                              boxShadow: "0px 0px 3px rgba(0, 0, 0, 0.1)",
+                              padding: 10,
+                              flexDirection: "row",
+                              justifyContent: "space-between",
+                              backgroundColor: COLORS.white,
+                              marginHorizontal: 20,
                             }}
-                          />
-                          <View
-                            style={{ marginLeft: 10, flexDirection: "column" }}
                           >
-                            <Text style={{ fontFamily: "bold", fontSize: 16 }}>
-                              {item?.restaurant?.title}
-                            </Text>
-                            <View>
-                              <Text
+                            <View style={{ flexDirection: "row" }}>
+                              <Image
+                                source={{ uri: item?.restaurant?.logoUrl?.url }}
                                 style={{
-                                  color: COLORS.gray,
-                                  fontSize: 12,
-                                  fontFamily: "regular",
+                                  height: 70,
+                                  width: 70,
+                                  borderRadius: 10,
+                                }}
+                              />
+                              <View
+                                style={{
+                                  marginLeft: 10,
+                                  flexDirection: "column",
                                 }}
                               >
-                                Ordered on:
-                              </Text>
-                              <Text
-                                style={{
-                                  color: COLORS.gray,
-                                  fontSize: 12,
-                                  fontFamily: "regular",
-                                }}
-                              >
-                                {new Date(item?.createdAt).toLocaleDateString(
-                                  "en-US",
-                                  {
-                                    month: "long",
-                                    day: "numeric",
-                                  }
-                                )}{" "}
-                                at{" "}
-                                {new Date(item?.createdAt).toLocaleTimeString(
-                                  "en-US",
-                                  {
-                                    hour: "numeric",
-                                    minute: "2-digit",
-                                    hour12: true,
-                                  }
-                                )}
-                              </Text>
-                            </View>
-
-                            <FlatList
-                              data={item?.orderItems}
-                              style={{ marginTop: 5 }}
-                              keyExtractor={(item) => item._id}
-                              renderItem={({ item }) => (
+                                <Text
+                                  style={{ fontFamily: "bold", fontSize: 16 }}
+                                >
+                                  {item?.restaurant?.title}
+                                </Text>
                                 <View>
                                   <Text
                                     style={{
                                       color: COLORS.gray,
-                                      fontSize: 14,
+                                      fontSize: 12,
                                       fontFamily: "regular",
                                     }}
                                   >
-                                    x{item?.quantity} {item?.foodId?.title}
+                                    Ordered on:
+                                  </Text>
+                                  <Text
+                                    style={{
+                                      color: COLORS.gray,
+                                      fontSize: 12,
+                                      fontFamily: "regular",
+                                    }}
+                                  >
+                                    {new Date(
+                                      item?.createdAt
+                                    ).toLocaleDateString("en-US", {
+                                      month: "long",
+                                      day: "numeric",
+                                    })}{" "}
+                                    at{" "}
+                                    {new Date(
+                                      item?.createdAt
+                                    ).toLocaleTimeString("en-US", {
+                                      hour: "numeric",
+                                      minute: "2-digit",
+                                      hour12: true,
+                                    })}
                                   </Text>
                                 </View>
-                              )}
-                            />
-                          </View>
-                        </View>
-                        <Text style={{ fontFamily: "bold", fontSize: 16 }}>
-                          ₱{(item?.totalAmount).toFixed(2)}
-                        </Text>
-                      </TouchableOpacity>
-                    )}
-                  />
+
+                                <FlatList
+                                  data={item?.orderItems}
+                                  style={{ marginTop: 5 }}
+                                  keyExtractor={(item) => item._id}
+                                  renderItem={({ item }) => (
+                                    <View>
+                                      <Text
+                                        style={{
+                                          color: COLORS.gray,
+                                          fontSize: 14,
+                                          fontFamily: "regular",
+                                        }}
+                                      >
+                                        x{item?.quantity} {item?.foodId?.title}
+                                      </Text>
+                                    </View>
+                                  )}
+                                />
+                              </View>
+                            </View>
+                            <Text style={{ fontFamily: "bold", fontSize: 16 }}>
+                              ₱{(item?.totalAmount).toFixed(2)}
+                            </Text>
+                          </TouchableOpacity>
+                        )}
+                      />
+                    </>
+                  )}
+
+                  {cancelledOrders.length === 0 && (
+                    <View
+                      style={{
+                        justifyContent: "center",
+                        alignItems: "center",
+                        height: SIZES.height / 1.5,
+                      }}
+                    >
+                      <Image
+                        source={require("../../assets/images/emptyOrder.png")}
+                        style={{ width: 200, height: 200 }}
+                      />
+                      <Text style={styles.text}>
+                        You have no cancelled orders.
+                      </Text>
+                    </View>
+                  )}
                 </>
               )}
             </>

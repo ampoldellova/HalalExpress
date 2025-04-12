@@ -74,14 +74,14 @@ const SignUp = ({ navigation }) => {
   };
 
   return (
-    <ScrollView style={{ backgroundColor: COLORS.white }}>
+    <ScrollView>
       <View style={{ marginHorizontal: 20, marginTop: 50 }}>
         <BackBtn onPress={() => navigation.goBack()} />
         <LottieView
           autoPlay
           ref={animation}
           style={{ width: "100%", height: 300 }}
-          source={require("../../assets/anime/delivery.json")}
+          source={require("../../assets/anime/vegetables.json")}
         />
 
         <Text style={styles.titleLogin}>HalalExpress</Text>
