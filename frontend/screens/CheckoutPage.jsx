@@ -39,6 +39,8 @@ import {
   createPaymentIntent,
   createPaymentMethod,
 } from "../hook/paymongoService";
+import { collection, addDoc } from "@react-native-firebase/firestore";
+import { database } from "../config/firebase";
 
 const CheckoutPage = () => {
   const route = useRoute();
@@ -325,6 +327,19 @@ const CheckoutPage = () => {
 
         const response = await axios.post(endpoint, data, config);
         if (response.status === 200) {
+          const message = {
+            _id: new Date().getTime().toString(),
+            text: `Thank you for placing your order! Your order is being processed.`,
+            createdAt: new Date(),
+            user: {
+              _id: restaurant?._id,
+              name: restaurant?.title,
+              avatar: restaurant?.logoUrl?.url,
+            },
+            receiverId: user?._id,
+          };
+
+          await addDoc(collection(database, "chats"), message);
           navigation.navigate("order-page");
           Toast.show({
             type: "success",

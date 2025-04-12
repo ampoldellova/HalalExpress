@@ -1,52 +1,55 @@
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React from 'react'
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import React from "react";
+import { COLORS, SIZES } from "../../styles/theme";
+import Divider from "../../components/Divider";
 
-const ChatUser = ({ user, onPress }) => {
+const ChatUser = ({ restaurant, onPress }) => {
+  return (
+    <TouchableOpacity style={styles.profile} onPress={onPress}>
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          marginHorizontal: 20,
+          marginBottom: 10,
+        }}
+      >
+        <Image
+          alt=""
+          source={{
+            uri: restaurant?.user?.avatar,
+          }}
+          style={styles.profileAvatar}
+        />
+        <View>
+          <Text style={styles.profileName}>{restaurant?.user?.name}</Text>
+          <Text
+            style={{
+              fontFamily: "regular",
+              color: COLORS.gray,
+              width: SIZES.width / 1.5,
+            }}
+          >
+            {restaurant?.text}
+          </Text>
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
+};
 
-    return (
-        <TouchableOpacity style={styles.profile} onPress={onPress}>
-            <Image
-                alt=""
-                source={{
-                    uri: user.profile.url,
-                }}
-                style={styles.profileAvatar}
-            />
-            <View>
-                <Text style={styles.profileName}>{user.username}</Text>
-            </View>
-        </TouchableOpacity>
-    )
-}
-
-export default ChatUser
+export default ChatUser;
 
 const styles = StyleSheet.create({
-    profile: {
-        padding: 12,
-        backgroundColor: '#fff',
-        borderRadius: 15,
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'flex-start',
-        marginVertical: 5,
-        marginHorizontal: 15
-    },
-    profileAvatar: {
-        width: 30,
-        height: 30,
-        borderRadius: 9999,
-        marginRight: 12,
-    },
-    profileName: {
-        fontSize: 18,
-        fontWeight: '600',
-        color: '#292929',
-    },
-    profileHandle: {
-        marginTop: 2,
-        fontSize: 16,
-        fontWeight: '400',
-        color: '#858585',
-    },
-})
+  profileAvatar: {
+    width: 50,
+    height: 50,
+    borderRadius: 99,
+    marginRight: 12,
+  },
+  profileName: {
+    fontSize: 18,
+    color: COLORS.black,
+    fontFamily: "bold",
+  },
+});

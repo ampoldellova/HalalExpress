@@ -83,14 +83,17 @@ const LoginPage = () => {
 
         const cartResponse = await axios.get(`${baseUrl}/api/cart/`, config);
         dispatch(updateCartCount(cartResponse.data.cartItems.length));
+      } else {
+        setLoader(false);
+        Toast.show({
+          type: "error",
+          text1: "Login Error 🚨",
+          text2: "Invalid email or password",
+        });
       }
     } catch (error) {
-      Toast.show({
-        type: "error",
-        text1: "Error Logging in 🚨",
-        text2: "Please provide valid credentials",
-      });
       setLogin(false);
+      setLoader(false);
     } finally {
       setLoader(false);
     }
