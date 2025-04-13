@@ -25,6 +25,8 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import Entypo from "@expo/vector-icons/Entypo";
 import { createRefund } from "../../hook/paymongoService";
 import MapView, { Marker } from "react-native-maps";
+import { addDoc, collection } from "@react-native-firebase/firestore";
+import { database } from "../../config/firebase";
 
 const PendingOrderDetails = () => {
   const route = useRoute();
@@ -114,6 +116,20 @@ const PendingOrderDetails = () => {
         { orderId: order._id },
         config
       );
+
+      const message = {
+        _id: new Date().getTime().toString(),
+        text: `Thank you for placing your order! We are now preparing your order.`,
+        createdAt: new Date(),
+        user: {
+          _id: order?.restaurant?._id,
+          name: order?.restaurant?.title,
+          avatar: order?.restaurant?.logoUrl?.url,
+        },
+        receiverId: order?.userId?._id,
+      };
+
+      await addDoc(collection(database, "chats"), message);
 
       navigation.goBack();
       setLoading(false);

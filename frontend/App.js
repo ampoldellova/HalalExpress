@@ -82,12 +82,6 @@ export default function App() {
     semibold: require("./assets/fonts/Poppins-SemiBold.ttf"),
   });
 
-  const onLayoutRootView = useCallback(async () => {
-    if (fontsLoaded) {
-      await SplashScreen.hideAsync();
-    }
-  }, [fontsLoaded]);
-
   const loginStatus = async () => {
     const userToken = await AsyncStorage.getItem("token");
     if (userToken !== null) {
