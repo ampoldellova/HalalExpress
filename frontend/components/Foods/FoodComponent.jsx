@@ -1,12 +1,17 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React from "react";
 import { COLORS, SIZES } from "../../styles/theme";
+import { useNavigation } from "@react-navigation/native";
 
-const FoodComponent = ({ item, onPress }) => {
+const FoodComponent = ({ item }) => {
+  const navigation = useNavigation();
   return (
-    <TouchableOpacity style={styles.wrapper} onPress={onPress}>
+    <TouchableOpacity
+      style={styles.wrapper}
+      onPress={() => navigation.navigate("food-page", item)}
+    >
       <Image
-        source={{ uri: item.imageUrl.url }}
+        source={{ uri: item?.imageUrl?.url }}
         style={{
           width: SIZES.width - 230,
           height: SIZES.height / 5.8,
@@ -16,9 +21,9 @@ const FoodComponent = ({ item, onPress }) => {
         }}
       />
 
-      <Text style={styles.small}>{item.restaurant.title}</Text>
-      <Text style={styles.heading}>{item.title}</Text>
-      <Text style={styles.small}>₱ {item.price}</Text>
+      <Text style={styles.small}>{item?.restaurant.title}</Text>
+      <Text style={styles.heading}>{item?.title}</Text>
+      <Text style={styles.small}>₱ {item?.price}</Text>
     </TouchableOpacity>
   );
 };

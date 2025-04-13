@@ -12,7 +12,6 @@ import ClosedWindow from "../../components/Vendor/ClosedWindow";
 
 const Menu = () => {
   const route = useRoute();
-  const navigation = useNavigation();
   const [foods, setFoods] = useState([]);
   const item = route.params;
 
@@ -48,10 +47,7 @@ const Menu = () => {
           keyExtractor={(item) => item._id}
           renderItem={({ item }) => (
             <View style={{ alignItems: "center" }}>
-              <CategoryFoodComp
-                item={item}
-                onPress={() => navigation.navigate("food-navigator", item)}
-              />
+              <CategoryFoodComp item={item} />
             </View>
           )}
         />

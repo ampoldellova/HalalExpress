@@ -33,7 +33,6 @@ import EditSupplierPage from "./screens/Supplier/EditSupplierPage";
 import Restaurant from "./screens/Vendor/Restaurant";
 import Supplier from "./screens/Supplier/Supplier";
 import ProductNavigator from "./navigations/ProductNavigator";
-import FoodNavigator from "./navigations/FoodNavigator";
 import AddressesPage from "./screens/User/AddressesPage";
 import AddAddressPage from "./screens/User/AddAddressPage";
 import EditAddressPage from "./screens/User/EditAddressPage";
@@ -47,6 +46,7 @@ import OrderDetails from "./screens/Order/OrderDetails";
 import { registerForPushNotificationsAsync } from "./notificationPermission";
 import ManageOrdersPage from "./screens/Vendor/ManageOrderPage";
 import PendingOrderDetails from "./screens/Order/PendingOrderDetails";
+import FoodPage from "./screens/Food/FoodPage";
 
 const Stack = createNativeStackNavigator();
 
@@ -135,8 +135,8 @@ export default function App() {
                         options={{ headerShown: false }}
                       />
                       <Stack.Screen
-                        name="food-navigation"
-                        component={FoodNavigator}
+                        name="food-page"
+                        component={FoodPage}
                         options={{ headerShown: false }}
                       />
                       <Stack.Screen
@@ -227,11 +227,6 @@ export default function App() {
                       <Stack.Screen
                         name="product-navigator"
                         component={ProductNavigator}
-                        options={{ headerShown: false }}
-                      />
-                      <Stack.Screen
-                        name="food-navigator"
-                        component={FoodNavigator}
                         options={{ headerShown: false }}
                       />
                       <Stack.Screen

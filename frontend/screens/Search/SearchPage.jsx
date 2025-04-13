@@ -179,7 +179,7 @@ const SearchPage = () => {
                   <SearchedFood
                     key={i}
                     item={item}
-                    onPress={() => navigation.navigate("food-navigation", item)}
+                    onPress={() => navigation.navigate("food-page", item)}
                   />
                 ))}
               {searchCategory === "restaurants" &&

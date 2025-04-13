@@ -22,7 +22,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { updateCartCount } from "../../redux/UserReducer";
 
 const FoodPage = ({ route, navigation }) => {
-  const item = route.params.item;
+  const item = route.params;
   const [additives, setAdditives] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
   const [count, setCount] = useState(1);
@@ -59,12 +59,12 @@ const FoodPage = ({ route, navigation }) => {
 
   const addFoodToCart = async () => {
     const cartItem = {
-      foodId: item._id,
-      restaurantId: item.restaurant._id,
+      foodId: item?._id,
+      restaurantId: item?.restaurant._id,
       additives: additives,
       instructions: preference,
       quantity: count,
-      totalPrice: (item.price + totalPrice) * count,
+      totalPrice: (item?.price + totalPrice) * count,
     };
     try {
       const token = await AsyncStorage.getItem("token");
@@ -94,7 +94,7 @@ const FoodPage = ({ route, navigation }) => {
     }
   };
 
-  const total = (item.price + totalPrice) * count;
+  const total = (item?.price + totalPrice) * count;
 
   return (
     <ScrollView
@@ -102,7 +102,7 @@ const FoodPage = ({ route, navigation }) => {
     >
       <View>
         <Image
-          source={{ uri: item.imageUrl.url }}
+          source={{ uri: item?.imageUrl.url }}
           style={{
             width: SIZES.width,
             height: SIZES.height / 3.4,
@@ -120,16 +120,16 @@ const FoodPage = ({ route, navigation }) => {
 
       <View style={styles.container}>
         <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-          <Text style={[styles.title, { width: 250 }]}>{item.title}</Text>
+          <Text style={[styles.title, { width: 250 }]}>{item?.title}</Text>
           <Text style={styles.title}>
             ₱ {total.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, "$&,")}
           </Text>
         </View>
 
-        <Text style={styles.small}>{item.description}</Text>
+        <Text style={styles.small}>{item?.description}</Text>
 
         <FlatList
-          data={item.foodTags}
+          data={item?.foodTags}
           showsHorizontalScrollIndicator={false}
           keyExtractor={(item) => item}
           style={{ marginTop: 10 }}
@@ -150,8 +150,8 @@ const FoodPage = ({ route, navigation }) => {
         </Text>
 
         <FlatList
-          data={item.additives}
-          keyExtractor={(item) => item.id}
+          data={item?.additives}
+          keyExtractor={(item) => item?.id}
           style={{ marginTop: 10 }}
           showsVerticalScrollIndicator={false}
           renderItem={({ item }) => (
@@ -172,9 +172,9 @@ const FoodPage = ({ route, navigation }) => {
                     handleAdditives(item);
                   }}
                 />
-                <Text style={styles.small}>{item.title}</Text>
+                <Text style={styles.small}>{item?.title}</Text>
               </View>
-              <Text style={[styles.small]}>₱ {item.price}</Text>
+              <Text style={[styles.small]}>₱ {item?.price}</Text>
             </View>
           )}
         />

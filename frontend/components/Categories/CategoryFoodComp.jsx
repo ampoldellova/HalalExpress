@@ -9,23 +9,39 @@ import {
 import React from "react";
 import { COLORS, SIZES } from "../../styles/theme";
 import { Rating } from "react-native-stock-star-rating";
+import { useNavigation } from "@react-navigation/native";
 
-const CategoryFoodComp = ({ item, onPress }) => {
+const CategoryFoodComp = ({ item }) => {
+  const navigation = useNavigation();
   return (
-    <TouchableOpacity style={styles.wrapper} onPress={onPress}>
+    <TouchableOpacity
+      style={styles.wrapper}
+      onPress={() => navigation.navigate("food-page", item)}
+    >
       <View style={styles.innerRow}>
         <Image
           source={{ uri: item.imageUrl.url }}
           style={{
             width: 100,
             height: 100,
-            borderRadius: 15
+            borderRadius: 15,
           }}
         />
         <View
-          style={{ position: "absolute", right: 10, bottom: 10, backgroundColor: COLORS.secondary, borderRadius: 8 }}
+          style={{
+            position: "absolute",
+            right: 10,
+            bottom: 10,
+            backgroundColor: COLORS.secondary,
+            borderRadius: 8,
+          }}
         >
-          <Text style={[styles.restaurant, { color: COLORS.lightWhite, marginHorizontal: 5 }]}>{` \₱ ${item.price}`}</Text>
+          <Text
+            style={[
+              styles.restaurant,
+              { color: COLORS.lightWhite, marginHorizontal: 5 },
+            ]}
+          >{` \₱ ${item.price}`}</Text>
         </View>
 
         <View style={styles.row}>
@@ -48,7 +64,12 @@ const CategoryFoodComp = ({ item, onPress }) => {
                   }}
                 >
                   <Text
-                    style={{ marginHorizontal: 5, color: COLORS.lightWhite, fontFamily: "regular", fontSize: 11 }}
+                    style={{
+                      marginHorizontal: 5,
+                      color: COLORS.lightWhite,
+                      fontFamily: "regular",
+                      fontSize: 11,
+                    }}
                   >
                     {item}
                   </Text>

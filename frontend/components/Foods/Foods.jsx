@@ -1,11 +1,8 @@
 import { View, FlatList } from "react-native";
 import React from "react";
 import FoodComponent from "./FoodComponent";
-import { useNavigation } from "@react-navigation/native";
 
 const Foods = ({ foods }) => {
-  const navigation = useNavigation();
-
   return (
     <View style={{ marginLeft: 12, marginBottom: 10 }}>
       <FlatList
@@ -15,12 +12,7 @@ const Foods = ({ foods }) => {
         style={{ marginTop: 5, rowGap: 10 }}
         scrollEnabled
         keyExtractor={(item) => item._id}
-        renderItem={({ item }) => (
-          <FoodComponent
-            item={item}
-            onPress={() => navigation.navigate("food-navigator", item)}
-          />
-        )}
+        renderItem={({ item }) => <FoodComponent item={item} />}
       />
     </View>
   );
