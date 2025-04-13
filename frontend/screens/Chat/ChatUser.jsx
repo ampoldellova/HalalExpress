@@ -1,8 +1,17 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React from "react";
 import { COLORS, SIZES } from "../../styles/theme";
+import { useSelector } from "react-redux";
 
-const ChatUser = ({ restaurant, onPress }) => {
+const ChatUser = ({ restaurant, latestMessage, onPress }) => {
+  const { user } = useSelector((state) => state.user);
+
+  const formatTime = (date) => {
+    if (!date) return "";
+    const options = { hour: "numeric", minute: "numeric", hour12: true };
+    return new Date(date).toLocaleTimeString([], options);
+  };
+
   return (
     <TouchableOpacity style={styles.profile} onPress={onPress}>
       <View
@@ -42,7 +51,7 @@ const ChatUser = ({ restaurant, onPress }) => {
                 marginLeft: 5,
               }}
             >
-              {restaurant?.timeAgo}
+              {formatTime(latestMessage?.createdAt)}
             </Text>
           </View>
           <Text
@@ -54,7 +63,9 @@ const ChatUser = ({ restaurant, onPress }) => {
               width: SIZES.width / 1.5,
             }}
           >
-            {restaurant?.text}
+            {latestMessage?.user?._id === user?._id
+              ? `You: ${latestMessage?.text}`
+              : latestMessage?.text}
           </Text>
         </View>
       </View>

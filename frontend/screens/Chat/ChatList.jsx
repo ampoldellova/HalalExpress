@@ -13,24 +13,12 @@ import {
 } from "@react-native-firebase/firestore";
 import { useSelector } from "react-redux";
 import { database } from "../../config/firebase";
-import { formatDistanceToNow } from "date-fns";
 
 const ChatList = () => {
   const [conversations, setConversations] = useState([]);
   const [latestMessage, setLatestMessage] = useState(null);
   const { user } = useSelector((state) => state.user);
   const navigation = useNavigation();
-  const getShortTimeAgo = (date) => {
-    const fullText = formatDistanceToNow(date, { addSuffix: true });
-    return fullText
-      .replace("about ", "")
-      .replace(" hours", "h")
-      .replace(" minutes", "m")
-      .replace(" seconds", "s")
-      .replace(" days", "d")
-      .replace(" months", "mo")
-      .replace(" years", "y");
-  };
 
   useFocusEffect(
     React.useCallback(() => {
@@ -41,12 +29,10 @@ const ChatList = () => {
         const unsubscribe = onSnapshot(q, (snapshot) => {
           const chats = snapshot.docs.map((doc) => {
             const data = doc.data();
-            const createdAt = data.createdAt?.toDate() || new Date();
 
             return {
               _id: doc.id,
               ...data,
-              timeAgo: getShortTimeAgo(createdAt),
             };
           });
 
@@ -66,23 +52,95 @@ const ChatList = () => {
         return unsubscribe;
       };
 
-      const unsubscribe = fetchConversations();
-      return () => unsubscribe();
+      const fetchLatestMessage = () => {
+        const collectionRef = collection(database, "chats");
+
+        const q1 = query(collectionRef, where("receiverId", "==", user?._id));
+        const q2 = query(collectionRef, where("user._id", "==", user?._id));
+
+        const unsubscribe1 = onSnapshot(q1, (snapshot1) => {
+          const chats1 = snapshot1.docs.map((doc) => {
+            const data = doc.data();
+            const createdAt = data.createdAt?.toDate() || new Date();
+
+            return {
+              ...data,
+              createdAt,
+            };
+          });
+
+          const unsubscribe2 = onSnapshot(q2, (snapshot2) => {
+            const chats2 = snapshot2.docs.map((doc) => {
+              const data = doc.data();
+              const createdAt = data.createdAt?.toDate() || new Date();
+              return {
+                ...data,
+                createdAt,
+              };
+            });
+
+            const allChats = [...chats1, ...chats2];
+
+            const uniqueChats = Object.values(
+              allChats.reduce((acc, chat) => {
+                const conversationId =
+                  chat.receiverId === user?._id
+                    ? chat.user._id
+                    : chat.receiverId;
+
+                if (
+                  !acc[conversationId] ||
+                  acc[conversationId].createdAt < chat.createdAt
+                ) {
+                  acc[conversationId] = chat;
+                }
+                return acc;
+              }, {})
+            );
+
+            setLatestMessage(uniqueChats);
+          });
+
+          return () => unsubscribe2();
+        });
+
+        return () => unsubscribe1();
+      };
+
+      const unsubscribeConversations = fetchConversations();
+      const unsubscribeLatestMessage = fetchLatestMessage();
+      return () => {
+        unsubscribeConversations();
+        unsubscribeLatestMessage();
+      };
     }, [user])
   );
 
-  console.log(
-    conversations.length === 0 ? "No conversations found" : conversations
-  );
+  const combinedData = conversations.map((conversation) => {
+    const latestMessageForConversation = latestMessage?.find((message) => {
+      const isReceiverMatch = message.receiverId === conversation.user._id;
+      const isSenderMatch = message.user._id === conversation.user._id;
 
-  const renderItem = ({ item }) => (
-    <>
-      <ChatUser
-        restaurant={item}
-        onPress={() => navigation.navigate("chat-page", item)}
-      />
-    </>
-  );
+      return isReceiverMatch || isSenderMatch;
+    });
+
+    return {
+      ...conversation,
+      latestMessage: latestMessageForConversation,
+    };
+  });
+
+  const renderItem = ({ item }) => {
+    return (
+      <>
+        <ChatUser
+          restaurant={item}
+          latestMessage={item.latestMessage}
+          onPress={() => navigation.navigate("chat-page", item)}
+        />
+      </>
+    );
+  };
 
   return (
     <SafeAreaView>
@@ -114,7 +172,7 @@ const ChatList = () => {
 
       {conversations.length > 0 && (
         <FlatList
-          data={conversations}
+          data={combinedData}
           keyExtractor={(item) => item._id}
           renderItem={renderItem}
           showsVerticalScrollIndicator={false}
