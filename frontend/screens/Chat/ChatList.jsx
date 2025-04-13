@@ -17,18 +17,19 @@ import { formatDistanceToNow } from "date-fns";
 
 const ChatList = () => {
   const [conversations, setConversations] = useState([]);
+  const [latestMessage, setLatestMessage] = useState(null);
   const { user } = useSelector((state) => state.user);
   const navigation = useNavigation();
   const getShortTimeAgo = (date) => {
     const fullText = formatDistanceToNow(date, { addSuffix: true });
     return fullText
-      .replace("about ", "") // Remove "about"
-      .replace(" hours", "h") // Shorten "hours" to "h"
-      .replace(" minutes", "m") // Shorten "minutes" to "m"
-      .replace(" seconds", "s") // Shorten "seconds" to "s"
-      .replace(" days", "d") // Shorten "days" to "d"
-      .replace(" months", "mo") // Shorten "months" to "mo"
-      .replace(" years", "y"); // Shorten "years" to "y"
+      .replace("about ", "")
+      .replace(" hours", "h")
+      .replace(" minutes", "m")
+      .replace(" seconds", "s")
+      .replace(" days", "d")
+      .replace(" months", "mo")
+      .replace(" years", "y");
   };
 
   useFocusEffect(

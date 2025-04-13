@@ -12,11 +12,14 @@ import { getProfile } from "../hook/helpers";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import baseUrl from "../assets/common/baseUrl";
 import axios from "axios";
+import { addDoc, collection } from "@react-native-firebase/firestore";
+import { database } from "../config/firebase";
+import { useSelector } from "react-redux";
 
 const PaymentConfirmationPage = () => {
   const navigation = useNavigation();
   const route = useRoute();
-  const [user, setUser] = useState(null);
+  const { user } = useSelector((state) => state.user);
   const { payment, data } = route.params;
   const [isPaymentSuccessful, setIsPaymentSuccessful] = useState(false);
   const intervalRef = useRef(null);
@@ -53,6 +56,38 @@ const PaymentConfirmationPage = () => {
 
           const response = await axios.post(endpoint, parsedData, config);
           if (response.status === 200) {
+            const order = response.data.order;
+            const restaurantDetails = order.restaurant;
+
+            if (
+              restaurantDetails?._id &&
+              restaurantDetails?.title &&
+              restaurantDetails?.logoUrl?.url
+            ) {
+              const message = {
+                _id: new Date().getTime().toString(),
+                text: `Thank you for placing your order! Your order is being processed.`,
+                createdAt: new Date(),
+                user: {
+                  _id: restaurantDetails?._id,
+                  name: restaurantDetails?.title,
+                  avatar: restaurantDetails?.logoUrl?.url,
+                },
+                receiverId: user?._id,
+              };
+
+              try {
+                await addDoc(collection(database, "chats"), message);
+                console.log("Message sent to Firestore successfully.");
+              } catch (error) {
+                console.error("Error sending message to Firestore:", error);
+              }
+            } else {
+              console.error(
+                "Restaurant details are incomplete. Message not sent."
+              );
+            }
+
             navigation.navigate("order-page");
             Toast.show({
               type: "success",

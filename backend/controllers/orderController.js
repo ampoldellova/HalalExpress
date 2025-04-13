@@ -61,6 +61,10 @@ module.exports = {
 
       await newOrder.save();
 
+      const populatedOrder = await Order.findById(newOrder._id).populate(
+        "restaurant"
+      );
+
       cart.cartItems = [];
       cart.totalAmount = 0;
       await cart.save();
@@ -94,7 +98,7 @@ module.exports = {
       res.status(200).json({
         status: true,
         message: "Order placed successfully",
-        order: newOrder,
+        order: populatedOrder,
       });
     } catch (error) {
       console.log(error);

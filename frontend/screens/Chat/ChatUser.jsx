@@ -77,6 +77,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: COLORS.black,
     fontFamily: "bold",
-    width: SIZES.width / 2,
+    // width: SIZES.width / 2,
   },
 });
