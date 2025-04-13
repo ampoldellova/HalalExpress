@@ -1,4 +1,4 @@
-import { FlatList, StyleSheet, Text, View } from "react-native";
+import { FlatList, Image, StyleSheet, Text, View } from "react-native";
 import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS, SIZES } from "../../styles/theme";
@@ -71,6 +71,10 @@ const ChatList = () => {
     }, [user])
   );
 
+  console.log(
+    conversations.length === 0 ? "No conversations found" : conversations
+  );
+
   const renderItem = ({ item }) => (
     <>
       <ChatUser
@@ -87,14 +91,37 @@ const ChatList = () => {
         <Text style={styles.heading}>Chats</Text>
       </View>
 
-      <FlatList
-        data={conversations}
-        keyExtractor={(item) => item._id}
-        renderItem={renderItem}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 100 }}
-        style={{ marginTop: 20 }}
-      />
+      {conversations.length === 0 && (
+        <View style={styles.container}>
+          <Image
+            style={{ width: 200, height: 200 }}
+            source={require("../../assets/images/emptyInbox.png")}
+          />
+          <Text
+            style={{
+              fontSize: 14,
+              fontFamily: "regular",
+              color: COLORS.gray,
+              textAlign: "center",
+              width: "70%",
+              marginTop: 10,
+            }}
+          >
+            Your message box is empty.
+          </Text>
+        </View>
+      )}
+
+      {conversations.length > 0 && (
+        <FlatList
+          data={conversations}
+          keyExtractor={(item) => item._id}
+          renderItem={renderItem}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingBottom: 100 }}
+          style={{ marginTop: 20 }}
+        />
+      )}
     </SafeAreaView>
   );
 };
@@ -102,6 +129,11 @@ const ChatList = () => {
 export default ChatList;
 
 const styles = StyleSheet.create({
+  container: {
+    justifyContent: "center",
+    alignItems: "center",
+    height: SIZES.height / 1.3,
+  },
   heading: {
     fontFamily: "bold",
     fontSize: 24,
