@@ -31,7 +31,6 @@ const ChatRoom = ({ route }) => {
   const [messages, setMessages] = useState([]);
   const navigation = useNavigation();
   const receiver = route.params;
-  console.log(receiver);
   const [text, setText] = useState("");
 
   const renderInputToolbar = (props) => (
@@ -54,7 +53,7 @@ const ChatRoom = ({ route }) => {
           onPress={() => {
             if (text.trim()) {
               sendProps.onSend({ text: text.trim() }, true);
-              setText(""); // Clear input
+              setText("");
             }
           }}
         >
