@@ -18,12 +18,24 @@ const HomePage = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedSection, setSelectedSection] = useState(null);
   const [selectedValue, setSelectedValue] = useState(null);
+  const [categories, setCategories] = useState([]);
+  const [categoriesLoaded, setCategoriesLoaded] = useState(false);
   const [restaurants, setRestaurants] = useState([]);
   const [restaurantsLoaded, setRestaurantsLoaded] = useState(false);
   const [foods, setFoods] = useState([]);
   const [filteredFoods, setFilteredFoods] = useState([]);
   const [foodsLoaded, setFoodsLoaded] = useState(false);
   const [loading, setLoading] = useState(true);
+
+  const getCategories = async () => {
+    try {
+      const response = await axios.get(`${baseUrl}/api/category`);
+      setCategories(response.data);
+      setCategoriesLoaded(true);
+    } catch (error) {
+      console.log("Error fetching restaurants:", error);
+    }
+  };
 
   const getRestaurants = async () => {
     try {
@@ -50,10 +62,10 @@ const HomePage = () => {
   };
 
   useEffect(() => {
-    if (restaurantsLoaded && foodsLoaded) {
+    if (categoriesLoaded && restaurantsLoaded && foodsLoaded) {
       setLoading(false);
     }
-  }, [restaurantsLoaded, foodsLoaded]);
+  }, [categoriesLoaded, restaurantsLoaded, foodsLoaded]);
 
   useEffect(() => {
     if (selectedCategory) {
@@ -69,10 +81,11 @@ const HomePage = () => {
   useFocusEffect(
     React.useCallback(() => {
       setLoading(true);
+      setCategoriesLoaded(false);
       setRestaurantsLoaded(false);
       setFoodsLoaded(false);
 
-      Promise.all([getRestaurants(), getFoods()])
+      Promise.all([getCategories(), getRestaurants(), getFoods()])
         .then(() => setLoading(false))
         .catch((err) => console.error(err));
     }, [])
@@ -89,6 +102,7 @@ const HomePage = () => {
               <HomeHeader />
               <View>
                 <CategoryList
+                  categories={categories}
                   setSelectedCategory={setSelectedCategory}
                   setSelectedSection={setSelectedSection}
                   setSelectedValue={setSelectedValue}
