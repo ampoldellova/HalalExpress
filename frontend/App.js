@@ -47,6 +47,8 @@ import { registerForPushNotificationsAsync } from "./notificationPermission";
 import ManageOrdersPage from "./screens/Vendor/ManageOrderPage";
 import PendingOrderDetails from "./screens/Order/PendingOrderDetails";
 import FoodPage from "./screens/Food/FoodPage";
+import RestaurantChatList from "./screens/Chat/RestaurantChatList";
+import RestaurantChatRoom from "./screens/Chat/RestaurantChatRoom";
 
 const Stack = createNativeStackNavigator();
 
@@ -81,6 +83,12 @@ export default function App() {
     extrabold: require("./assets/fonts/Poppins-ExtraBold.ttf"),
     semibold: require("./assets/fonts/Poppins-SemiBold.ttf"),
   });
+
+  const onLayoutRootView = useCallback(async () => {
+    if (fontsLoaded) {
+      await SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded]);
 
   const loginStatus = async () => {
     const userToken = await AsyncStorage.getItem("token");
@@ -204,8 +212,18 @@ export default function App() {
                         options={{ headerShown: false }}
                       />
                       <Stack.Screen
+                        name="restaurant-chat-list"
+                        component={RestaurantChatList}
+                        options={{ headerShown: false }}
+                      />
+                      <Stack.Screen
                         name="chat-page"
                         component={ChatRoom}
+                        options={{ headerTitle: "" }}
+                      />
+                      <Stack.Screen
+                        name="restaurant-chat-page"
+                        component={RestaurantChatRoom}
                         options={{ headerTitle: "" }}
                       />
                       <Stack.Screen

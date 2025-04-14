@@ -1,19 +1,7 @@
-import {
-  Image,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
-import React, {
-  useLayoutEffect,
-  useState,
-  useEffect,
-  useCallback,
-} from "react";
+import { StyleSheet, Text, TextInput, TouchableOpacity } from "react-native";
+import React, { useLayoutEffect, useState, useCallback } from "react";
 import { GiftedChat, InputToolbar } from "react-native-gifted-chat";
-import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 import { COLORS } from "../../styles/theme";
 import {
   collection,
@@ -26,11 +14,11 @@ import { database } from "../../config/firebase";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { useSelector } from "react-redux";
 
-const ChatRoom = ({ route }) => {
-  const { user } = useSelector((state) => state.user);
+const RestaurantChatRoom = ({ route }) => {
   const [messages, setMessages] = useState([]);
   const navigation = useNavigation();
-  const receiver = route.params;
+  const restaurant = route.params.restaurant;
+  const receiver = route.params.item;
   const [text, setText] = useState("");
 
   const renderInputToolbar = (props) => (
@@ -66,7 +54,7 @@ const ChatRoom = ({ route }) => {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: () => (
-        <Text style={styles.receiverName}>{receiver?.user?.name}</Text>
+        <Text style={styles.receiverName}>{receiver?.receiverName}</Text>
       ),
     });
   });
@@ -86,17 +74,17 @@ const ChatRoom = ({ route }) => {
         }))
         .filter(
           (msg) =>
-            (msg.user._id === user?._id &&
-              msg.receiverId === receiver?.user?._id) ||
-            (msg.user._id === receiver?.user?._id &&
-              msg.receiverId === user?._id)
+            (msg.user._id === restaurant?._id &&
+              msg.receiverId === receiver?.receiverId) ||
+            (msg.user._id === receiver?.receiverId &&
+              msg.receiverId === restaurant?._id)
         );
 
       setMessages(filteredMessages);
     });
 
     return unsubscribe;
-  }, [user, receiver]);
+  }, [restaurant, receiver]);
 
   const onSend = useCallback((messages = []) => {
     const { _id, createdAt, text, user } = messages[0];
@@ -121,9 +109,9 @@ const ChatRoom = ({ route }) => {
       onSend={(messages) => onSend(messages)}
       renderInputToolbar={renderInputToolbar}
       user={{
-        _id: user?._id,
-        name: user?.username,
-        avatar: user?.profile?.url,
+        _id: restaurant?._id,
+        name: restaurant?.title,
+        avatar: restaurant?.logoUrl?.url,
       }}
       messagesContainerStyle={{
         backgroundColor: "#fff",
@@ -132,7 +120,7 @@ const ChatRoom = ({ route }) => {
   );
 };
 
-export default ChatRoom;
+export default RestaurantChatRoom;
 
 const styles = StyleSheet.create({
   receiverAvatar: {

@@ -127,6 +127,8 @@ const PendingOrderDetails = () => {
           avatar: order?.restaurant?.logoUrl?.url,
         },
         receiverId: order?.userId?._id,
+        receiverName: order?.userId?.username,
+        receiverAvatar: order?.userId?.profile?.url,
       };
 
       await addDoc(collection(database, "chats"), message);

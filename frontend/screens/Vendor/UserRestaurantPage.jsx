@@ -18,6 +18,7 @@ import ManageFoodButton from "../../components/Vendor/ManageFoodButton";
 import AddFoodButton from "../../components/Foods/AddFoodButton";
 import EditRestaurantButton from "../../components/Vendor/EditRestaurantButton";
 import Foundation from "@expo/vector-icons/Foundation";
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 
 const UserRestaurantPage = () => {
   const navigation = useNavigation();
@@ -26,8 +27,39 @@ const UserRestaurantPage = () => {
 
   return (
     <View style={{ marginHorizontal: 20, marginTop: 15 }}>
-      <BackBtn onPress={() => navigation.goBack()} />
-      <Text style={styles.heading}>Restaurant Page</Text>
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.backbtn}
+        >
+          <Ionicons
+            name="chevron-back-circle"
+            size={30}
+            color={COLORS.primary}
+          />
+        </TouchableOpacity>
+        <Text style={styles.heading}>Restaurant Page</Text>
+        <TouchableOpacity
+          style={{ marginTop: 10 }}
+          onPress={() =>
+            navigation.navigate("restaurant-chat-list", {
+              restaurant: item,
+            })
+          }
+        >
+          <MaterialCommunityIcons
+            name="message-reply-text"
+            size={24}
+            color={COLORS.secondary}
+          />
+        </TouchableOpacity>
+      </View>
       <View style={styles.imageContainer}>
         <Image
           source={{

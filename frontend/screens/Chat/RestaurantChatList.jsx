@@ -2,29 +2,37 @@ import { FlatList, Image, StyleSheet, Text, View } from "react-native";
 import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS, SIZES } from "../../styles/theme";
-import { useFocusEffect, useNavigation } from "@react-navigation/native";
-import ChatUser from "./ChatUser";
+import {
+  useFocusEffect,
+  useNavigation,
+  useRoute,
+} from "@react-navigation/native";
 import BackBtn from "../../components/BackBtn";
 import {
   collection,
   query,
   where,
   onSnapshot,
+  or,
 } from "@react-native-firebase/firestore";
 import { useSelector } from "react-redux";
 import { database } from "../../config/firebase";
+import RestaurantChatUser from "./RestaurantChatUser";
 
-const ChatList = () => {
+const RestaurantChatList = () => {
   const [conversations, setConversations] = useState([]);
   const [latestMessage, setLatestMessage] = useState(null);
   const { user } = useSelector((state) => state.user);
   const navigation = useNavigation();
+  const router = useRoute();
+  const restaurant = router.params?.restaurant;
 
   useFocusEffect(
     React.useCallback(() => {
       const fetchConversations = () => {
         const collectionRef = collection(database, "chats");
-        const q = query(collectionRef, where("receiverId", "==", user?._id));
+
+        const q = query(collectionRef, where("user._id", "==", restaurant._id));
 
         const unsubscribe = onSnapshot(q, (snapshot) => {
           const chats = snapshot.docs.map((doc) => {
@@ -36,17 +44,25 @@ const ChatList = () => {
             };
           });
 
-          const uniqueChats = Object.values(
+          const uniqueReceivers = Object.values(
             chats.reduce((acc, chat) => {
-              const senderId = chat.user._id;
-              if (!acc[senderId]) {
-                acc[senderId] = chat;
+              const receiver = {
+                _id: chat.receiverId,
+                name: chat.receiverName,
+                avatar: chat.receiverAvatar,
+              };
+
+              if (!acc[receiver._id]) {
+                acc[receiver._id] = {
+                  user: receiver,
+                  ...chat,
+                };
               }
               return acc;
             }, {})
           );
 
-          setConversations(uniqueChats);
+          setConversations(uniqueReceivers);
         });
 
         return unsubscribe;
@@ -55,11 +71,16 @@ const ChatList = () => {
       const fetchLatestMessage = () => {
         const collectionRef = collection(database, "chats");
 
-        const q1 = query(collectionRef, where("receiverId", "==", user?._id));
-        const q2 = query(collectionRef, where("user._id", "==", user?._id));
+        const q = query(
+          collectionRef,
+          or(
+            where("receiverId", "==", restaurant._id),
+            where("user._id", "==", restaurant._id)
+          )
+        );
 
-        const unsubscribe1 = onSnapshot(q1, (snapshot1) => {
-          const chats1 = snapshot1.docs.map((doc) => {
+        const unsubscribe = onSnapshot(q, (snapshot) => {
+          const chats = snapshot.docs.map((doc) => {
             const data = doc.data();
             const createdAt = data.createdAt?.toDate() || new Date();
 
@@ -69,44 +90,28 @@ const ChatList = () => {
             };
           });
 
-          const unsubscribe2 = onSnapshot(q2, (snapshot2) => {
-            const chats2 = snapshot2.docs.map((doc) => {
-              const data = doc.data();
-              const createdAt = data.createdAt?.toDate() || new Date();
-              return {
-                ...data,
-                createdAt,
-              };
-            });
+          const latestMessages = Object.values(
+            chats.reduce((acc, chat) => {
+              const conversationId =
+                chat.receiverId === restaurant._id
+                  ? chat.user._id
+                  : chat.receiverId;
 
-            const allChats = [...chats1, ...chats2];
+              if (
+                !acc[conversationId] ||
+                acc[conversationId].createdAt < chat.createdAt
+              ) {
+                acc[conversationId] = chat;
+              }
+              return acc;
+            }, {})
+          );
 
-            const uniqueChats = Object.values(
-              allChats.reduce((acc, chat) => {
-                const conversationId =
-                  chat.receiverId === user?._id
-                    ? chat.user._id
-                    : chat.receiverId;
-
-                if (
-                  !acc[conversationId] ||
-                  acc[conversationId].createdAt < chat.createdAt
-                ) {
-                  acc[conversationId] = chat;
-                }
-                return acc;
-              }, {})
-            );
-
-            setLatestMessage(uniqueChats);
-          });
-
-          return () => unsubscribe2();
+          setLatestMessage(latestMessages);
         });
 
-        return () => unsubscribe1();
+        return unsubscribe;
       };
-
       const unsubscribeConversations = fetchConversations();
       const unsubscribeLatestMessage = fetchLatestMessage();
       return () => {
@@ -134,10 +139,16 @@ const ChatList = () => {
   const renderItem = ({ item }) => {
     return (
       <>
-        <ChatUser
-          restaurant={item}
+        <RestaurantChatUser
+          restaurant={restaurant}
+          receiver={item}
           latestMessage={item.latestMessage}
-          onPress={() => navigation.navigate("chat-page", item)}
+          onPress={() =>
+            navigation.navigate("restaurant-chat-page", {
+              item,
+              restaurant: restaurant,
+            })
+          }
         />
       </>
     );
@@ -185,7 +196,7 @@ const ChatList = () => {
   );
 };
 
-export default ChatList;
+export default RestaurantChatList;
 
 const styles = StyleSheet.create({
   container: {

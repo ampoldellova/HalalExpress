@@ -1,17 +1,19 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React from "react";
 import { COLORS, SIZES } from "../../styles/theme";
-import { useSelector } from "react-redux";
 
-const ChatUser = ({ restaurant, latestMessage, onPress }) => {
-  const { user } = useSelector((state) => state.user);
-
+const RestaurantChatUser = ({
+  restaurant,
+  receiver,
+  latestMessage,
+  onPress,
+}) => {
   const formatTime = (date) => {
     if (!date) return "";
     const options = { hour: "numeric", minute: "numeric", hour12: true };
     return new Date(date).toLocaleTimeString([], options);
   };
-
+  
   return (
     <TouchableOpacity style={styles.profile} onPress={onPress}>
       <View
@@ -25,7 +27,7 @@ const ChatUser = ({ restaurant, latestMessage, onPress }) => {
         <Image
           alt=""
           source={{
-            uri: restaurant?.user?.avatar,
+            uri: receiver?.receiverAvatar,
           }}
           style={styles.profileAvatar}
         />
@@ -42,7 +44,7 @@ const ChatUser = ({ restaurant, latestMessage, onPress }) => {
               numberOfLines={1}
               ellipsizeMode="tail"
             >
-              {restaurant?.user?.name}
+              {receiver?.receiverName}
             </Text>
             <Text
               style={{
@@ -63,7 +65,7 @@ const ChatUser = ({ restaurant, latestMessage, onPress }) => {
               width: SIZES.width / 1.5,
             }}
           >
-            {latestMessage?.user?._id === user?._id
+            {latestMessage?.user?._id === restaurant?._id
               ? `You: ${latestMessage?.text}`
               : `${latestMessage?.user?.name}: ${latestMessage?.text}`}
           </Text>
@@ -73,7 +75,7 @@ const ChatUser = ({ restaurant, latestMessage, onPress }) => {
   );
 };
 
-export default ChatUser;
+export default RestaurantChatUser;
 
 const styles = StyleSheet.create({
   profileAvatar: {
