@@ -110,7 +110,7 @@ const ProfilePage = () => {
         setRestaurants([]);
         setStores([]);
       };
-    }, [])
+    }, [user])
   );
 
   return (

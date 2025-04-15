@@ -4,7 +4,6 @@ const jwt = require("jsonwebtoken");
 
 module.exports = {
   createUser: async (req, res) => {
-    console.log(req.body);
     try {
       const user = req.body;
 
@@ -62,6 +61,7 @@ module.exports = {
       const { password, ...others } = user._doc;
       return res.status(200).json({ ...others, userToken });
     } catch (error) {
+      console.log(error);
       return res.status(500).json({ status: false, error: error.message });
     }
   },

@@ -74,40 +74,35 @@ const LoginPage = () => {
           JSON.stringify(response.data.userToken)
         );
 
-        try {
-          const token = await AsyncStorage.getItem("token");
-          const config = {
-            headers: {
-              Authorization: `Bearer ${JSON.parse(token)}`,
-            },
-          };
+        navigation.navigate("bottom-navigation", { screen: "HomePage" });
 
-          if (user?.userType === "Vendor") {
-            const cartResponse = await axios.get(
-              `${baseUrl}/api/cart/vendor`,
-              config
-            );
-            console.log(cartResponse.data.cartItems.length);
-            dispatch(updateCartCount(cartResponse.data.cartItems.length));
-          } else {
-            const cartResponse = await axios.get(
-              `${baseUrl}/api/cart/`,
-              config
-            );
-            console.log(cartResponse.data.cartItems.length);
-            dispatch(updateCartCount(cartResponse.data.cartItems.length));
-          }
-        } catch (error) {}
+        const token = await AsyncStorage.getItem("token");
+        const config = {
+          headers: {
+            Authorization: `Bearer ${JSON.parse(token)}`,
+          },
+        };
+
+        const cartResponse = await axios.get(`${baseUrl}/api/cart/`, config);
+        dispatch(updateCartCount(cartResponse.data.cartItems.length));
       }
     } catch (error) {
-      console.log(error);
-      Toast.show({
-        type: "error",
-        text1: "Login Error 🚨",
-        text2: "Invalid email or password",
-      });
       setLogin(false);
       setLoader(false);
+
+      if (error.response && error.response.status === 401) {
+        Toast.show({
+          type: "error",
+          text1: "Login Error 🚨",
+          text2: "Invalid email or password",
+        });
+      } else {
+        Toast.show({
+          type: "error",
+          text1: "Login Error 🚨",
+          text2: "Something went wrong. Please try again.",
+        });
+      }
     } finally {
       setLoader(false);
     }
