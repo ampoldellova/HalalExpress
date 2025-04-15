@@ -123,18 +123,20 @@ const RestaurantChatList = () => {
 
   const combinedData = conversations.map((conversation) => {
     const latestMessageForConversation = latestMessage?.find((message) => {
-      console.log(message);
-      const isReceiverMatch = message.receiverId === conversation.user._id;
-      const isSenderMatch = message.user._id === conversation.user._id;
+      const isReceiverMatch = message.receiverId === conversation.receiverId;
+      const isSenderMatch = message.user._id === conversation.receiverId;
 
       return isReceiverMatch || isSenderMatch;
     });
 
     return {
       ...conversation,
+      text: latestMessageForConversation?.text || conversation.text,
       latestMessage: latestMessageForConversation,
     };
   });
+
+  console.log(combinedData);
 
   const renderItem = ({ item }) => {
     return (
