@@ -59,7 +59,6 @@ const LoginPage = () => {
 
       const response = await axios.post(endpoint, data);
       if (response.status === 200) {
-        navigation.navigate("HomePage");
         Toast.show({
           type: "success",
           text1: "Logged in ✅",
@@ -88,12 +87,14 @@ const LoginPage = () => {
               `${baseUrl}/api/cart/vendor`,
               config
             );
+            console.log(cartResponse.data.cartItems.length);
             dispatch(updateCartCount(cartResponse.data.cartItems.length));
           } else {
             const cartResponse = await axios.get(
               `${baseUrl}/api/cart/`,
               config
             );
+            console.log(cartResponse.data.cartItems.length);
             dispatch(updateCartCount(cartResponse.data.cartItems.length));
           }
         } catch (error) {}

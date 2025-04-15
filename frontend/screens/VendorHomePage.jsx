@@ -17,6 +17,8 @@ import Divider from "../components/Divider";
 import HomeProductCategories from "../components/Categories/HomeProductCategories";
 
 const VendorHomePage = () => {
+  const [supplyCategories, setSupplyCategories] = useState([]);
+  const [supplyCategoriesLoaded, setSupplyCategoriesLoaded] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedSection, setSelectedSection] = useState(null);
   const [selectedValue, setSelectedValue] = useState(null);
@@ -26,6 +28,16 @@ const VendorHomePage = () => {
   const [ingredientsLoaded, setIngredientsLoaded] = useState(false);
   const [filteredIngredients, setFilteredIngredients] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const getSupplyCategories = async () => {
+    try {
+      const response = await axios.get(`${baseUrl}/api/supplyCategory/`);
+      setSupplyCategories(response.data);
+      setSupplyCategoriesLoaded(true);
+    } catch (error) {
+      console.log("Error fetching restaurants:", error);
+    }
+  };
 
   const getSuppliers = async () => {
     try {
@@ -76,10 +88,10 @@ const VendorHomePage = () => {
   };
 
   useEffect(() => {
-    if (suppliersLoaded && ingredientsLoaded) {
+    if (supplyCategoriesLoaded && suppliersLoaded && ingredientsLoaded) {
       setLoading(false);
     }
-  }, [suppliersLoaded, ingredientsLoaded]);
+  }, [supplyCategoriesLoaded, suppliersLoaded, ingredientsLoaded]);
 
   useEffect(() => {
     if (selectedCategory) {
@@ -95,10 +107,11 @@ const VendorHomePage = () => {
   useFocusEffect(
     React.useCallback(() => {
       setLoading(true);
+      setSupplyCategoriesLoaded(false);
       setSuppliersLoaded(false);
       setIngredientsLoaded(false);
 
-      Promise.all([getSuppliers(), getIngredients()])
+      Promise.all([getSupplyCategories(), getSuppliers(), getIngredients()])
         .then(() => setLoading(false))
         .catch((err) => console.error(err));
     }, [])
@@ -114,6 +127,7 @@ const VendorHomePage = () => {
             <ScrollView>
               <HomeHeader />
               <SupplyCategoryList
+                supplyCategories={supplyCategories}
                 setSelectedCategory={setSelectedCategory}
                 setSelectedSection={setSelectedSection}
                 setSelectedValue={setSelectedValue}

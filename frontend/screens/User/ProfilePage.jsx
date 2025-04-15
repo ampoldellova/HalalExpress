@@ -1,11 +1,5 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  Image,
-  TouchableOpacity
-} from "react-native";
-import React from "react";
+import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
+import React, { useState } from "react";
 import { COLORS, SIZES } from "../../styles/theme";
 import { AntDesign } from "@expo/vector-icons";
 import ProfileTile from "../../components/User/ProfileTile";
@@ -19,11 +13,17 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import pages from "../../styles/page.style";
 import SupplierStores from "../../components/Supplier/SupplierStores";
 import Toast from "react-native-toast-message";
+import baseUrl from "../../assets/common/baseUrl";
+import axios from "axios";
+import Loader from "../../components/Loader";
 
 const ProfilePage = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const { user } = useSelector((state) => state.user);
+  const [restaurants, setRestaurants] = useState([]);
+  const [stores, setStores] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const handleLogout = async () => {
     await AsyncStorage.removeItem("id");
@@ -39,120 +39,198 @@ const ProfilePage = () => {
     navigation.navigate("bottom-navigation", { screen: "LoginPage" });
   };
 
+  const getRestaurantsByOwner = async () => {
+    try {
+      const token = await AsyncStorage.getItem("token");
+      if (token) {
+        const config = {
+          headers: {
+            Authorization: `Bearer ${JSON.parse(token)}`,
+          },
+        };
+
+        const response = await axios.get(
+          `${baseUrl}/api/restaurant/owner/${user?._id}`,
+          config
+        );
+        setRestaurants(response.data.data);
+        setLoading(false);
+      } else {
+        console.log("Authentication token not found");
+      }
+    } catch (err) {
+      console.error("Error fetching user restaurants:", err);
+      setError(err.message || "Failed to fetch restaurants.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getSupplierStoresByOwner = async () => {
+    try {
+      const token = await AsyncStorage.getItem("token");
+      if (token) {
+        const config = {
+          headers: {
+            Authorization: `Bearer ${JSON.parse(token)}`,
+          },
+        };
+
+        const response = await axios(
+          `${baseUrl}/api/supplier/owner/${user?._id}`,
+          config
+        );
+        setStores(response.data.data);
+        setLoading(false);
+      } else {
+        console.log("Authentication token not found");
+      }
+    } catch (err) {
+      console.error("Error fetching user supplier stores:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useFocusEffect(
+    React.useCallback(() => {
+      setLoading(true);
+      const fetchData = async () => {
+        if (user?.userType === "Vendor") {
+          await getRestaurantsByOwner();
+        } else if (user?.userType === "Supplier") {
+          await getSupplierStoresByOwner();
+        } else if (user?.userType === "Client") {
+          setLoading(false);
+        }
+      };
+
+      fetchData().catch((err) => console.error(err));
+      return () => {
+        setRestaurants([]);
+        setStores([]);
+      };
+    }, [])
+  );
+
   return (
     <SafeAreaView>
-      <View style={pages.viewOne}>
-        <View style={pages.viewTwo}>
-          <TouchableOpacity
-            onPress={() => navigation.navigate("edit-profile-page", { user })}
-            style={styles.profile}
-          >
-            <View style={{ flexDirection: "row" }}>
-              <Image
-                source={{ uri: user?.profile?.url }}
-                style={{
-                  height: 50,
-                  width: 50,
-                  borderRadius: 99,
-                }}
-              />
-              <View style={{ marginLeft: 5, marginTop: 3 }}>
-                <Text style={styles.text}>
-                  {user === null ? "username" : user?.username}
-                </Text>
-                <Text style={styles.email}>
-                  {user === null ? "email" : user?.email}
-                </Text>
+      {loading ? (
+        <Loader />
+      ) : (
+        <View style={pages.viewOne}>
+          <View style={pages.viewTwo}>
+            <TouchableOpacity
+              onPress={() => navigation.navigate("edit-profile-page", { user })}
+              style={styles.profile}
+            >
+              <View style={{ flexDirection: "row" }}>
+                <Image
+                  source={{ uri: user?.profile?.url }}
+                  style={{
+                    height: 50,
+                    width: 50,
+                    borderRadius: 99,
+                  }}
+                />
+                <View style={{ marginLeft: 5, marginTop: 3 }}>
+                  <Text style={styles.text}>
+                    {user === null ? "username" : user?.username}
+                  </Text>
+                  <Text style={styles.email}>
+                    {user === null ? "email" : user?.email}
+                  </Text>
+                </View>
               </View>
-            </View>
 
-            <TouchableOpacity onPress={handleLogout}>
-              <AntDesign name="logout" size={24} color="red" />
+              <TouchableOpacity onPress={handleLogout}>
+                <AntDesign name="logout" size={24} color="red" />
+              </TouchableOpacity>
             </TouchableOpacity>
-          </TouchableOpacity>
 
-          {user?.userType === "Client" && (
-            <View>
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  marginHorizontal: 25,
-                  marginTop: 10,
-                }}
-              >
-                <ProfileTile
-                  title={"Orders"}
-                  icon={"fast-food-outline"}
-                  font={1}
-                  onPress={() => navigation.navigate("order-page", user)}
-                />
-                <ProfileTile
-                  title={"Addresses"}
-                  icon={"location-outline"}
-                  font={1}
-                  onPress={() => navigation.navigate("address-page", user)}
-                />
+            {user?.userType === "Client" && (
+              <View>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    marginHorizontal: 25,
+                    marginTop: 10,
+                  }}
+                >
+                  <ProfileTile
+                    title={"Orders"}
+                    icon={"fast-food-outline"}
+                    font={1}
+                    onPress={() => navigation.navigate("order-page", user)}
+                  />
+                  <ProfileTile
+                    title={"Addresses"}
+                    icon={"location-outline"}
+                    font={1}
+                    onPress={() => navigation.navigate("address-page", user)}
+                  />
+                </View>
               </View>
-            </View>
-          )}
+            )}
 
-          {user?.userType === "Vendor" && (
-            <View>
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  marginHorizontal: 25,
-                  marginTop: 10,
-                }}
-              >
-                <ProfileTile
-                  title={"Orders"}
-                  icon={"fast-food-outline"}
-                  font={1}
-                />
-                <ProfileTile
-                  title={"Addresses"}
-                  icon={"location-outline"}
-                  font={1}
-                  onPress={() => navigation.navigate("address-page", user)}
-                />
+            {user?.userType === "Vendor" && (
+              <View>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    marginHorizontal: 25,
+                    marginTop: 10,
+                  }}
+                >
+                  <ProfileTile
+                    title={"Orders"}
+                    icon={"fast-food-outline"}
+                    font={1}
+                  />
+                  <ProfileTile
+                    title={"Addresses"}
+                    icon={"location-outline"}
+                    font={1}
+                    onPress={() => navigation.navigate("address-page", user)}
+                  />
+                </View>
+                <Heading heading={"Your Restaurants"} onPress={() => {}} />
+                <UserRestaurants restaurants={restaurants} />
               </View>
-              <Heading heading={"Your Restaurants"} onPress={() => {}} />
-              <UserRestaurants user={user} />
-            </View>
-          )}
+            )}
 
-          {user?.userType === "Supplier" && (
-            <View>
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  marginHorizontal: 25,
-                  marginTop: 10,
-                }}
-              >
-                <ProfileTile
-                  title={"Orders"}
-                  icon={"fast-food-outline"}
-                  font={1}
-                  onPress={() => navigation.navigate("order-page", user)}
-                />
-                <ProfileTile
-                  title={"Addresses"}
-                  icon={"location-outline"}
-                  font={1}
-                  onPress={() => navigation.navigate("address-page", user)}
-                />
+            {user?.userType === "Supplier" && (
+              <View>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    marginHorizontal: 25,
+                    marginTop: 10,
+                  }}
+                >
+                  <ProfileTile
+                    title={"Orders"}
+                    icon={"fast-food-outline"}
+                    font={1}
+                    onPress={() => navigation.navigate("order-page", user)}
+                  />
+                  <ProfileTile
+                    title={"Addresses"}
+                    icon={"location-outline"}
+                    font={1}
+                    onPress={() => navigation.navigate("address-page", user)}
+                  />
+                </View>
+                <Heading heading={"Your Stores"} onPress={() => {}} />
+                <SupplierStores stores={stores} />
               </View>
-              <Heading heading={"Your Stores"} onPress={() => {}} />
-              <SupplierStores user={user} />
-            </View>
-          )}
+            )}
+          </View>
         </View>
-      </View>
+      )}
     </SafeAreaView>
   );
 };

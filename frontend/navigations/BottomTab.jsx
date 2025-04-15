@@ -28,26 +28,26 @@ const BottomTab = () => {
   const { user, cartCount } = useSelector((state) => state.user);
   const dispatch = useDispatch();
 
-  const getUser = async () => {
-    try {
-      const token = await AsyncStorage.getItem("token");
-      if (token) {
-        const config = {
-          headers: {
-            Authorization: `Bearer ${JSON.parse(token)}`,
-          },
-        };
-        const response = await axios.get(
-          `${baseUrl}/api/users/profile`,
-          config
-        );
+  // const getUser = async () => {
+  //   try {
+  //     const token = await AsyncStorage.getItem("token");
+  //     if (token) {
+  //       const config = {
+  //         headers: {
+  //           Authorization: `Bearer ${JSON.parse(token)}`,
+  //         },
+  //       };
+  //       const response = await axios.get(
+  //         `${baseUrl}/api/users/profile`,
+  //         config
+  //       );
 
-        dispatch(addUser(response.data));
-      }
-    } catch (error) {
-      console.log("Error fetching profile:", error);
-    }
-  };
+  //       dispatch(addUser(response.data));
+  //     }
+  //   } catch (error) {
+  //     console.log("Error fetching profile:", error);
+  //   }
+  // };
 
   const getCartItems = async () => {
     try {
@@ -72,7 +72,7 @@ const BottomTab = () => {
 
   useFocusEffect(
     React.useCallback(() => {
-      getUser();
+      // getUser();
       getCartItems();
     }, [])
   );
@@ -87,13 +87,7 @@ const BottomTab = () => {
     >
       <Tab.Screen
         name="HomePage"
-        component={
-          user
-            ? user.userType === "Vendor"
-              ? VendorHomePage
-              : HomePage
-            : HomePage
-        }
+        component={user?.userType === "Vendor" ? VendorHomePage : HomePage}
         options={{
           tabBarStyle: tabBarStyle,
           tabBarShowLabel: false,
