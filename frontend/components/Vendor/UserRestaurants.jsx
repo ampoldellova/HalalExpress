@@ -1,20 +1,18 @@
 import { FlatList, StyleSheet, View } from "react-native";
-import React, { useState } from "react";
-import {
-  useFocusEffect,
-  useNavigation,
-  useRoute,
-} from "@react-navigation/native";
+import React, { useRef, useState } from "react";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import baseUrl from "../../assets/common/baseUrl";
 import axios from "axios";
-import Loader from "../Loader";
 import RestaurantStoreComponent from "./RestaurantStoreComponent";
+import LottieView from "lottie-react-native";
+import { SIZES } from "../../styles/theme";
 
 const UserRestaurants = ({ user }) => {
   const navigation = useNavigation();
   const [restaurants, setRestaurants] = useState([]);
   const [loading, setLoading] = useState(true);
+  const animation = useRef(null);
 
   const getRestaurantsByOwner = async () => {
     try {
@@ -52,7 +50,22 @@ const UserRestaurants = ({ user }) => {
   return (
     <View style={{ marginLeft: 12 }}>
       {loading ? (
-        <Loader />
+        <View
+          style={{
+            width: SIZES.width,
+            height: SIZES.height / 2,
+            justifyContent: "center",
+            alignItems: "center",
+            top: 0,
+          }}
+        >
+          <LottieView
+            autoPlay
+            ref={animation}
+            style={{ width: "50%", height: "50%" }}
+            source={require("../../assets/anime/loading.json")}
+          />
+        </View>
       ) : (
         <FlatList
           data={restaurants}

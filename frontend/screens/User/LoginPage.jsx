@@ -19,7 +19,7 @@ import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { LoginContext } from "../../contexts/LoginContext";
 import baseUrl from "../../assets/common/baseUrl";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { addUser, updateCartCount } from "../../redux/UserReducer";
 import { SafeAreaView } from "react-native-safe-area-context";
 import pages from "../../styles/page.style";
@@ -42,6 +42,7 @@ const LoginPage = () => {
   const [obsecureText, setObsecureText] = useState(false);
   const { login, setLogin } = useContext(LoginContext);
   const navigation = useNavigation();
+  const { user } = useSelector((state) => state.user);
 
   const inValidForm = () => {
     Alert.alert(
@@ -74,24 +75,36 @@ const LoginPage = () => {
           JSON.stringify(response.data.userToken)
         );
 
-        const token = await AsyncStorage.getItem("token");
-        const config = {
-          headers: {
-            Authorization: `Bearer ${JSON.parse(token)}`,
-          },
-        };
+        try {
+          const token = await AsyncStorage.getItem("token");
+          const config = {
+            headers: {
+              Authorization: `Bearer ${JSON.parse(token)}`,
+            },
+          };
 
-        const cartResponse = await axios.get(`${baseUrl}/api/cart/`, config);
-        dispatch(updateCartCount(cartResponse.data.cartItems.length));
-      } else {
-        setLoader(false);
-        Toast.show({
-          type: "error",
-          text1: "Login Error 🚨",
-          text2: "Invalid email or password",
-        });
+          if (user?.userType === "Vendor") {
+            const cartResponse = await axios.get(
+              `${baseUrl}/api/cart/vendor`,
+              config
+            );
+            dispatch(updateCartCount(cartResponse.data.cartItems.length));
+          } else {
+            const cartResponse = await axios.get(
+              `${baseUrl}/api/cart/`,
+              config
+            );
+            dispatch(updateCartCount(cartResponse.data.cartItems.length));
+          }
+        } catch (error) {}
       }
     } catch (error) {
+      console.log(error);
+      Toast.show({
+        type: "error",
+        text1: "Login Error 🚨",
+        text2: "Invalid email or password",
+      });
       setLogin(false);
       setLoader(false);
     } finally {

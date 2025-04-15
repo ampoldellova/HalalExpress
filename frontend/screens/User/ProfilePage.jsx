@@ -3,23 +3,16 @@ import {
   Text,
   View,
   Image,
-  TouchableOpacity,
-  ScrollView,
-  Alert,
-  Modal,
-  Pressable,
+  TouchableOpacity
 } from "react-native";
-import React, { useState } from "react";
+import React from "react";
 import { COLORS, SIZES } from "../../styles/theme";
 import { AntDesign } from "@expo/vector-icons";
 import ProfileTile from "../../components/User/ProfileTile";
-import RegistrationTile from "../../components/User/RegistrationTile";
 import { useDispatch, useSelector } from "react-redux";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import axios from "axios";
-import { cleanCart, cleanCartCount, cleanUser } from "../../redux/UserReducer";
-import baseUrl from "../../assets/common/baseUrl";
+import { cleanCart, cleanUser } from "../../redux/UserReducer";
 import Heading from "../../components/Heading";
 import UserRestaurants from "../../components/Vendor/UserRestaurants";
 import { SafeAreaView } from "react-native-safe-area-context";
