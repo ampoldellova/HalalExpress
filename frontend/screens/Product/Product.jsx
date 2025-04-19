@@ -28,7 +28,7 @@ const Product = ({ route, navigation }) => {
   const addProductToCart = async () => {
     const cartItem = {
       productId: item?._id,
-      supplierId: item?.supplier._id,
+      supplierId: item?.supplier?._id,
       instructions: preference,
       quantity: count,
       totalPrice: item?.price * count,
