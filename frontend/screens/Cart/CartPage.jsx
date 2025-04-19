@@ -25,9 +25,7 @@ const CartPage = () => {
   const navigation = useNavigation();
   const { user } = useSelector((state) => state.user);
   const [cart, setCart] = useState({});
-  const [vendorCart, setVendorCart] = useState({});
   const [cartItems, setCartItems] = useState([]);
-  const [vendorCartItems, setVendorCartItems] = useState([]);
   const [loading, setLoading] = useState(false);
 
   const getCartItems = async () => {
@@ -40,15 +38,8 @@ const CartPage = () => {
           },
         };
 
-        const endpoint =
-          user?.userType === "Vendor"
-            ? `${baseUrl}/api/cart/vendor/`
-            : `${baseUrl}/api/cart/`;
-
-        const response = await axios.get(endpoint, config);
-        setVendorCartItems(response.data.cartItems);
+        const response = await axios.get(`${baseUrl}/api/cart/`, config);
         setCartItems(response.data.cartItems);
-        setVendorCart(response.data.vendorCart);
         setCart(response.data.cart);
         setLoading(false);
       } else {
@@ -62,7 +53,7 @@ const CartPage = () => {
   useFocusEffect(
     React.useCallback(() => {
       getCartItems();
-    }, [cartItems, vendorCartItems])
+    }, [cartItems])
   );
 
   return (
@@ -94,15 +85,13 @@ const CartPage = () => {
       ) : (
         <View style={pages.viewOne}>
           <View style={pages.viewTwo}>
-            {cartItems.length > 0 || vendorCartItems.length > 0 ? (
+            {cartItems.length > 0 ? (
               <View style={{ marginHorizontal: 20, marginTop: 15 }}>
                 <BackBtn onPress={() => navigation.goBack()} />
                 <Text style={styles.heading}>Your Cart</Text>
 
                 <FlatList
-                  data={
-                    user?.userType === "Vendor" ? vendorCartItems : cartItems
-                  }
+                  data={cartItems}
                   keyExtractor={(item) => item._id}
                   style={{ height: SIZES.height / 1.5 }}
                   renderItem={({ item }) => (
@@ -144,7 +133,6 @@ const CartPage = () => {
                   onPress={() => {
                     navigation.navigate("checkout-page", {
                       cart,
-                      vendorCart,
                       user,
                     });
                   }}

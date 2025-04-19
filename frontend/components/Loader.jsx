@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from "react-native";
 import React, { useRef } from "react";
 import LottieView from "lottie-react-native";
-import { SIZES } from "../styles/theme";
+import { COLORS, SIZES } from "../styles/theme";
 import pages from "../styles/page.style";
 
 const Loader = () => {
@@ -15,15 +15,24 @@ const Loader = () => {
             height: SIZES.height / 1.2,
             justifyContent: "center",
             alignItems: "center",
-            top: 0,
           }}
         >
           <LottieView
             autoPlay
             ref={animation}
-            style={{ width: "50%", height: "50%" }}
+            style={{ width: "20%", height: "20%" }}
             source={require("../assets/anime/loading.json")}
           />
+          <Text
+            style={{
+              fontFamily: "regular",
+              color: COLORS.gray,
+              position: "absolute",
+              bottom: 220,
+            }}
+          >
+            Loading...
+          </Text>
         </View>
       </View>
     </View>
