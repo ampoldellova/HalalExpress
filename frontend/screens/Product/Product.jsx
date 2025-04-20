@@ -104,7 +104,7 @@ const Product = ({ route, navigation }) => {
               onChangeText={(value) => setPreference(value)}
               autoCapitalize={false}
               autoCorrect={false}
-              style={{ flex: 1 }}
+              style={{ flex: 1, fontFamily: "regular", color: COLORS.gray }}
             />
           </View>
 

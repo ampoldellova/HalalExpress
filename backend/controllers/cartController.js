@@ -2,72 +2,124 @@ const Cart = require("../models/Cart");
 
 module.exports = {
   addFoodToCart: async (req, res) => {
-    const userId = req.user.id;
+    const user = req.user;
     const {
       foodId,
+      productId,
       totalPrice,
       quantity,
       additives,
       instructions,
       restaurantId,
+      supplierId,
     } = req.body;
 
     try {
-      let cart = await Cart.findOne({ userId });
+      if (user.userType === "Vendor") {
+        let cart = await Cart.findOne({ userId: user.id });
 
-      if (cart) {
-        const differentRestaurantItemIndex = cart.cartItems.findIndex(
-          (item) => item.foodId.restaurant.toString() !== restaurantId
-        );
-        if (differentRestaurantItemIndex > -1) {
-          cart.cartItems = cart.cartItems.filter(
-            (item) => item.foodId.restaurant.toString() === restaurantId
+        if (cart) {
+          const differentRestaurantItemIndex = cart.cartItems.findIndex(
+            (item) => item.productId.supplier.toString() !== supplierId
           );
-          cart.totalAmount = 0;
-        }
 
-        const existingItemIndex = cart.cartItems.findIndex(
-          (item) => item.foodId._id.toString() === foodId
-        );
+          if (differentRestaurantItemIndex > -1) {
+            cart.cartItems = cart.cartItems.filter(
+              (item) => item.productId.supplier.toString() === supplierId
+            );
+            cart.totalAmount = 0;
+          }
 
-        if (existingItemIndex > -1) {
-          cart.cartItems[existingItemIndex].quantity += quantity;
-          cart.cartItems[existingItemIndex].totalPrice += totalPrice;
+          const existingItemIndex = cart.cartItems.findIndex(
+            (item) => item.productId._id.toString() === productId
+          );
+
+          if (existingItemIndex > -1) {
+            cart.cartItems[existingItemIndex].quantity += quantity;
+            cart.cartItems[existingItemIndex].totalPrice += totalPrice;
+          } else {
+            cart.cartItems.push({
+              productId,
+              supplierId,
+              instructions,
+              quantity,
+              totalPrice,
+            });
+          }
+          cart.totalAmount += totalPrice;
+          await cart.save();
         } else {
-          cart.cartItems.push({
-            foodId,
-            restaurantId,
-            additives,
-            instructions,
-            quantity,
-            totalPrice,
+          const newCart = new Cart({
+            userId: user.id,
+            cartItems: [
+              {
+                productId,
+                supplierId,
+                instructions,
+                quantity,
+                totalPrice,
+              },
+            ],
+            totalAmount: totalPrice,
           });
+          await newCart.save();
         }
 
-        cart.totalAmount += totalPrice;
-        await cart.save();
+        const count = await Cart.countDocuments({ userId: user.id });
+        res.status(200).json({ status: true, count });
       } else {
-        const newCart = new Cart({
-          userId,
-          cartItems: [
-            {
+        let cart = await Cart.findOne({ userId: user.id });
+
+        if (cart) {
+          const differentRestaurantItemIndex = cart.cartItems.findIndex(
+            (item) => item.foodId.restaurant.toString() !== restaurantId
+          );
+          if (differentRestaurantItemIndex > -1) {
+            cart.cartItems = cart.cartItems.filter(
+              (item) => item.foodId.restaurant.toString() === restaurantId
+            );
+            cart.totalAmount = 0;
+          }
+          const existingItemIndex = cart.cartItems.findIndex(
+            (item) => item.foodId._id.toString() === foodId
+          );
+          if (existingItemIndex > -1) {
+            cart.cartItems[existingItemIndex].quantity += quantity;
+            cart.cartItems[existingItemIndex].totalPrice += totalPrice;
+          } else {
+            cart.cartItems.push({
               foodId,
               restaurantId,
               additives,
               instructions,
               quantity,
               totalPrice,
-            },
-          ],
-          totalAmount: totalPrice,
-        });
-
-        await newCart.save();
+            });
+          }
+          cart.totalAmount += totalPrice;
+          await cart.save();
+        } else {
+          const newCart = new Cart({
+            userId: user.id,
+            cartItems: [
+              {
+                foodId,
+                restaurantId,
+                additives,
+                instructions,
+                quantity,
+                totalPrice,
+              },
+            ],
+            totalAmount: totalPrice,
+          });
+          await newCart.save();
+        }
+        const count = await Cart.countDocuments({ userId: user.id });
+        res.status(200).json({ status: true, count });
       }
-
-      const count = await Cart.countDocuments({ userId });
-      res.status(200).json({ status: true, count });
     } catch (error) {
+      console.error(error);
       res.status(500).json({ status: false, message: error.message });
     }
   },

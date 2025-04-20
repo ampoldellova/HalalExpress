@@ -28,6 +28,27 @@ const BottomTab = () => {
   const { user, cartCount } = useSelector((state) => state.user);
   const dispatch = useDispatch();
 
+  const getUser = async () => {
+    try {
+      const token = await AsyncStorage.getItem("token");
+      if (token) {
+        const config = {
+          headers: {
+            Authorization: `Bearer ${JSON.parse(token)}`,
+          },
+        };
+
+        const response = await axios.get(
+          `${baseUrl}/api/users/profile`,
+          config
+        );
+        dispatch(addUser(response.data));
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
   const getCartItems = async () => {
     try {
       const token = await AsyncStorage.getItem("token");
@@ -51,7 +72,7 @@ const BottomTab = () => {
 
   useFocusEffect(
     React.useCallback(() => {
-      // getUser();
+      getUser();
       getCartItems();
     }, [])
   );

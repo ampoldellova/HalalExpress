@@ -146,7 +146,7 @@ const VendorHomePage = () => {
                   <Suppliers suppliers={suppliers} />
                   <Divider />
                   <Heading
-                    heading={"Ingredients Available"}
+                    heading={"Products Available"}
                     onPress={() => {}}
                   />
                   <Products ingredients={filteredIngredients} />
