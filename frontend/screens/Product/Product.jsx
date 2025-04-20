@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { COLORS, SIZES } from "../../styles/theme";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Entypo, AntDesign } from "@expo/vector-icons";
@@ -17,6 +17,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import Toast from "react-native-toast-message";
 import baseUrl from "../../assets/common/baseUrl";
+import { updateCartCount } from "../../redux/UserReducer";
 
 const Product = ({ route, navigation }) => {
   const item = route.params;
@@ -60,6 +61,10 @@ const Product = ({ route, navigation }) => {
       console.log(error);
     }
   };
+
+  useEffect(() => {
+    console.log("cartCount updated:", cartCount);
+  }, [cartCount]);
 
   return (
     <SafeAreaView>
@@ -179,7 +184,7 @@ const Product = ({ route, navigation }) => {
                     },
                   ]}
                 >
-                  {0}
+                  {cartCount}
                 </Text>
               </TouchableOpacity>
             </View>

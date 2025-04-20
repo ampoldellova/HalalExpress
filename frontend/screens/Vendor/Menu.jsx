@@ -1,4 +1,4 @@
-import { FlatList, StyleSheet, Text, View } from "react-native";
+import { Alert, FlatList, StyleSheet, Text, View } from "react-native";
 import React, { useContext, useRef, useState } from "react";
 import {
   useFocusEffect,
@@ -10,7 +10,7 @@ import axios from "axios";
 import baseUrl from "../../assets/common/baseUrl";
 import ClosedWindow from "../../components/Vendor/ClosedWindow";
 import LottieView from "lottie-react-native";
-import { SIZES } from "../../styles/theme";
+import { SIZES, COLORS } from "../../styles/theme";
 
 const Menu = () => {
   const route = useRoute();
@@ -51,15 +51,24 @@ const Menu = () => {
             height: SIZES.height / 2,
             justifyContent: "center",
             alignItems: "center",
-            top: 0,
           }}
         >
           <LottieView
             autoPlay
             ref={animation}
-            style={{ width: "50%", height: "50%" }}
+            style={{ width: "20%", height: "20%" }}
             source={require("../../assets/anime/loading.json")}
           />
+          <Text
+            style={{
+              fontFamily: "regular",
+              color: COLORS.gray,
+              position: "absolute",
+              bottom: 120,
+            }}
+          >
+            Loading...
+          </Text>
         </View>
       )}
 
