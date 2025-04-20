@@ -1,7 +1,7 @@
 const Cart = require("../models/Cart");
 
 module.exports = {
-  addFoodToCart: async (req, res) => {
+  addItemToCart: async (req, res) => {
     const user = req.user;
     const {
       foodId,
@@ -126,27 +126,49 @@ module.exports = {
 
   removeFoodFromCart: async (req, res) => {
     try {
-      const { userId, foodId } = req.query;
+      const user = JSON.parse(req.query.user);
+      const { itemId } = req.query;
+      const cart = await Cart.findOne({ userId: user?._id });
 
-      const cart = await Cart.findOne({ userId });
-      if (!cart) {
-        return res.status(404).json({ message: "Cart not found" });
+      if (user.userType === "Vendor") {
+        if (!cart) {
+          return res.status(404).json({ message: "Cart not found" });
+        }
+
+        const itemToRemove = cart.cartItems.find(
+          (item) => item.productId._id.toString() === itemId
+        );
+        if (!itemToRemove) {
+          return res.status(404).json({ message: "Item not found in cart" });
+        }
+
+        cart.cartItems = cart.cartItems.filter(
+          (item) => item.productId._id.toString() !== itemId
+        );
+        cart.totalAmount -= itemToRemove.totalPrice;
+
+        await cart.save();
+        res.status(200).json({ message: "Item removed from cart", cart });
+      } else {
+        if (!cart) {
+          return res.status(404).json({ message: "Cart not found" });
+        }
+
+        const itemToRemove = cart.cartItems.find(
+          (item) => item.foodId._id.toString() === itemId
+        );
+        if (!itemToRemove) {
+          return res.status(404).json({ message: "Item not found in cart" });
+        }
+
+        cart.cartItems = cart.cartItems.filter(
+          (item) => item.foodId._id.toString() !== itemId
+        );
+        cart.totalAmount -= itemToRemove.totalPrice;
+
+        await cart.save();
+        res.status(200).json({ message: "Item removed from cart", cart });
       }
-
-      const itemToRemove = cart.cartItems.find(
-        (item) => item.foodId._id.toString() === foodId
-      );
-      if (!itemToRemove) {
-        return res.status(404).json({ message: "Food item not found in cart" });
-      }
-
-      cart.cartItems = cart.cartItems.filter(
-        (item) => item.foodId._id.toString() !== foodId
-      );
-      cart.totalAmount -= itemToRemove.totalPrice;
-
-      await cart.save();
-      res.status(200).json({ message: "Food item removed from cart", cart });
     } catch (error) {
       res.status(500).json({ message: "Server error", error });
     }
