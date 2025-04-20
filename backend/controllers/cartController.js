@@ -265,15 +265,15 @@ module.exports = {
       if (user.userType === "Vendor") {
         if (cart) {
           const existingItemIndex = cart.cartItems.findIndex(
-            (item) => item.foodId._id.toString() === foodId
+            (item) => item.productId._id.toString() === itemId
           );
 
           if (existingItemIndex > -1) {
             const item = cart.cartItems[existingItemIndex];
             if (item.quantity > 1) {
               item.quantity -= 1;
-              item.totalPrice -= item.foodId.price;
-              cart.totalAmount -= item.foodId.price;
+              item.totalPrice -= item.productId.price;
+              cart.totalAmount -= item.productId.price;
 
               await cart.save();
               return res.status(200).json({
@@ -299,7 +299,7 @@ module.exports = {
       } else {
         if (cart) {
           const existingItemIndex = cart.cartItems.findIndex(
-            (item) => item.foodId._id.toString() === foodId
+            (item) => item.foodId._id.toString() === itemId
           );
 
           if (existingItemIndex > -1) {
