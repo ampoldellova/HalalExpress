@@ -178,7 +178,9 @@ module.exports = {
     const userId = req.user.id;
 
     try {
-      const cart = await Cart.findOne({ userId }).populate("cartItems.foodId");
+      const cart = await Cart.findOne({ userId })
+        .populate("cartItems.foodId")
+        .populate("cartItems.productId");
 
       if (!cart) {
         return res
