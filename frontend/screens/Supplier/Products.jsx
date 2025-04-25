@@ -1,5 +1,5 @@
 import { FlatList, StyleSheet, Text, View } from "react-native";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import {
   useFocusEffect,
   useNavigation,
@@ -8,19 +8,25 @@ import {
 import axios from "axios";
 import baseUrl from "../../assets/common/baseUrl";
 import CategoryIngredientComp from "../../components/Categories/CategoryIngredientComp";
+import LottieView from "lottie-react-native";
+import { COLORS, SIZES } from "../../styles/theme";
 
 const Products = () => {
   const route = useRoute();
   const item = route.params;
   const navigation = useNavigation();
   const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const animation = useRef(null);
 
   const fetchSupplierProducts = async () => {
+    setLoading(true);
     try {
       const response = await axios.patch(
         `${baseUrl}/api/ingredients/supplier/${item._id}`
       );
       setProducts(response.data);
+      setLoading(false);
     } catch (error) {
       console.error(error);
     }
@@ -34,24 +40,53 @@ const Products = () => {
 
   return (
     <View style={{ marginTop: 5, marginBottom: 80 }}>
-      {item.isAvailable ? (
-        <FlatList
-          data={products}
-          showsVerticalScrollIndicator={false}
-          style={{ marginTop: 5 }}
-          scrollEnabled
-          keyExtractor={(item) => item._id}
-          renderItem={({ item }) => (
-            <View style={{ alignItems: "center" }}>
-              <CategoryIngredientComp
-                item={item}
-                onPress={() => navigation.navigate("product-navigator", item)}
-              />
-            </View>
+      {loading && (
+        <View
+          style={{
+            width: SIZES.width,
+            height: SIZES.height / 2,
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <LottieView
+            autoPlay
+            ref={animation}
+            style={{ width: "20%", height: "20%" }}
+            source={require("../../assets/anime/loading.json")}
+          />
+          <Text
+            style={{
+              fontFamily: "regular",
+              color: COLORS.gray,
+              position: "absolute",
+              bottom: 120,
+            }}
+          >
+            Loading...
+          </Text>
+        </View>
+      )}
+
+      {!loading && (
+        <>
+          {item.isAvailable ? (
+            <FlatList
+              data={products}
+              showsVerticalScrollIndicator={false}
+              style={{ marginTop: 5 }}
+              scrollEnabled
+              keyExtractor={(item) => item._id}
+              renderItem={({ item }) => (
+                <View style={{ alignItems: "center" }}>
+                  <CategoryIngredientComp item={item} />
+                </View>
+              )}
+            />
+          ) : (
+            <ClosedWindow />
           )}
-        />
-      ) : (
-        <ClosedWindow />
+        </>
       )}
     </View>
   );

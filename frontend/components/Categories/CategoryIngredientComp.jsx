@@ -1,18 +1,16 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  TouchableOpacity,
-  FlatList,
-  Image,
-} from "react-native";
+import { StyleSheet, Text, View, TouchableOpacity, Image } from "react-native";
 import React from "react";
 import { COLORS, SIZES } from "../../styles/theme";
-import { Rating } from "react-native-stock-star-rating";
+import { useNavigation } from "@react-navigation/native";
 
-const CategoryIngredientComp = ({ item, onPress }) => {
+const CategoryIngredientComp = ({ item }) => {
+  console.log("item", item);
+  const navigation = useNavigation();
   return (
-    <TouchableOpacity style={styles.wrapper} onPress={onPress}>
+    <TouchableOpacity
+      style={styles.wrapper}
+      onPress={() => navigation.navigate("product-page", item)}
+    >
       <View style={styles.innerRow}>
         <Image
           source={{ uri: item.imageUrl.url }}
