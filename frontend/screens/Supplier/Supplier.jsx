@@ -52,7 +52,7 @@ const Supplier = ({ navigation }) => {
         />
 
         <View style={styles.rating}>
-          <View style={styles.innerRating}>
+          <View pointerEvents="none" style={styles.innerRating}>
             <RatingInput rating={Number(item.rating)} size={22} />
           </View>
         </View>
