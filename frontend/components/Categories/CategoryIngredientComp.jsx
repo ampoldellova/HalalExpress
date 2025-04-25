@@ -4,7 +4,6 @@ import { COLORS, SIZES } from "../../styles/theme";
 import { useNavigation } from "@react-navigation/native";
 
 const CategoryIngredientComp = ({ item }) => {
-  console.log("item", item);
   const navigation = useNavigation();
   return (
     <TouchableOpacity

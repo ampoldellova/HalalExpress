@@ -1,10 +1,6 @@
 import { FlatList, StyleSheet, Text, View } from "react-native";
 import React, { useRef, useState } from "react";
-import {
-  useFocusEffect,
-  useNavigation,
-  useRoute,
-} from "@react-navigation/native";
+import { useFocusEffect, useRoute } from "@react-navigation/native";
 import axios from "axios";
 import baseUrl from "../../assets/common/baseUrl";
 import CategoryIngredientComp from "../../components/Categories/CategoryIngredientComp";
@@ -14,7 +10,6 @@ import { COLORS, SIZES } from "../../styles/theme";
 const Products = () => {
   const route = useRoute();
   const item = route.params;
-  const navigation = useNavigation();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
   const animation = useRef(null);
