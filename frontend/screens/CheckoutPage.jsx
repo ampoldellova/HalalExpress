@@ -43,7 +43,7 @@ import {
 const CheckoutPage = () => {
   const route = useRoute();
   const navigation = useNavigation();
-  const { cart, vendorCart, user } = route.params;
+  const { cart, user } = route.params;
   const [username, setUsername] = useState(user?.username);
   const [email, setEmail] = useState(user?.email);
   const [phone, setPhone] = useState(user?.phone);
@@ -112,7 +112,7 @@ const CheckoutPage = () => {
 
   const fetchRestaurant = async () => {
     if (cart?.cartItems.length > 0) {
-      const restaurantId = cart.cartItems[0].foodId.restaurant;
+      const restaurantId = cart?.cartItems[0].foodId.restaurant;
       try {
         const response = await axios.get(
           `${baseUrl}/api/restaurant/byId/${restaurantId}`
@@ -125,16 +125,20 @@ const CheckoutPage = () => {
   };
 
   const fetchSupplier = async () => {
-    if (vendorCart?.cartItems.length > 0) {
-      const supplierId = vendorCart.cartItems[0].productId.supplier;
-      try {
-        const response = await axios.get(
-          `${baseUrl}/api/supplier/byId/${supplierId}`
-        );
-        setSupplier(response.data.data);
-      } catch (error) {
-        console.error("Error fetching supplier data:", error);
+    try {
+      if (cart?.cartItems.length > 0) {
+        const supplierId = cart?.cartItems[0].productId.supplier;
+        try {
+          const response = await axios.get(
+            `${baseUrl}/api/supplier/byId/${supplierId}`
+          );
+          setSupplier(response.data.data);
+        } catch (error) {
+          console.error("Error fetching supplier data:", error);
+        }
       }
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -205,11 +209,7 @@ const CheckoutPage = () => {
     } else if (selectedPaymentMethod === "gcash") {
       try {
         const amount =
-          parseFloat(
-            user?.userType === "Vendor"
-              ? vendorCart?.totalAmount.toFixed(2)
-              : cart?.totalAmount.toFixed(2)
-          ) + parseFloat(deliveryFee);
+          parseFloat(cart?.totalAmount.toFixed(2)) + parseFloat(deliveryFee);
         const paymentIntent = await createPaymentIntent(amount);
         const paymentMethodResponse = await createPaymentMethod(
           phone,
@@ -220,10 +220,7 @@ const CheckoutPage = () => {
         const data = {
           restaurant:
             user?.userType === "Vendor" ? supplier?._id : restaurant?._id,
-          orderItems:
-            user?.userType === "Vendor"
-              ? vendorCart?.cartItems
-              : cart?.cartItems,
+          orderItems: cart?.cartItems,
           deliveryOption: selectedDeliveryOption,
           deliveryAddress:
             selectedDeliveryOption === "standard" && selectedAddress === null
@@ -241,10 +238,7 @@ const CheckoutPage = () => {
                     longitude: selectedAddressLng,
                   },
                 },
-          subTotal:
-            user?.userType === "Vendor"
-              ? vendorCart?.totalAmount.toFixed(2)
-              : cart?.totalAmount.toFixed(2),
+          subTotal: cart?.totalAmount.toFixed(2),
           deliveryFee,
           totalAmount: amount.toFixed(2),
           paymentMethod: selectedPaymentMethod,
@@ -278,10 +272,7 @@ const CheckoutPage = () => {
           paymentId: "No online payment",
           restaurant:
             user?.userType === "Vendor" ? supplier?._id : restaurant?._id,
-          orderItems:
-            user?.userType === "Vendor"
-              ? vendorCart?.cartItems
-              : cart?.cartItems,
+          orderItems: cart?.cartItems,
           deliveryOption: selectedDeliveryOption,
           deliveryAddress:
             selectedDeliveryOption === "standard" && selectedAddress === null
@@ -299,17 +290,10 @@ const CheckoutPage = () => {
                     longitude: selectedAddressLng,
                   },
                 },
-          subTotal:
-            user?.userType === "Vendor"
-              ? vendorCart?.totalAmount.toFixed(2)
-              : cart?.totalAmount.toFixed(2),
+          subTotal: cart?.totalAmount.toFixed(2),
           deliveryFee,
           totalAmount:
-            parseFloat(
-              user?.userType === "Vendor"
-                ? vendorCart?.totalAmount.toFixed(2)
-                : cart?.totalAmount.toFixed(2)
-            ) + parseFloat(deliveryFee),
+            parseFloat(cart?.totalAmount.toFixed(2)) + parseFloat(deliveryFee),
           paymentMethod: selectedPaymentMethod,
           paymentStatus: "Pending",
           orderStatus: "Pending",
@@ -354,7 +338,7 @@ const CheckoutPage = () => {
       {
         user.userType === "Vendor" ? fetchSupplier() : fetchRestaurant();
       }
-    }, [cart, vendorCart, user])
+    }, [cart, user])
   );
 
   useEffect(() => {
@@ -1209,11 +1193,7 @@ const CheckoutPage = () => {
 
             <FlatList
               style={{ marginBottom: 20 }}
-              data={
-                user?.userType === "Vendor"
-                  ? vendorCart?.cartItems
-                  : cart?.cartItems
-              }
+              data={cart?.cartItems}
               keyExtractor={(item) => item?._id}
               renderItem={({ item }) => (
                 <View
@@ -1225,7 +1205,12 @@ const CheckoutPage = () => {
                 >
                   <View style={{ flexDirection: "row" }}>
                     <Image
-                      source={{ uri: item.foodId.imageUrl.url }}
+                      source={{
+                        uri:
+                          user?.userType === "Vendor"
+                            ? item?.productId?.imageUrl?.url
+                            : item?.foodId?.imageUrl?.url,
+                      }}
                       style={{ width: 50, height: 50, borderRadius: 10 }}
                     />
                     <View style={{ flexDirection: "column", marginLeft: 10 }}>
@@ -1237,15 +1222,33 @@ const CheckoutPage = () => {
                         }}
                       >
                         {item?.quantity}x{" "}
-                        {vendorCart?.cartItems
+                        {user?.userType === "Vendor"
                           ? item?.productId?.title
                           : item?.foodId?.title}
                       </Text>
-                      {item?.additives.length > 0 ? (
-                        <FlatList
-                          data={item?.additives}
-                          keyExtractor={(item) => item._id}
-                          renderItem={({ item }) => (
+
+                      {item?.productId ? (
+                        <></>
+                      ) : (
+                        <>
+                          {item?.additives.length > 0 ? (
+                            <FlatList
+                              data={item?.additives}
+                              keyExtractor={(item) => item._id}
+                              renderItem={({ item }) => (
+                                <Text
+                                  style={{
+                                    fontFamily: "regular",
+                                    fontSize: 14,
+                                    color: COLORS.gray,
+                                    marginLeft: 10,
+                                  }}
+                                >
+                                  + {item?.title}
+                                </Text>
+                              )}
+                            />
+                          ) : (
                             <Text
                               style={{
                                 fontFamily: "regular",
@@ -1254,21 +1257,10 @@ const CheckoutPage = () => {
                                 marginLeft: 10,
                               }}
                             >
-                              + {item?.title}
+                              - No additives
                             </Text>
                           )}
-                        />
-                      ) : (
-                        <Text
-                          style={{
-                            fontFamily: "regular",
-                            fontSize: 14,
-                            color: COLORS.gray,
-                            marginLeft: 10,
-                          }}
-                        >
-                          - No additives
-                        </Text>
+                        </>
                       )}
                     </View>
                   </View>
@@ -1356,11 +1348,8 @@ const CheckoutPage = () => {
               <Text style={{ fontFamily: "bold", fontSize: 24 }}>
                 ₱{" "}
                 {(
-                  parseFloat(
-                    user.userType === "Vendor"
-                      ? vendorCart?.totalAmount.toFixed(2)
-                      : cart?.totalAmount.toFixed(2)
-                  ) + parseFloat(deliveryFee)
+                  parseFloat(cart?.totalAmount.toFixed(2)) +
+                  parseFloat(deliveryFee)
                 ).toFixed(2)}
               </Text>
             </View>
