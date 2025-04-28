@@ -413,114 +413,108 @@ const CheckoutPage = () => {
           <BackBtn onPress={() => navigation.goBack()} />
           <Text style={styles.heading}>Check Out</Text>
 
-          {restaurant?.delivery || supplier?.delivery ? (
+          <View
+            style={{
+              borderColor: COLORS.gray2,
+              height: "auto",
+              borderWidth: 1,
+              borderRadius: 10,
+              padding: 10,
+              marginBottom: 20,
+            }}
+          >
             <View
               style={{
-                borderColor: COLORS.gray2,
-                height: "auto",
-                borderWidth: 1,
-                borderRadius: 10,
-                padding: 10,
-                marginBottom: 20,
+                flexDirection: "row",
+                alignItems: "center",
+                marginBottom: 10,
+                width: "100%",
+                justifyContent: "space-between",
+                marginTop: 10,
               }}
             >
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  marginBottom: 10,
-                  width: "100%",
-                  justifyContent: "space-between",
-                  marginTop: 10,
-                }}
-              >
-                <View style={{ flexDirection: "row", alignItems: "center" }}>
-                  <Image
-                    source={require("../assets/images/location.png")}
-                    style={{ width: 25, height: 25 }}
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <Image
+                  source={require("../assets/images/location.png")}
+                  style={{ width: 25, height: 25 }}
+                />
+                <Text
+                  style={{ fontFamily: "bold", fontSize: 18, marginLeft: 5 }}
+                >
+                  Delivery Address
+                </Text>
+              </View>
+              <View>
+                <TouchableOpacity onPress={() => setShowAddresses(true)}>
+                  <FontAwesome
+                    name="pencil"
+                    size={20}
+                    color={COLORS.black}
+                    style={{ marginRight: 5 }}
                   />
-                  <Text
-                    style={{ fontFamily: "bold", fontSize: 18, marginLeft: 5 }}
-                  >
-                    Delivery Address
-                  </Text>
-                </View>
-                <View>
-                  <TouchableOpacity onPress={() => setShowAddresses(true)}>
-                    <FontAwesome
-                      name="pencil"
-                      size={20}
-                      color={COLORS.black}
-                      style={{ marginRight: 5 }}
-                    />
-                  </TouchableOpacity>
-                </View>
-              </View>
-
-              <View style={styles.mapContainer}>
-                {region && (
-                  <MapView
-                    style={{ height: SIZES.height / 5.2 }}
-                    region={{
-                      latitude: region?.latitude,
-                      longitude: region?.longitude,
-                      latitudeDelta: 0.01,
-                      longitudeDelta: 0.01,
-                    }}
-                  >
-                    <Marker
-                      title="Your Location"
-                      coordinate={{
-                        latitude: region?.latitude,
-                        longitude: region?.longitude,
-                      }}
-                    />
-                  </MapView>
-                )}
-              </View>
-
-              <View style={{ flexDirection: "column" }}>
-                <Text
-                  style={{ fontFamily: "bold", fontSize: 16, marginTop: 5 }}
-                >
-                  {formatAddress(
-                    selectedAddress === null
-                      ? address.formattedAddress
-                      : selectedAddress
-                  )}
-                </Text>
-                <Text
-                  style={{ fontFamily: "regular", fontSize: 14, marginTop: -5 }}
-                >
-                  {formatCity(
-                    selectedAddress === null ? address.city : selectedAddress
-                  )}
-                </Text>
-              </View>
-
-              <Text style={styles.label}>Delivery note</Text>
-              <View style={styles.notesInputWrapper(COLORS.offwhite)}>
-                <MaterialIcons
-                  name="notes"
-                  size={20}
-                  color={COLORS.gray}
-                  style={{ marginTop: 10, marginRight: 5 }}
-                />
-                <TextInput
-                  multiline
-                  numberOfLines={3}
-                  placeholder="Add your note here..."
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                  value={orderNote}
-                  onChangeText={(text) => setOrderNote(text)}
-                  style={[styles.textInput, { marginTop: 10 }]}
-                />
+                </TouchableOpacity>
               </View>
             </View>
-          ) : (
-            <></>
-          )}
+
+            <View style={styles.mapContainer}>
+              {region && (
+                <MapView
+                  style={{ height: SIZES.height / 5.2 }}
+                  region={{
+                    latitude: region?.latitude,
+                    longitude: region?.longitude,
+                    latitudeDelta: 0.01,
+                    longitudeDelta: 0.01,
+                  }}
+                >
+                  <Marker
+                    title="Your Location"
+                    coordinate={{
+                      latitude: region?.latitude,
+                      longitude: region?.longitude,
+                    }}
+                  />
+                </MapView>
+              )}
+            </View>
+
+            <View style={{ flexDirection: "column" }}>
+              <Text style={{ fontFamily: "bold", fontSize: 16, marginTop: 5 }}>
+                {formatAddress(
+                  selectedAddress === null
+                    ? address.formattedAddress
+                    : selectedAddress
+                )}
+              </Text>
+              <Text
+                style={{ fontFamily: "regular", fontSize: 14, marginTop: -5 }}
+              >
+                {formatCity(
+                  selectedAddress === null ? address.city : selectedAddress
+                )}
+              </Text>
+            </View>
+
+            <Text style={styles.label}>Delivery note</Text>
+            <View style={styles.notesInputWrapper(COLORS.offwhite)}>
+              <MaterialIcons
+                name="notes"
+                size={20}
+                color={COLORS.gray}
+                style={{ marginTop: 10, marginRight: 5 }}
+              />
+              <TextInput
+                multiline
+                numberOfLines={3}
+                placeholder="Add your note here..."
+                autoCapitalize="none"
+                autoCorrect={false}
+                value={orderNote}
+                onChangeText={(text) => setOrderNote(text)}
+                style={[styles.textInput, { marginTop: 10 }]}
+              />
+            </View>
+          </View>
 
           {deliveryOptionsError && (
             <Text
@@ -929,150 +923,104 @@ const CheckoutPage = () => {
               </Text>
             </View>
 
-            {selectedDeliveryOption === "pickup" ? (
-              <TouchableOpacity
-                onPress={() => {
-                  selectedPaymentMethod === null
-                    ? setPaymentMethodError(false)
-                    : setSelectedPaymentMethod("Pay at the counter");
-                  selectedPaymentMethod === "Pay at the counter"
-                    ? setSelectedPaymentMethod(null)
-                    : setSelectedPaymentMethod("Pay at the counter");
-                }}
-                style={{
-                  marginTop: 10,
-                  borderWidth: 1,
-                  padding: 10,
-                  borderRadius: 10,
-                  borderColor:
-                    selectedPaymentMethod === "Pay at the counter"
-                      ? COLORS.primary
-                      : COLORS.gray2,
-                  opacity: restaurant?.delivery ? 1 : 0.5,
-                }}
-              >
-                <View
-                  style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    width: "100%",
-                  }}
-                >
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                      height: 30,
-                    }}
-                  >
-                    <View
-                      style={{ flexDirection: "row", alignItems: "center" }}
-                    >
-                      <Image
-                        source={require("../assets/images/COD.png")}
-                        style={{ width: 20, height: 20, marginLeft: 2.5 }}
-                      />
-                      <Text
-                        style={{
-                          fontFamily: "medium",
-                          fontSize: 16,
-                          marginLeft: 10,
-                          color: COLORS.black,
-                        }}
-                      >
-                        Pay at the counter
-                      </Text>
-                    </View>
-                  </View>
-                </View>
-
-                {selectedPaymentMethod === "Pay at the counter" && (
-                  <Text
-                    style={{
-                      fontFamily: "regular",
-                      fontSize: 12,
-                      color: COLORS.gray,
-                    }}
-                  >
-                    You can place your order online and make the payment when
-                    you pick up your order at the restaurant. This allows you to
-                    conveniently reserve your items and pay in person.
-                  </Text>
-                )}
-              </TouchableOpacity>
-            ) : (
-              <TouchableOpacity
-                onPress={() => {
-                  selectedPaymentMethod === null
-                    ? setPaymentMethodError(false)
-                    : setSelectedPaymentMethod("cod");
+            <TouchableOpacity
+              onPress={() => {
+                selectedPaymentMethod === null
+                  ? setPaymentMethodError(false)
+                  : setSelectedPaymentMethod(
+                      selectedDeliveryOption === "pickup"
+                        ? "Pay at the counter"
+                        : "cod"
+                    );
+                selectedPaymentMethod === "Pay at the counter" ||
+                selectedPaymentMethod === "cod"
+                  ? setSelectedPaymentMethod(null)
+                  : setSelectedPaymentMethod(
+                      selectedDeliveryOption === "pickup"
+                        ? "Pay at the counter"
+                        : "cod"
+                    );
+              }}
+              style={{
+                marginTop: 10,
+                borderWidth: 1,
+                padding: 10,
+                borderRadius: 10,
+                borderColor:
+                  selectedPaymentMethod === "Pay at the counter" ||
                   selectedPaymentMethod === "cod"
-                    ? setSelectedPaymentMethod(null)
-                    : setSelectedPaymentMethod("cod");
-                }}
+                    ? COLORS.primary
+                    : COLORS.gray2,
+                opacity: 1,
+              }}
+            >
+              <View
                 style={{
-                  marginTop: 10,
-                  borderWidth: 1,
-                  padding: 10,
-                  borderRadius: 10,
-                  borderColor:
-                    selectedPaymentMethod === "cod"
-                      ? COLORS.primary
-                      : COLORS.gray2,
-                  opacity: restaurant?.delivery ? 1 : 0.5,
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  width: "100%",
                 }}
               >
                 <View
                   style={{
                     flexDirection: "row",
                     alignItems: "center",
-                    justifyContent: "space-between",
-                    width: "100%",
+                    height: 30,
                   }}
                 >
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                      height: 30,
-                    }}
-                  >
-                    <View
-                      style={{ flexDirection: "row", alignItems: "center" }}
+                  <View style={{ flexDirection: "row", alignItems: "center" }}>
+                    <Image
+                      source={require("../assets/images/COD.png")}
+                      style={{ width: 20, height: 20, marginLeft: 2.5 }}
+                    />
+                    <Text
+                      style={{
+                        fontFamily: "medium",
+                        fontSize: 16,
+                        marginLeft: 10,
+                        color: COLORS.black,
+                      }}
                     >
-                      <Image
-                        source={require("../assets/images/COD.png")}
-                        style={{ width: 20, height: 20, marginLeft: 2.5 }}
-                      />
-                      <Text
-                        style={{
-                          fontFamily: "medium",
-                          fontSize: 16,
-                          marginLeft: 10,
-                          color: COLORS.black,
-                        }}
-                      >
-                        Cash On Delivery
-                      </Text>
-                    </View>
+                      {selectedDeliveryOption === "pickup"
+                        ? "Pay at the counter"
+                        : "Cash On Delivery"}
+                    </Text>
                   </View>
                 </View>
+              </View>
 
-                {selectedPaymentMethod === "cod" && (
-                  <Text
-                    style={{
-                      fontFamily: "regular",
-                      fontSize: 12,
-                      color: COLORS.gray,
-                    }}
-                  >
-                    Consider payment upon ordering for contactless delivery. You
-                    cant pay by a card to the rider upon delivery.
-                  </Text>
-                )}
-              </TouchableOpacity>
-            )}
+              {selectedPaymentMethod === "Pay at the counter" ||
+                (selectedPaymentMethod === "cod" && (
+                  <>
+                    {selectedDeliveryOption === "pickup" ? (
+                      <Text
+                        style={{
+                          fontFamily: "regular",
+                          fontSize: 12,
+                          color: COLORS.gray,
+                        }}
+                      >
+                        You can place your order online and make the payment
+                        when you pick up your order at the restaurant. This
+                        allows you to conveniently reserve your items and pay in
+                        person.
+                      </Text>
+                    ) : (
+                      <Text
+                        style={{
+                          fontFamily: "regular",
+                          fontSize: 12,
+                          color: COLORS.gray,
+                        }}
+                      >
+                        Consider payment upon ordering for contactless delivery.
+                        You can't pay by card to the rider upon delivery.
+                      </Text>
+                    )}
+                  </>
+                ))}
+            </TouchableOpacity>
 
             <TouchableOpacity
               onPress={() => {
@@ -1092,7 +1040,7 @@ const CheckoutPage = () => {
                   selectedPaymentMethod === "gcash"
                     ? COLORS.primary
                     : COLORS.gray2,
-                opacity: restaurant?.delivery ? 1 : 0.5,
+                opacity: 1,
               }}
             >
               <View
