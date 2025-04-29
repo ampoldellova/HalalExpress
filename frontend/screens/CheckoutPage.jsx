@@ -39,6 +39,7 @@ import {
   createPaymentIntent,
   createPaymentMethod,
 } from "../hook/paymongoService";
+import DeliveryAddress from "../components/Checkout/DeliveryAddress";
 
 const CheckoutPage = () => {
   const route = useRoute();
@@ -372,20 +373,6 @@ const CheckoutPage = () => {
     });
   }, [supplier, restaurant, selectedAddress]);
 
-  const formatAddress = (address) => {
-    const parts = address.split(",");
-    return parts.slice(0, 2).join(",");
-  };
-
-  const formatCity = (address) => {
-    const parts = address.split(",");
-    if (parts.length > 1) {
-      const cityParts = parts[1].trim().split(" ");
-      return cityParts[0];
-    }
-    return parts[0];
-  };
-
   const totalTime =
     distanceTime.duration +
     GoogleApiServices.extractNumbers(
@@ -413,108 +400,13 @@ const CheckoutPage = () => {
           <BackBtn onPress={() => navigation.goBack()} />
           <Text style={styles.heading}>Check Out</Text>
 
-          <View
-            style={{
-              borderColor: COLORS.gray2,
-              height: "auto",
-              borderWidth: 1,
-              borderRadius: 10,
-              padding: 10,
-              marginBottom: 20,
-            }}
-          >
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                marginBottom: 10,
-                width: "100%",
-                justifyContent: "space-between",
-                marginTop: 10,
-              }}
-            >
-              <View style={{ flexDirection: "row", alignItems: "center" }}>
-                <Image
-                  source={require("../assets/images/location.png")}
-                  style={{ width: 25, height: 25 }}
-                />
-                <Text
-                  style={{ fontFamily: "bold", fontSize: 18, marginLeft: 5 }}
-                >
-                  Delivery Address
-                </Text>
-              </View>
-              <View>
-                <TouchableOpacity onPress={() => setShowAddresses(true)}>
-                  <FontAwesome
-                    name="pencil"
-                    size={20}
-                    color={COLORS.black}
-                    style={{ marginRight: 5 }}
-                  />
-                </TouchableOpacity>
-              </View>
-            </View>
-
-            <View style={styles.mapContainer}>
-              {region && (
-                <MapView
-                  style={{ height: SIZES.height / 5.2 }}
-                  region={{
-                    latitude: region?.latitude,
-                    longitude: region?.longitude,
-                    latitudeDelta: 0.01,
-                    longitudeDelta: 0.01,
-                  }}
-                >
-                  <Marker
-                    title="Your Location"
-                    coordinate={{
-                      latitude: region?.latitude,
-                      longitude: region?.longitude,
-                    }}
-                  />
-                </MapView>
-              )}
-            </View>
-
-            <View style={{ flexDirection: "column" }}>
-              <Text style={{ fontFamily: "bold", fontSize: 16, marginTop: 5 }}>
-                {formatAddress(
-                  selectedAddress === null
-                    ? address.formattedAddress
-                    : selectedAddress
-                )}
-              </Text>
-              <Text
-                style={{ fontFamily: "regular", fontSize: 14, marginTop: -5 }}
-              >
-                {formatCity(
-                  selectedAddress === null ? address.city : selectedAddress
-                )}
-              </Text>
-            </View>
-
-            <Text style={styles.label}>Delivery note</Text>
-            <View style={styles.notesInputWrapper(COLORS.offwhite)}>
-              <MaterialIcons
-                name="notes"
-                size={20}
-                color={COLORS.gray}
-                style={{ marginTop: 10, marginRight: 5 }}
-              />
-              <TextInput
-                multiline
-                numberOfLines={3}
-                placeholder="Add your note here..."
-                autoCapitalize="none"
-                autoCorrect={false}
-                value={orderNote}
-                onChangeText={(text) => setOrderNote(text)}
-                style={[styles.textInput, { marginTop: 10 }]}
-              />
-            </View>
-          </View>
+          <DeliveryAddress
+            region={region}
+            selectedAddress={selectedAddress}
+            address={address}
+            orderNote={orderNote}
+            setShowAddresses={setShowAddresses}
+          />
 
           {deliveryOptionsError && (
             <Text
