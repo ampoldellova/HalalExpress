@@ -44,6 +44,7 @@ import DeliveryOptions from "../components/Checkout/DeliveryOptions";
 import PersonalDetails from "../components/Checkout/PersonalDetails";
 import PaymentMethod from "../components/Checkout/PaymentMethod";
 import OrderSummary from "../components/Checkout/OrderSummary";
+import AddressBottomModal from "../components/Checkout/AddressBottomModal";
 
 const CheckoutPage = () => {
   const route = useRoute();
@@ -402,7 +403,17 @@ const CheckoutPage = () => {
           style={{ marginHorizontal: 20, marginTop: 15 }}
         >
           <BackBtn onPress={() => navigation.goBack()} />
-          <Text style={styles.heading}>Check Out</Text>
+          <Text
+            style={{
+              fontFamily: "bold",
+              fontSize: 24,
+              textAlign: "center",
+              marginTop: 10,
+              marginBottom: 20,
+            }}
+          >
+            Check Out
+          </Text>
 
           <DeliveryAddress
             region={region}
@@ -465,185 +476,22 @@ const CheckoutPage = () => {
         </ScrollView>
       )}
 
-      <BottomModal
-        visible={showAddresses}
-        onTouchOutside={() => setShowAddresses(false)}
-        swipeThreshold={100}
-        modalAnimation={new SlideAnimation({ slideFrom: "bottom" })}
-        onHardwareBackPress={() => setShowAddresses(false)}
-      >
-        <View
-          style={{
-            height: 10,
-            backgroundColor: COLORS.primary,
-            width: SIZES.width,
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <View
-            style={{
-              height: 3,
-              backgroundColor: COLORS.white,
-              width: SIZES.width / 5,
-              borderRadius: 10,
-            }}
-          />
-        </View>
-        <ModalContent style={{ height: SIZES.height / 2, width: "100%" }}>
-          <Text style={{ fontFamily: "bold", fontSize: 20, marginBottom: 5 }}>
-            {" "}
-            Saved Addresses
-          </Text>
-
-          <FlatList
-            data={addresses}
-            showsVerticalScrollIndicator={false}
-            keyExtractor={(item) => item._id}
-            renderItem={({ item }) => (
-              <TouchableOpacity
-                onPress={() => {
-                  setSelectedAddress(
-                    selectedAddress === item.address ? null : item.address
-                  );
-                  setSelectedAddressLat(
-                    selectedAddressLat === item.latitude ? null : item.latitude
-                  );
-                  setSelectedAddressLng(
-                    selectedAddressLng === item.longitude
-                      ? null
-                      : item.longitude
-                  );
-                }}
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  marginTop: 10,
-                  borderWidth: 1,
-                  padding: 10,
-                  borderRadius: 10,
-                  borderColor:
-                    selectedAddress === item.address
-                      ? COLORS.primary
-                      : COLORS.gray2,
-                }}
-              >
-                <View style={{ flexDirection: "row", alignItems: "center" }}>
-                  <Image
-                    source={require("../assets/images/location.png")}
-                    style={{ width: 30, height: 30, marginLeft: 5 }}
-                  />
-                  <View
-                    style={{ flex: 1, height: 60, justifyContent: "center" }}
-                  >
-                    <Text
-                      style={{
-                        fontFamily: "regular",
-                        fontSize: 14,
-                        marginLeft: 10,
-                        color: COLORS.gray,
-                      }}
-                      numberOfLines={3}
-                      ellipsizeMode="tail"
-                    >
-                      {item.address}
-                    </Text>
-                  </View>
-                </View>
-              </TouchableOpacity>
-            )}
-          />
-          <TouchableOpacity
-            onPress={() => {
-              navigation.navigate("add-address-page");
-              setShowAddresses(false);
-            }}
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              marginTop: 10,
-              borderWidth: 1,
-              borderRadius: 10,
-              borderColor: COLORS.gray2,
-              marginBottom: -15,
-            }}
-          >
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                marginHorizontal: 10,
-              }}
-            >
-              <MaterialIcons name="add" size={30} color={COLORS.gray2} />
-              <View style={{ flex: 1, height: 50, justifyContent: "center" }}>
-                <Text
-                  style={{
-                    fontFamily: "regular",
-                    fontSize: 14,
-                    marginLeft: 10,
-                    color: COLORS.gray,
-                  }}
-                >
-                  Add New Address
-                </Text>
-              </View>
-            </View>
-          </TouchableOpacity>
-        </ModalContent>
-      </BottomModal>
+      <AddressBottomModal
+        showAddresses={showAddresses}
+        addresses={addresses}
+        selectedAddress={selectedAddress}
+        setShowAddresses={setShowAddresses}
+        setSelectedAddress={setSelectedAddress}
+        selectedAddressLat={selectedAddressLat}
+        setSelectedAddressLat={setSelectedAddressLat}
+        selectedAddressLng={selectedAddressLng}
+        setSelectedAddressLng={setSelectedAddressLng}
+        navigation={navigation}
+      />
     </SafeAreaView>
   );
 };
 
 export default CheckoutPage;
 
-const styles = StyleSheet.create({
-  heading: {
-    fontFamily: "bold",
-    fontSize: 24,
-    textAlign: "center",
-    marginTop: 10,
-    marginBottom: 20,
-  },
-  mapContainer: {
-    width: "100%",
-    height: "auto",
-    borderColor: COLORS.gray2,
-    borderWidth: 1,
-    borderRadius: 15,
-    overflow: "hidden",
-  },
-  label: {
-    fontFamily: "regular",
-    fontSize: SIZES.xSmall,
-    marginBottom: 5,
-    marginEnd: 5,
-    textAlign: "right",
-  },
-  textInput: {
-    flex: 1,
-    fontFamily: "regular",
-    marginTop: 2,
-  },
-  notesInputWrapper: (borderColor) => ({
-    borderColor: borderColor,
-    backgroundColor: COLORS.lightWhite,
-    borderWidth: 1,
-    height: 80,
-    borderRadius: 12,
-    flexDirection: "row",
-    paddingHorizontal: 15,
-    alignItems: "flex-start",
-  }),
-  inputWrapper: (borderColor) => ({
-    borderColor: borderColor,
-    backgroundColor: COLORS.lightWhite,
-    borderWidth: 1,
-    height: 50,
-    borderRadius: 12,
-    flexDirection: "row",
-    paddingHorizontal: 15,
-    alignItems: "center",
-  }),
-});
+const styles = StyleSheet.create({});
