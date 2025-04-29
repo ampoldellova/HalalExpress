@@ -14,7 +14,12 @@ const DeliveryOptions = ({
   return (
     <>
       {deliveryOptionsError && (
-        <Text style={[styles.label, { color: COLORS.red, textAlign: "left" }]}>
+        <Text
+          style={[
+            styles.label,
+            { color: COLORS.red, textAlign: "left", fontFamily: "regular" },
+          ]}
+        >
           *Please select a delivery option
         </Text>
       )}
