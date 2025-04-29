@@ -1,14 +1,4 @@
-import {
-  FlatList,
-  Image,
-  Linking,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Linking, ScrollView, StyleSheet, Text } from "react-native";
 import React, { useContext, useEffect, useState } from "react";
 import {
   useFocusEffect,
@@ -20,19 +10,11 @@ import BackBtn from "../components/BackBtn";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import baseUrl from "../assets/common/baseUrl";
 import axios from "axios";
-import { SIZES, COLORS } from "../styles/theme";
-import MapView, { Marker } from "react-native-maps";
 import { UserLocationContext } from "../contexts/UserLocationContext";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { UserReversedGeoCode } from "../contexts/UserReversedGeoCode";
-import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { BottomModal, ModalContent, SlideAnimation } from "react-native-modals";
 import Button from "../components/Button";
-import Feather from "@expo/vector-icons/Feather";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import GoogleApiServices from "../hook/GoogleApiServices";
 import Toast from "react-native-toast-message";
-import Divider from "../components/Divider";
 import Loader from "../components/Loader";
 import {
   attachPaymentMethod,
