@@ -19,12 +19,12 @@ const DeliveryAddress = ({
   setShowAddresses,
 }) => {
   const formatAddress = (address) => {
-    const parts = address.split(",");
+    const parts = address?.split(",");
     return parts.slice(0, 2).join(",");
   };
 
   const formatCity = (address) => {
-    const parts = address.split(",");
+    const parts = address?.split(",");
     if (parts.length > 1) {
       const cityParts = parts[1].trim().split(" ");
       return cityParts[0];
