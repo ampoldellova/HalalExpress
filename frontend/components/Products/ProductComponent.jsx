@@ -3,7 +3,6 @@ import React from "react";
 import { COLORS, SIZES } from "../../styles/theme";
 
 const ProductComponent = ({ item, onPress }) => {
-  console.log("item", item);
   return (
     <TouchableOpacity style={styles.wrapper} onPress={onPress}>
       <Image
