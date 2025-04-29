@@ -20,7 +20,7 @@ const DeliveryAddress = ({
 }) => {
   const formatAddress = (address) => {
     const parts = address?.split(",");
-    return parts.slice(0, 2).join(",");
+    return parts?.slice(0, 2).join(",");
   };
 
   const formatCity = (address) => {
