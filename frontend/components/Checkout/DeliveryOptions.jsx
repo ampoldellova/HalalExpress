@@ -108,16 +108,21 @@ const DeliveryOptions = ({
                   Standard
                 </Text>
               </View>
-              <Text
-                style={{
-                  fontFamily: "regular",
-                  fontSize: 12,
-                  color: COLORS.gray,
-                  marginLeft: 5,
-                }}
-              >
-                ({totalTime.toFixed(0)} mins)
-              </Text>
+
+              {restaurant?.delivery ? (
+                <Text
+                  style={{
+                    fontFamily: "regular",
+                    fontSize: 12,
+                    color: COLORS.gray,
+                    marginLeft: 5,
+                  }}
+                >
+                  ({totalTime.toFixed(0)} mins)
+                </Text>
+              ) : (
+                <></>
+              )}
             </View>
 
             {restaurant?.delivery ? (

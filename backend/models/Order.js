@@ -13,6 +13,11 @@ const orderSchema = new mongoose.Schema(
       ref: "Restaurant",
       autopopulate: true,
     },
+    supplier: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Supplier",
+      autopopulate: true,
+    },
     orderItems: [
       {
         foodId: {

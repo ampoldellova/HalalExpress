@@ -8,6 +8,7 @@ module.exports = {
     const userId = req.user.id;
     const {
       restaurant,
+      supplier,
       orderItems,
       deliveryOption,
       deliveryAddress,
@@ -46,6 +47,7 @@ module.exports = {
       const newOrder = new Order({
         userId,
         restaurant,
+        supplier,
         orderItems,
         deliveryOption,
         deliveryAddress,
@@ -61,9 +63,9 @@ module.exports = {
 
       await newOrder.save();
 
-      const populatedOrder = await Order.findById(newOrder._id).populate(
-        "restaurant"
-      );
+      const populatedOrder = await Order.findById(newOrder._id)
+        .populate("restaurant")
+        .populate("supplier");
 
       cart.cartItems = [];
       cart.totalAmount = 0;

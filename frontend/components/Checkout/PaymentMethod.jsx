@@ -113,36 +113,34 @@ const PaymentMethod = ({
               </View>
             </View>
           </View>
+          {console.log(selectedPaymentMethod)}
 
-          {selectedPaymentMethod === "Pay at the counter" ||
-            (selectedPaymentMethod === "cod" && (
-              <>
-                {selectedDeliveryOption === "pickup" ? (
-                  <Text
-                    style={{
-                      fontFamily: "regular",
-                      fontSize: 12,
-                      color: COLORS.gray,
-                    }}
-                  >
-                    You can place your order online and make the payment when
-                    you pick up your order at the restaurant. This allows you to
-                    conveniently reserve your items and pay in person.
-                  </Text>
-                ) : (
-                  <Text
-                    style={{
-                      fontFamily: "regular",
-                      fontSize: 12,
-                      color: COLORS.gray,
-                    }}
-                  >
-                    Consider payment upon ordering for contactless delivery. You
-                    can't pay by card to the rider upon delivery.
-                  </Text>
-                )}
-              </>
-            ))}
+          {selectedPaymentMethod === "Pay at the counter" && (
+            <Text
+              style={{
+                fontFamily: "regular",
+                fontSize: 12,
+                color: COLORS.gray,
+              }}
+            >
+              You can place your order online and make the payment when you pick
+              up your order at the restaurant. This allows you to conveniently
+              reserve your items and pay in person.
+            </Text>
+          )}
+
+          {selectedPaymentMethod === "cod" && (
+            <Text
+              style={{
+                fontFamily: "regular",
+                fontSize: 12,
+                color: COLORS.gray,
+              }}
+            >
+              Consider payment upon ordering for contactless delivery. You can't
+              pay by card to the rider upon delivery.
+            </Text>
+          )}
         </TouchableOpacity>
 
         <TouchableOpacity

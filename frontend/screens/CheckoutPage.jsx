@@ -1,4 +1,11 @@
-import { Linking, ScrollView, StyleSheet, Text } from "react-native";
+import {
+  Image,
+  Linking,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import React, { useContext, useEffect, useState } from "react";
 import {
   useFocusEffect,
@@ -27,6 +34,9 @@ import PersonalDetails from "../components/Checkout/PersonalDetails";
 import PaymentMethod from "../components/Checkout/PaymentMethod";
 import OrderSummary from "../components/Checkout/OrderSummary";
 import AddressBottomModal from "../components/Checkout/AddressBottomModal";
+import { COLORS, SIZES } from "../styles/theme";
+import MapView, { Marker } from "react-native-maps";
+import LottieView from "lottie-react-native";
 
 const CheckoutPage = () => {
   const route = useRoute();
@@ -206,8 +216,8 @@ const CheckoutPage = () => {
         );
 
         const data = {
-          restaurant:
-            user?.userType === "Vendor" ? supplier?._id : restaurant?._id,
+          restaurant: restaurant?._id,
+          supplier: supplier?._id,
           orderItems: cart?.cartItems,
           deliveryOption: selectedDeliveryOption,
           deliveryAddress:
@@ -258,8 +268,8 @@ const CheckoutPage = () => {
 
         const data = {
           paymentId: "No online payment",
-          restaurant:
-            user?.userType === "Vendor" ? supplier?._id : restaurant?._id,
+          restaurant: restaurant?._id,
+          supplier: supplier?._id,
           orderItems: cart?.cartItems,
           deliveryOption: selectedDeliveryOption,
           deliveryAddress:
@@ -374,7 +384,6 @@ const CheckoutPage = () => {
       image !== user?.profile?.url
     );
   };
-
   return (
     <SafeAreaView>
       {loading ? (
@@ -397,13 +406,20 @@ const CheckoutPage = () => {
             Check Out
           </Text>
 
-          <DeliveryAddress
-            region={region}
-            selectedAddress={selectedAddress}
-            address={address}
-            orderNote={orderNote}
-            setShowAddresses={setShowAddresses}
-          />
+          {supplier?.delivery === null ||
+          supplier?.delivery === false ||
+          restaurant?.delivery === null ||
+          restaurant?.delivery === false ? (
+            <></>
+          ) : (
+            <DeliveryAddress
+              region={region}
+              selectedAddress={selectedAddress}
+              address={address}
+              orderNote={orderNote}
+              setShowAddresses={setShowAddresses}
+            />
+          )}
 
           <DeliveryOptions
             deliveryOptionsError={deliveryOptionsError}
