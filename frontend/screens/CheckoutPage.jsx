@@ -251,7 +251,11 @@ const CheckoutPage = () => {
 
         if (payment.data.attributes.next_action.redirect.url) {
           Linking.openURL(payment.data.attributes.next_action.redirect.url);
-          navigation.navigate("payment-confirmation", { payment, data, user });
+          navigation.navigate("payment-confirmation", {
+            payment,
+            data,
+            user,
+          });
         }
       } catch (error) {
         console.error("Error processing payment:", error);
@@ -298,12 +302,11 @@ const CheckoutPage = () => {
           orderNote,
         };
 
-        const endpoint =
-          user?.userType === "Vendor"
-            ? `${baseUrl}/api/vendor/orders/check-out`
-            : `${baseUrl}/api/orders/check-out`;
-
-        const response = await axios.post(endpoint, data, config);
+        const response = await axios.post(
+          `${baseUrl}/api/orders/check-out`,
+          data,
+          config
+        );
         if (response.status === 200) {
           navigation.navigate("order-page");
           Toast.show({
@@ -427,7 +430,9 @@ const CheckoutPage = () => {
             selectedDeliveryOption={selectedDeliveryOption}
             setSelectedDeliveryOption={setSelectedDeliveryOption}
             restaurant={restaurant}
+            supplier={supplier}
             totalTime={totalTime}
+            distanceTime={distanceTime}
             setDeliveryOptionsError={setDeliveryOptionsError}
           />
 

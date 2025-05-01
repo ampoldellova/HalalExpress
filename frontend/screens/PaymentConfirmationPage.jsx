@@ -46,12 +46,11 @@ const PaymentConfirmationPage = () => {
             },
           };
 
-          const endpoint =
-            user?.userType === "Vendor"
-              ? `${baseUrl}/api/vendor/orders/check-out`
-              : `${baseUrl}/api/orders/check-out`;
-
-          const response = await axios.post(endpoint, parsedData, config);
+          const response = await axios.post(
+            `${baseUrl}/api/orders/check-out`,
+            parsedData,
+            config
+          );
           if (response.status === 200) {
             navigation.navigate("order-page");
             Toast.show({

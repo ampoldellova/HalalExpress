@@ -25,6 +25,11 @@ const orderSchema = new mongoose.Schema(
           ref: "Food",
           autopopulate: true,
         },
+        productId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "ingredients",
+          autopopulate: true,
+        },
         additives: {
           type: [],
           default: "",

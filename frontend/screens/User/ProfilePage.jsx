@@ -188,6 +188,7 @@ const ProfilePage = () => {
                     title={"Orders"}
                     icon={"fast-food-outline"}
                     font={1}
+                    onPress={() => navigation.navigate("order-page", user)}
                   />
                   <ProfileTile
                     title={"Addresses"}

@@ -8,7 +8,9 @@ const DeliveryOptions = ({
   selectedDeliveryOption,
   setSelectedDeliveryOption,
   restaurant,
+  supplier,
   totalTime,
+  distanceTime,
   setDeliveryOptionsError,
 }) => {
   return (
@@ -51,7 +53,7 @@ const DeliveryOptions = ({
 
         <TouchableOpacity
           onPress={() => {
-            if (restaurant?.delivery) {
+            if (restaurant?.delivery || supplier?.delivery) {
               setDeliveryFee(distanceTime.finalPrice);
               selectedDeliveryOption === "standard"
                 ? (setSelectedDeliveryOption(null), setDeliveryFee(0))
@@ -74,7 +76,7 @@ const DeliveryOptions = ({
               selectedDeliveryOption === "standard"
                 ? COLORS.primary
                 : COLORS.gray2,
-            opacity: restaurant?.delivery ? 1 : 0.5,
+            opacity: restaurant?.delivery || supplier?.delivery ? 1 : 0.5,
           }}
         >
           <View
@@ -109,7 +111,7 @@ const DeliveryOptions = ({
                 </Text>
               </View>
 
-              {restaurant?.delivery ? (
+              {restaurant?.delivery || supplier?.deliver ? (
                 <Text
                   style={{
                     fontFamily: "regular",
@@ -125,7 +127,7 @@ const DeliveryOptions = ({
               )}
             </View>
 
-            {restaurant?.delivery ? (
+            {restaurant?.delivery || supplier?.delivery ? (
               <View
                 style={{
                   backgroundColor: COLORS.secondary,

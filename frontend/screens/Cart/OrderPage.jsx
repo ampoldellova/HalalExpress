@@ -50,12 +50,7 @@ const OrderPage = () => {
           },
         };
 
-        const endpoint =
-          user?.userType === "Vendor"
-            ? `${baseUrl}/api/vendor/orders/`
-            : `${baseUrl}/api/orders/`;
-
-        const response = await axios.get(endpoint, config);
+        const response = await axios.get(`${baseUrl}/api/orders/`, config);
         setVendorOrders(response.data.vendorOrders);
         setOrders(response.data.orders);
         setLoading(false);
@@ -99,7 +94,7 @@ const OrderPage = () => {
   );
 
   const pendingOrders =
-    (user?.userType === "Vendor" ? vendorOrders : orders)?.filter(
+    orders?.filter(
       (order) =>
         order.orderStatus === "Pending" ||
         order.orderStatus === "Preparing" ||
@@ -108,14 +103,14 @@ const OrderPage = () => {
     ) || [];
 
   const pastOrders =
-    (user?.userType === "Vendor" ? vendorOrders : orders)?.filter(
+    orders?.filter(
       (order) =>
         order.orderStatus === "Delivered" || order.orderStatus === "Completed"
     ) || [];
+
   const cancelledOrders =
-    (user?.userType === "Vendor" ? vendorOrders : orders)?.filter(
-      (order) => order.orderStatus === "cancelled by customer"
-    ) || [];
+    orders?.filter((order) => order.orderStatus === "cancelled by customer") ||
+    [];
 
   return (
     <View>
@@ -235,7 +230,11 @@ const OrderPage = () => {
                           >
                             <View style={{ flexDirection: "row" }}>
                               <Image
-                                source={{ uri: item?.restaurant?.logoUrl?.url }}
+                                source={{
+                                  uri: item?.restaurant
+                                    ? item?.restaurant?.logoUrl?.url
+                                    : item?.supplier?.logoUrl?.url,
+                                }}
                                 style={{
                                   height: 70,
                                   width: 70,
@@ -246,7 +245,9 @@ const OrderPage = () => {
                                 <Text
                                   style={{ fontFamily: "bold", fontSize: 16 }}
                                 >
-                                  {item?.restaurant?.title}
+                                  {item?.restaurant
+                                    ? item?.restaurant?.title
+                                    : item?.supplier?.title}
                                 </Text>
 
                                 {(item?.orderStatus === "Pending" ||
@@ -312,7 +313,10 @@ const OrderPage = () => {
                                           fontFamily: "regular",
                                         }}
                                       >
-                                        x{item?.quantity} {item?.foodId?.title}
+                                        x{item?.quantity}{" "}
+                                        {item?.foodId
+                                          ? item?.foodId?.title
+                                          : item?.productId?.title}
                                       </Text>
                                     </View>
                                   )}
