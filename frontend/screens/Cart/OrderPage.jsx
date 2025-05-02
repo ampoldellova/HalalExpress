@@ -27,6 +27,7 @@ import { RatingInput } from "react-native-stock-star-rating";
 import Heading from "../../components/Heading";
 import ActiveOrders from "../../components/Cart/ActiveOrders";
 import PreviousOrders from "../../components/Cart/PreviousOrders";
+import CancelledOrders from "../../components/Cart/CancelledOrders";
 
 const OrderPage = () => {
   const navigation = useNavigation();
@@ -111,7 +112,7 @@ const OrderPage = () => {
     ) || [];
 
   const cancelledOrders =
-    orders?.filter((order) => order.orderStatus === "cancelled by customer") ||
+    orders?.filter((order) => order.orderStatus === "Cancelled by customer") ||
     [];
 
   return (
@@ -207,12 +208,10 @@ const OrderPage = () => {
               {orderType === "Active" && (
                 <>
                   {pendingOrders.length > 0 && (
-                    <>
-                      <ActiveOrders
-                        pendingOrders={pendingOrders}
-                        navigation={navigation}
-                      />
-                    </>
+                    <ActiveOrders
+                      pendingOrders={pendingOrders}
+                      navigation={navigation}
+                    />
                   )}
 
                   {pendingOrders.length === 0 && (
@@ -238,12 +237,10 @@ const OrderPage = () => {
               {orderType === "Previous" && (
                 <>
                   {pastOrders.length > 0 && (
-                    <>
-                      <PreviousOrders
-                        pastOrders={pastOrders}
-                        navigation={navigation}
-                      />
-                    </>
+                    <PreviousOrders
+                      pastOrders={pastOrders}
+                      navigation={navigation}
+                    />
                   )}
 
                   {pastOrders.length === 0 && (
@@ -269,121 +266,12 @@ const OrderPage = () => {
               {orderType === "Cancelled" && (
                 <>
                   {cancelledOrders.length > 0 && (
-                    <>
-                      <FlatList
-                        data={cancelledOrders}
-                        scrollEnabled={false}
-                        keyExtractor={(item) => item._id}
-                        renderItem={({ item }) => (
-                          <TouchableOpacity
-                            onPress={() =>
-                              navigation.navigate("order-details-page", {
-                                order: item,
-                              })
-                            }
-                            style={{
-                              marginBottom: 10,
-                              borderRadius: 15,
-                              boxShadow: "0px 0px 3px rgba(0, 0, 0, 0.1)",
-                              padding: 10,
-                              flexDirection: "row",
-                              justifyContent: "space-between",
-                              backgroundColor: COLORS.white,
-                              marginHorizontal: 20,
-                            }}
-                          >
-                            <View style={{ flexDirection: "row" }}>
-                              <Image
-                                source={{
-                                  uri: item?.restaurant
-                                    ? item?.restaurant?.logoUrl?.url
-                                    : item?.supplier?.logoUrl?.url,
-                                }}
-                                style={{
-                                  height: 70,
-                                  width: 70,
-                                  borderRadius: 10,
-                                }}
-                              />
-                              <View
-                                style={{
-                                  marginLeft: 10,
-                                  flexDirection: "column",
-                                }}
-                              >
-                                <Text
-                                  style={{ fontFamily: "bold", fontSize: 16 }}
-                                >
-                                  {item?.restaurant
-                                    ? item?.restaurant?.title
-                                    : item?.supplier?.title}
-                                </Text>
-                                <View>
-                                  <Text
-                                    style={{
-                                      color: COLORS.gray,
-                                      fontSize: 12,
-                                      fontFamily: "regular",
-                                    }}
-                                  >
-                                    Ordered on:
-                                  </Text>
-                                  <Text
-                                    style={{
-                                      color: COLORS.gray,
-                                      fontSize: 12,
-                                      fontFamily: "regular",
-                                    }}
-                                  >
-                                    {new Date(
-                                      item?.createdAt
-                                    ).toLocaleDateString("en-US", {
-                                      month: "long",
-                                      day: "numeric",
-                                    })}{" "}
-                                    at{" "}
-                                    {new Date(
-                                      item?.createdAt
-                                    ).toLocaleTimeString("en-US", {
-                                      hour: "numeric",
-                                      minute: "2-digit",
-                                      hour12: true,
-                                    })}
-                                  </Text>
-                                </View>
-
-                                <FlatList
-                                  data={item?.orderItems}
-                                  style={{ marginTop: 5 }}
-                                  keyExtractor={(item) => item._id}
-                                  renderItem={({ item }) => (
-                                    <View>
-                                      <Text
-                                        style={{
-                                          color: COLORS.gray,
-                                          fontSize: 14,
-                                          fontFamily: "regular",
-                                        }}
-                                      >
-                                        x{item?.quantity}{" "}
-                                        {item?.foodId
-                                          ? item?.foodId?.title
-                                          : item?.productId?.title}
-                                      </Text>
-                                    </View>
-                                  )}
-                                />
-                              </View>
-                            </View>
-                            <Text style={{ fontFamily: "bold", fontSize: 16 }}>
-                              ₱{(item?.totalAmount).toFixed(2)}
-                            </Text>
-                          </TouchableOpacity>
-                        )}
-                      />
-                    </>
+                    <CancelledOrders
+                      cancelledOrders={cancelledOrders}
+                      navigation={navigation}
+                    />
                   )}
-
+                  
                   {cancelledOrders.length === 0 && (
                     <View
                       style={{
