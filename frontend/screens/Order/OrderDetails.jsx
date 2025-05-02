@@ -525,7 +525,11 @@ const OrderDetails = () => {
           >
             <View style={{ flexDirection: "row" }}>
               <Image
-                source={{ uri: order?.restaurant?.logoUrl?.url }}
+                source={{
+                  uri: order?.restaurant
+                    ? order?.restaurant?.logoUrl?.url
+                    : order?.supplier?.logoUrl?.url,
+                }}
                 style={{
                   height: 60,
                   width: 60,
@@ -535,7 +539,9 @@ const OrderDetails = () => {
               />
               <View style={{ marginLeft: 10 }}>
                 <Text style={{ fontFamily: "bold", fontSize: 18 }}>
-                  {order?.restaurant?.title}
+                  {order?.restaurant
+                    ? order?.restaurant?.title
+                    : order?.supplier?.title}
                 </Text>
                 <Text
                   style={{
@@ -585,7 +591,9 @@ const OrderDetails = () => {
                   Order from:
                 </Text>
                 <Text style={{ fontFamily: "regular" }}>
-                  {order?.restaurant?.coords?.address}
+                  {order?.restaurant
+                    ? order?.restaurant?.coords?.address
+                    : order?.supplier?.coords?.address}
                 </Text>
               </View>
             </View>
@@ -633,7 +641,11 @@ const OrderDetails = () => {
                 >
                   <View style={{ flexDirection: "row" }}>
                     <Image
-                      source={{ uri: item?.foodId?.imageUrl?.url }}
+                      source={{
+                        uri: item?.foodId
+                          ? item?.foodId?.imageUrl?.url
+                          : item?.productId?.imageUrl?.url,
+                      }}
                       style={{
                         height: 40,
                         width: 40,
@@ -649,14 +661,32 @@ const OrderDetails = () => {
                           marginLeft: 10,
                         }}
                       >
-                        {item?.quantity}x {item?.foodId?.title}
+                        {item?.quantity}x{" "}
+                        {item?.foodId
+                          ? item?.foodId?.title
+                          : item?.productId?.title}
                       </Text>
 
-                      {item?.additives?.length > 0 ? (
+                      {item?.foodId && (
                         <>
-                          {item?.additives?.map((additive) => (
+                          {item?.additives?.length > 0 ? (
+                            <>
+                              {item?.additives?.map((additive) => (
+                                <Text
+                                  key={additive?._id}
+                                  style={{
+                                    fontFamily: "regular",
+                                    fontSize: 12,
+                                    color: COLORS.gray,
+                                    marginLeft: 15,
+                                  }}
+                                >
+                                  + {additive?.title}
+                                </Text>
+                              ))}
+                            </>
+                          ) : (
                             <Text
-                              key={additive?._id}
                               style={{
                                 fontFamily: "regular",
                                 fontSize: 12,
@@ -664,21 +694,10 @@ const OrderDetails = () => {
                                 marginLeft: 15,
                               }}
                             >
-                              + {additive?.title}
+                              - No Additives
                             </Text>
-                          ))}
+                          )}
                         </>
-                      ) : (
-                        <Text
-                          style={{
-                            fontFamily: "regular",
-                            fontSize: 12,
-                            color: COLORS.gray,
-                            marginLeft: 15,
-                          }}
-                        >
-                          - No Additives
-                        </Text>
                       )}
                     </View>
                   </View>

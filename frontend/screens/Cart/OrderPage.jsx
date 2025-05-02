@@ -380,7 +380,11 @@ const OrderPage = () => {
                           >
                             <View style={{ flexDirection: "row" }}>
                               <Image
-                                source={{ uri: item?.restaurant?.logoUrl?.url }}
+                                source={{
+                                  uri: item?.restaurant
+                                    ? item?.restaurant?.logoUrl?.url
+                                    : item?.supplier?.logoUrl?.url,
+                                }}
                                 style={{
                                   height: 70,
                                   width: 70,
@@ -396,7 +400,9 @@ const OrderPage = () => {
                                 <Text
                                   style={{ fontFamily: "bold", fontSize: 16 }}
                                 >
-                                  {item?.restaurant?.title}
+                                  {item?.restaurant
+                                    ? item?.restaurant?.title
+                                    : item?.supplier?.title}
                                 </Text>
 
                                 <View
@@ -503,7 +509,10 @@ const OrderPage = () => {
                                           fontFamily: "regular",
                                         }}
                                       >
-                                        x{item?.quantity} {item?.foodId?.title}
+                                        x{item?.quantity}{" "}
+                                        {item?.foodId
+                                          ? item?.foodId?.title
+                                          : item?.productId?.title}
                                       </Text>
                                     </View>
                                   )}
@@ -567,7 +576,11 @@ const OrderPage = () => {
                           >
                             <View style={{ flexDirection: "row" }}>
                               <Image
-                                source={{ uri: item?.restaurant?.logoUrl?.url }}
+                                source={{
+                                  uri: item?.restaurant
+                                    ? item?.restaurant?.logoUrl?.url
+                                    : item?.supplier?.logoUrl?.url,
+                                }}
                                 style={{
                                   height: 70,
                                   width: 70,
@@ -583,7 +596,9 @@ const OrderPage = () => {
                                 <Text
                                   style={{ fontFamily: "bold", fontSize: 16 }}
                                 >
-                                  {item?.restaurant?.title}
+                                  {item?.restaurant
+                                    ? item?.restaurant?.title
+                                    : item?.supplier?.title}
                                 </Text>
                                 <View>
                                   <Text
@@ -632,7 +647,10 @@ const OrderPage = () => {
                                           fontFamily: "regular",
                                         }}
                                       >
-                                        x{item?.quantity} {item?.foodId?.title}
+                                        x{item?.quantity}{" "}
+                                        {item?.foodId
+                                          ? item?.foodId?.title
+                                          : item?.productId?.title}
                                       </Text>
                                     </View>
                                   )}
