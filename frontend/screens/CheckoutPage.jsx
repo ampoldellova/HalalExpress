@@ -1,11 +1,4 @@
-import {
-  Image,
-  Linking,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { Linking, ScrollView, StyleSheet, Text } from "react-native";
 import React, { useContext, useEffect, useState } from "react";
 import {
   useFocusEffect,
@@ -34,9 +27,7 @@ import PersonalDetails from "../components/Checkout/PersonalDetails";
 import PaymentMethod from "../components/Checkout/PaymentMethod";
 import OrderSummary from "../components/Checkout/OrderSummary";
 import AddressBottomModal from "../components/Checkout/AddressBottomModal";
-import { COLORS, SIZES } from "../styles/theme";
-import MapView, { Marker } from "react-native-maps";
-import LottieView from "lottie-react-native";
+import PickupLocation from "../components/Checkout/PickupLocation";
 
 const CheckoutPage = () => {
   const route = useRoute();
@@ -55,7 +46,11 @@ const CheckoutPage = () => {
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [selectedAddressLat, setSelectedAddressLat] = useState(null);
   const [selectedAddressLng, setSelectedAddressLng] = useState(null);
-  const [selectedDeliveryOption, setSelectedDeliveryOption] = useState(null);
+  const [selectedDeliveryOption, setSelectedDeliveryOption] = useState(
+    restaurant?.delivery === false || supplier?.delivery === false
+      ? null
+      : "pickup"
+  );
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
   const [distanceTime, setDistanceTime] = useState({});
   const [deliveryFee, setDeliveryFee] = useState(
@@ -413,7 +408,7 @@ const CheckoutPage = () => {
           supplier?.delivery === false ||
           restaurant?.delivery === null ||
           restaurant?.delivery === false ? (
-            <></>
+            <PickupLocation restaurant={restaurant} supplier={supplier} />
           ) : (
             <DeliveryAddress
               region={region}
@@ -424,17 +419,21 @@ const CheckoutPage = () => {
             />
           )}
 
-          <DeliveryOptions
-            deliveryOptionsError={deliveryOptionsError}
-            setDeliveryFee={setDeliveryFee}
-            selectedDeliveryOption={selectedDeliveryOption}
-            setSelectedDeliveryOption={setSelectedDeliveryOption}
-            restaurant={restaurant}
-            supplier={supplier}
-            totalTime={totalTime}
-            distanceTime={distanceTime}
-            setDeliveryOptionsError={setDeliveryOptionsError}
-          />
+          {restaurant
+            ? restaurant?.delivery
+            : supplier?.delivery && (
+                <DeliveryOptions
+                  deliveryOptionsError={deliveryOptionsError}
+                  setDeliveryFee={setDeliveryFee}
+                  selectedDeliveryOption={selectedDeliveryOption}
+                  setSelectedDeliveryOption={setSelectedDeliveryOption}
+                  restaurant={restaurant}
+                  supplier={supplier}
+                  totalTime={totalTime}
+                  distanceTime={distanceTime}
+                  setDeliveryOptionsError={setDeliveryOptionsError}
+                />
+              )}
 
           <PersonalDetails
             isUserDetailsChanged={isUserDetailsChanged}
