@@ -10,11 +10,7 @@ import {
   View,
 } from "react-native";
 import React, { useState } from "react";
-import {
-  useFocusEffect,
-  useNavigation,
-  useRoute,
-} from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import BackBtn from "../../components/BackBtn";
 import { getProfile } from "../../hook/helpers";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -23,8 +19,6 @@ import Toast from "react-native-toast-message";
 import baseUrl from "../../assets/common/baseUrl";
 import { COLORS, SIZES } from "../../styles/theme";
 import Loader from "../../components/Loader";
-import { RatingInput } from "react-native-stock-star-rating";
-import Heading from "../../components/Heading";
 import ActiveOrders from "../../components/Cart/ActiveOrders";
 import PreviousOrders from "../../components/Cart/PreviousOrders";
 import CancelledOrders from "../../components/Cart/CancelledOrders";
@@ -271,7 +265,7 @@ const OrderPage = () => {
                       navigation={navigation}
                     />
                   )}
-                  
+
                   {cancelledOrders.length === 0 && (
                     <View
                       style={{

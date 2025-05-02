@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import React from "react";
 import { COLORS } from "../../styles/theme";
+import { RatingInput } from "react-native-stock-star-rating";
 
 const PreviousOrders = ({ pastOrders, navigation }) => {
   return (
