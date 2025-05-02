@@ -46,11 +46,7 @@ const CheckoutPage = () => {
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [selectedAddressLat, setSelectedAddressLat] = useState(null);
   const [selectedAddressLng, setSelectedAddressLng] = useState(null);
-  const [selectedDeliveryOption, setSelectedDeliveryOption] = useState(
-    restaurant?.delivery === false || supplier?.delivery === false
-      ? null
-      : "pickup"
-  );
+  const [selectedDeliveryOption, setSelectedDeliveryOption] = useState(null);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
   const [distanceTime, setDistanceTime] = useState({});
   const [deliveryFee, setDeliveryFee] = useState(
@@ -190,11 +186,21 @@ const CheckoutPage = () => {
   const handlePlaceOrder = async () => {
     setLoading(true);
     if (selectedDeliveryOption === null && selectedPaymentMethod === null) {
+      if (restaurant?.delivery || supplier?.delivery) {
+        setDeliveryOptionsError(true);
+      } else {
+        setDeliveryOptionsError(false);
+        setSelectedDeliveryOption("pickup");
+      }
       setPaymentMethodError(true);
-      setDeliveryOptionsError(true);
       setLoading(false);
     } else if (selectedDeliveryOption === null) {
-      setDeliveryOptionsError(true);
+      if (restaurant?.delivery || supplier?.delivery) {
+        setDeliveryOptionsError(true);
+      } else {
+        setDeliveryOptionsError(false);
+        setSelectedDeliveryOption("pickup");
+      }
       setLoading(false);
     } else if (selectedPaymentMethod === null) {
       setPaymentMethodError(true);
@@ -253,7 +259,7 @@ const CheckoutPage = () => {
           });
         }
       } catch (error) {
-        console.error("Error processing payment:", error);
+        console.log("Error processing payment:", error.message);
         setLoading(false);
       }
     } else {
@@ -297,6 +303,7 @@ const CheckoutPage = () => {
           orderNote,
         };
 
+        console.log("Order response:", data);
         const response = await axios.post(
           `${baseUrl}/api/orders/check-out`,
           data,
@@ -320,9 +327,9 @@ const CheckoutPage = () => {
         Toast.show({
           type: "error",
           text1: "Error ❌",
-          text2: error,
+          text2: error.message,
         });
-        console.error(error);
+        console.log(error.message);
         setLoading(false);
       }
     }
@@ -404,7 +411,8 @@ const CheckoutPage = () => {
             Check Out
           </Text>
 
-          {supplier?.delivery === null ||
+          {selectedDeliveryOption === "pickup" ||
+          supplier?.delivery === null ||
           supplier?.delivery === false ||
           restaurant?.delivery === null ||
           restaurant?.delivery === false ? (
@@ -419,21 +427,19 @@ const CheckoutPage = () => {
             />
           )}
 
-          {restaurant
-            ? restaurant?.delivery
-            : supplier?.delivery && (
-                <DeliveryOptions
-                  deliveryOptionsError={deliveryOptionsError}
-                  setDeliveryFee={setDeliveryFee}
-                  selectedDeliveryOption={selectedDeliveryOption}
-                  setSelectedDeliveryOption={setSelectedDeliveryOption}
-                  restaurant={restaurant}
-                  supplier={supplier}
-                  totalTime={totalTime}
-                  distanceTime={distanceTime}
-                  setDeliveryOptionsError={setDeliveryOptionsError}
-                />
-              )}
+          {(restaurant?.delivery === true || supplier?.delivery === true) && (
+            <DeliveryOptions
+              deliveryOptionsError={deliveryOptionsError}
+              setDeliveryFee={setDeliveryFee}
+              selectedDeliveryOption={selectedDeliveryOption}
+              setSelectedDeliveryOption={setSelectedDeliveryOption}
+              restaurant={restaurant}
+              supplier={supplier}
+              totalTime={totalTime}
+              distanceTime={distanceTime}
+              setDeliveryOptionsError={setDeliveryOptionsError}
+            />
+          )}
 
           <PersonalDetails
             isUserDetailsChanged={isUserDetailsChanged}
