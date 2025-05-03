@@ -33,7 +33,7 @@ const CancelledOrders = ({ cancelledOrders, navigation }) => {
             marginHorizontal: 20,
           }}
         >
-          <View style={{ flexDirection: "row" }}>
+          <View style={{ flexDirection: "row", width: "55%" }}>
             <Image
               source={{
                 uri: item?.restaurant
