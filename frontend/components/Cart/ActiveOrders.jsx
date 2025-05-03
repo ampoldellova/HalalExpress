@@ -33,7 +33,7 @@ const ActiveOrders = ({ pendingOrders, navigation }) => {
             })
           }
         >
-          <View style={{ flexDirection: "row" }}>
+          <View style={{ flexDirection: "row", width: "55%" }}>
             <Image
               source={{
                 uri: item?.restaurant
@@ -50,7 +50,7 @@ const ActiveOrders = ({ pendingOrders, navigation }) => {
               <Text style={{ fontFamily: "bold", fontSize: 16 }}>
                 {item?.restaurant
                   ? item?.restaurant?.title
-                  : item?.supplier?.title}
+                  : item?.supplier?.title}{" "}
               </Text>
 
               {(item?.orderStatus === "Pending" ||
