@@ -78,6 +78,14 @@ const CheckoutPage = () => {
     }, [location?.coords, selectedAddressLat, selectedAddressLng])
   );
 
+  useEffect(() => {
+    if (restaurant?.delivery === true || supplier?.delivery === true) {
+      setSelectedDeliveryOption(null);
+    } else {
+      setSelectedDeliveryOption("pickup");
+    }
+  }, [restaurant, supplier]);
+
   const getUserAddresses = async () => {
     try {
       const token = await AsyncStorage.getItem("token");
@@ -186,21 +194,11 @@ const CheckoutPage = () => {
   const handlePlaceOrder = async () => {
     setLoading(true);
     if (selectedDeliveryOption === null && selectedPaymentMethod === null) {
-      if (restaurant?.delivery || supplier?.delivery) {
-        setDeliveryOptionsError(true);
-      } else {
-        setDeliveryOptionsError(false);
-        setSelectedDeliveryOption("pickup");
-      }
+      setDeliveryOptionsError(true);
       setPaymentMethodError(true);
       setLoading(false);
     } else if (selectedDeliveryOption === null) {
-      if (restaurant?.delivery || supplier?.delivery) {
-        setDeliveryOptionsError(true);
-      } else {
-        setDeliveryOptionsError(false);
-        setSelectedDeliveryOption("pickup");
-      }
+      setDeliveryOptionsError(true);
       setLoading(false);
     } else if (selectedPaymentMethod === null) {
       setPaymentMethodError(true);
@@ -303,7 +301,6 @@ const CheckoutPage = () => {
           orderNote,
         };
 
-        console.log("Order response:", data);
         const response = await axios.post(
           `${baseUrl}/api/orders/check-out`,
           data,
@@ -389,6 +386,7 @@ const CheckoutPage = () => {
       image !== user?.profile?.url
     );
   };
+
   return (
     <SafeAreaView>
       {loading ? (
@@ -411,11 +409,7 @@ const CheckoutPage = () => {
             Check Out
           </Text>
 
-          {selectedDeliveryOption === "pickup" ||
-          supplier?.delivery === null ||
-          supplier?.delivery === false ||
-          restaurant?.delivery === null ||
-          restaurant?.delivery === false ? (
+          {selectedDeliveryOption === "pickup" ? (
             <PickupLocation restaurant={restaurant} supplier={supplier} />
           ) : (
             <DeliveryAddress

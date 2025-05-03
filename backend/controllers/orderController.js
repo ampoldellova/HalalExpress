@@ -23,19 +23,6 @@ module.exports = {
     } = req.body;
 
     try {
-      if (
-        !deliveryAddress ||
-        !deliveryAddress.address ||
-        !deliveryAddress.coordinates ||
-        typeof deliveryAddress.coordinates.latitude !== "number" ||
-        typeof deliveryAddress.coordinates.longitude !== "number"
-      ) {
-        return res.status(400).json({
-          status: false,
-          message: "Invalid delivery address format",
-        });
-      }
-
       const cart = await Cart.findOne({ userId }).populate("cartItems.foodId");
 
       if (!cart) {

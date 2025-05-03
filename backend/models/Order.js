@@ -56,16 +56,13 @@ const orderSchema = new mongoose.Schema(
     deliveryAddress: {
       address: {
         type: String,
-        required: true,
       },
       coordinates: {
         latitude: {
           type: Number,
-          required: true,
         },
         longitude: {
           type: Number,
-          required: true,
         },
       },
     },
