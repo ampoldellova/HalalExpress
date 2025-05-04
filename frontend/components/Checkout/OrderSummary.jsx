@@ -33,7 +33,7 @@ const OrderSummary = ({
       <Divider />
 
       <FlatList
-        style={{ marginBottom: 20, marginTop: 10 }}
+        style={{ marginTop: 10 }}
         data={cart?.cartItems}
         keyExtractor={(item) => item?._id}
         renderItem={({ item }) => (
@@ -126,80 +126,6 @@ const OrderSummary = ({
           </View>
         )}
       />
-
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "space-between",
-        }}
-      >
-        <Text
-          style={{
-            fontFamily: "regular",
-            fontSize: 14,
-            color: COLORS.gray,
-          }}
-        >
-          Subtotal:
-        </Text>
-        <Text
-          style={{
-            fontFamily: "regular",
-            fontSize: 14,
-            color: COLORS.gray,
-          }}
-        >
-          ₱ {cart?.totalAmount.toFixed(2)}
-        </Text>
-      </View>
-
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "space-between",
-          marginBottom: 20,
-        }}
-      >
-        <Text
-          style={{
-            fontFamily: "regular",
-            fontSize: 14,
-            color: COLORS.gray,
-          }}
-        >
-          Delivery Fee:
-        </Text>
-        <Text
-          style={{
-            fontFamily: "regular",
-            fontSize: 14,
-            color: COLORS.gray,
-          }}
-        >
-          ₱{" "}
-          {selectedDeliveryOption === "standard" ? distanceTime.finalPrice : 0}
-        </Text>
-      </View>
-
-      <Divider />
-
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "space-between",
-        }}
-      >
-        <Text style={{ fontFamily: "bold", fontSize: 24 }}>Total:</Text>
-        <Text style={{ fontFamily: "bold", fontSize: 24 }}>
-          ₱{" "}
-          {(
-            parseFloat(cart?.totalAmount.toFixed(2)) + parseFloat(deliveryFee)
-          ).toFixed(2)}
-        </Text>
-      </View>
     </View>
   );
 };

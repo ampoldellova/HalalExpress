@@ -4,6 +4,7 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   View,
 } from "react-native";
 import React, { useContext, useEffect, useState } from "react";
@@ -35,9 +36,9 @@ import PaymentMethod from "../components/Checkout/PaymentMethod";
 import OrderSummary from "../components/Checkout/OrderSummary";
 import AddressBottomModal from "../components/Checkout/AddressBottomModal";
 import PickupLocation from "../components/Checkout/PickupLocation";
-import { COLORS } from "../styles/theme";
+import { COLORS, SIZES } from "../styles/theme";
 import Divider from "../components/Divider";
-import { Entypo } from "@expo/vector-icons";
+import { AntDesign, MaterialIcons } from "@expo/vector-icons";
 
 const CheckoutPage = () => {
   const route = useRoute();
@@ -90,7 +91,7 @@ const CheckoutPage = () => {
 
   useEffect(() => {
     if (restaurant?.delivery === true || supplier?.delivery === true) {
-      setSelectedDeliveryOption(null);
+      setSelectedDeliveryOption("standard");
       setSelectedPaymentMethod(null);
     } else {
       setSelectedDeliveryOption("pickup");
@@ -203,7 +204,6 @@ const CheckoutPage = () => {
     }
   };
 
-  console.log(selectedPaymentMethod);
   const handlePlaceOrder = async () => {
     setLoading(true);
     if (selectedDeliveryOption === null && selectedPaymentMethod === null) {
@@ -434,6 +434,57 @@ const CheckoutPage = () => {
             />
           )}
 
+          <OrderSummary
+            selectedDeliveryOption={selectedDeliveryOption}
+            distanceTime={distanceTime}
+            deliveryFee={deliveryFee}
+            restaurant={restaurant}
+            supplier={supplier}
+            user={user}
+            cart={cart}
+          />
+
+          <View
+            style={{
+              marginBottom: 20,
+            }}
+          >
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+                marginTop: 10,
+              }}
+            >
+              <Text style={{ fontFamily: "bold", fontSize: 18 }}>
+                Special Remarks
+              </Text>
+            </View>
+
+            <Divider />
+
+            <View style={styles.notesInputWrapper(COLORS.gray2)}>
+              <AntDesign
+                name="message1"
+                size={18}
+                color={COLORS.gray2}
+                style={{ marginRight: 5 }}
+              />
+              <TextInput
+                multiline
+                numberOfLines={3}
+                placeholder="Let us know if you have any special requests."
+                placeholderTextColor={COLORS.gray2}
+                autoCapitalize="none"
+                autoCorrect={false}
+                value={orderNote}
+                onChangeText={(text) => setOrderNote(text)}
+                style={styles.textInput}
+              />
+            </View>
+          </View>
+
           {(restaurant?.delivery === true || supplier?.delivery === true) && (
             <DeliveryOptions
               deliveryOptionsError={deliveryOptionsError}
@@ -508,15 +559,79 @@ const CheckoutPage = () => {
             />
           )}
 
-          <OrderSummary
-            selectedDeliveryOption={selectedDeliveryOption}
-            distanceTime={distanceTime}
-            deliveryFee={deliveryFee}
-            restaurant={restaurant}
-            supplier={supplier}
-            user={user}
-            cart={cart}
-          />
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
+            <Text
+              style={{
+                fontFamily: "regular",
+                fontSize: 14,
+                color: COLORS.gray,
+              }}
+            >
+              Subtotal:
+            </Text>
+            <Text
+              style={{
+                fontFamily: "regular",
+                fontSize: 14,
+                color: COLORS.gray,
+              }}
+            >
+              ₱ {cart?.totalAmount.toFixed(2)}
+            </Text>
+          </View>
+
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
+            <Text
+              style={{
+                fontFamily: "regular",
+                fontSize: 14,
+                color: COLORS.gray,
+              }}
+            >
+              Delivery Fee:
+            </Text>
+            <Text
+              style={{
+                fontFamily: "regular",
+                fontSize: 14,
+                color: COLORS.gray,
+              }}
+            >
+              ₱{" "}
+              {selectedDeliveryOption === "standard"
+                ? distanceTime.finalPrice
+                : 0}
+            </Text>
+          </View>
+          <Divider />
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
+            <Text style={{ fontFamily: "bold", fontSize: 24 }}>Total:</Text>
+            <Text style={{ fontFamily: "bold", fontSize: 24 }}>
+              ₱{" "}
+              {(
+                parseFloat(cart?.totalAmount.toFixed(2)) +
+                parseFloat(deliveryFee)
+              ).toFixed(2)}
+            </Text>
+          </View>
 
           <Button
             title="P L A C E   O R D E R"
@@ -545,4 +660,27 @@ const CheckoutPage = () => {
 
 export default CheckoutPage;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  label: {
+    fontFamily: "regular",
+    fontSize: SIZES.xSmall,
+    marginBottom: 5,
+    marginEnd: 5,
+    textAlign: "right",
+  },
+  textInput: {
+    flex: 1,
+    fontFamily: "regular",
+    marginTop: 2,
+  },
+  notesInputWrapper: (borderColor) => ({
+    borderColor: borderColor,
+    marginTop: 10,
+    borderWidth: 1,
+    height: 80,
+    borderRadius: 12,
+    flexDirection: "row",
+    paddingHorizontal: 15,
+    alignItems: "center",
+  }),
+});

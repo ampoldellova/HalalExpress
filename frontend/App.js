@@ -116,7 +116,7 @@ export default function App() {
       const pushToken = await registerForPushNotificationsAsync(login);
       console.log("Push Notification Token:", pushToken);
     })();
-  }, [login, location]);
+  }, [login]);
 
   return (
     <Provider store={store}>

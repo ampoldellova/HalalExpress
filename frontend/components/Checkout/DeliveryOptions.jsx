@@ -93,20 +93,16 @@ const DeliveryOptions = ({
               </Text>
             </View>
 
-            {restaurant?.delivery || supplier?.deliver ? (
-              <Text
-                style={{
-                  fontFamily: "regular",
-                  fontSize: 12,
-                  color: COLORS.gray,
-                  marginLeft: 5,
-                }}
-              >
-                ({totalTime.toFixed(0)} mins)
-              </Text>
-            ) : (
-              <></>
-            )}
+            <Text
+              style={{
+                fontFamily: "regular",
+                fontSize: 12,
+                color: COLORS.gray,
+                marginLeft: 5,
+              }}
+            >
+              ({totalTime.toFixed(0)} mins)
+            </Text>
           </View>
 
           {restaurant?.delivery || supplier?.delivery ? (
