@@ -418,7 +418,6 @@ const CheckoutPage = () => {
               fontSize: 24,
               textAlign: "center",
               marginTop: 10,
-              marginBottom: 20,
             }}
           >
             Check Out
@@ -528,80 +527,6 @@ const CheckoutPage = () => {
             distanceTime={distanceTime}
             deliveryFee={deliveryFee}
           />
-
-          {/* <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "space-between",
-            }}
-          >
-            <Text
-              style={{
-                fontFamily: "regular",
-                fontSize: 14,
-                color: COLORS.gray,
-              }}
-            >
-              Subtotal:
-            </Text>
-            <Text
-              style={{
-                fontFamily: "regular",
-                fontSize: 14,
-                color: COLORS.gray,
-              }}
-            >
-              ₱ {cart?.totalAmount.toFixed(2)}
-            </Text>
-          </View>
-
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "space-between",
-            }}
-          >
-            <Text
-              style={{
-                fontFamily: "regular",
-                fontSize: 14,
-                color: COLORS.gray,
-              }}
-            >
-              Delivery Fee:
-            </Text>
-            <Text
-              style={{
-                fontFamily: "regular",
-                fontSize: 14,
-                color: COLORS.gray,
-              }}
-            >
-              ₱{" "}
-              {selectedDeliveryOption === "standard"
-                ? distanceTime.finalPrice
-                : 0}
-            </Text>
-          </View>
-          <Divider />
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "space-between",
-            }}
-          >
-            <Text style={{ fontFamily: "bold", fontSize: 24 }}>Total:</Text>
-            <Text style={{ fontFamily: "bold", fontSize: 24 }}>
-              ₱{" "}
-              {(
-                parseFloat(cart?.totalAmount.toFixed(2)) +
-                parseFloat(deliveryFee)
-              ).toFixed(2)}
-            </Text>
-          </View> */}
 
           <Button
             title="P L A C E   O R D E R"
