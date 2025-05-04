@@ -121,9 +121,15 @@ const PendingOrderDetails = () => {
         text: `Thank you for placing your order! We are now preparing your order.`,
         createdAt: new Date(),
         user: {
-          _id: order?.restaurant?._id,
-          name: order?.restaurant?.title,
-          avatar: order?.restaurant?.logoUrl?.url,
+          _id: order?.restaurant
+            ? order?.restaurant?._id
+            : order?.supplier?._id,
+          name: order?.restaurant
+            ? order?.restaurant?.title
+            : order?.supplier?.title,
+          avatar: order?.restaurant
+            ? order?.restaurant?.logoUrl?.url
+            : order?.supplier?.logoUrl?.url,
         },
         receiverId: order?.userId?._id,
         receiverName: order?.userId?.username,
@@ -140,12 +146,11 @@ const PendingOrderDetails = () => {
         text2: "Order accepted successfully!",
       });
     } catch (error) {
-      console.log(error);
       setLoading(false);
       Toast.show({
         type: "error",
         text1: "Error ❌",
-        text2: error,
+        text2: error.message,
       });
     }
   };
