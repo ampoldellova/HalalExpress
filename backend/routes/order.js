@@ -24,9 +24,9 @@ router.get(
 );
 
 router.get(
-  "/restaurant/:restaurantId/orders",
+  "/store/:storeId/orders",
   verifyAndAuthorization,
-  orderController.getRestaurantOrders
+  orderController.getStoreOrders
 );
 router.post("/reject", verifyAndAuthorization, orderController.rejectOrder);
 router.post("/accept", verifyAndAuthorization, orderController.acceptOrder);

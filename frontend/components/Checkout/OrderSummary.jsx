@@ -93,16 +93,18 @@ const OrderSummary = ({
                       <FlatList
                         data={item?.additives}
                         keyExtractor={(item) => item._id}
-                        renderItem={({ item }) => (
+                        horizontal={true}
+                        showsHorizontalScrollIndicator={false}
+                        renderItem={({ item, index }) => (
                           <Text
                             style={{
                               fontFamily: "regular",
-                              fontSize: 14,
+                              fontSize: 12,
                               color: COLORS.gray,
-                              marginLeft: 10,
                             }}
                           >
-                            + {item?.title}
+                            {item?.title}
+                            {index !== item?.additives?.length - 1 && " |"}{" "}
                           </Text>
                         )}
                       />

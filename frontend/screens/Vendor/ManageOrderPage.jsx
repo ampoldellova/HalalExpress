@@ -36,7 +36,7 @@ const ManageOrderPage = () => {
       };
 
       const response = await fetch(
-        `${baseUrl}/api/orders/restaurant/${item._id}/orders`,
+        `${baseUrl}/api/orders/store/${item._id}/orders`,
         config
       );
       const data = await response.json();

@@ -273,18 +273,20 @@ module.exports = {
     }
   },
 
-  getRestaurantOrders: async (req, res) => {
-    const { restaurantId } = req.params;
+  getStoreOrders: async (req, res) => {
+    const { storeId } = req.params;
     // console.log(restaurantId);
     try {
-      const orders = await Order.find({ restaurant: restaurantId }).sort({
+      const orders = await Order.find({
+        $or: [{ restaurant: storeId }, { supplier: storeId }],
+      }).sort({
         createdAt: -1,
       });
 
       if (!orders || orders.length === 0) {
         return res.status(404).json({
           status: false,
-          message: "No orders found for this restaurant",
+          message: "No orders found",
         });
       }
 
