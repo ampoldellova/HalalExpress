@@ -72,7 +72,6 @@ const OrderSummary = ({
                     fontFamily: "regular",
                     fontSize: 16,
                     color: COLORS.black,
-                    marginBottom: 15,
                   }}
                 >
                   ₱ {item?.totalPrice.toFixed(2)}

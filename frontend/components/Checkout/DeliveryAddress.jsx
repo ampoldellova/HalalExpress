@@ -98,26 +98,6 @@ const DeliveryAddress = ({
           )}
         </Text>
       </View>
-
-      {/* <Text style={styles.label}>Delivery note</Text>
-      <View style={styles.notesInputWrapper(COLORS.offwhite)}>
-        <MaterialIcons
-          name="notes"
-          size={20}
-          color={COLORS.gray}
-          style={{ marginTop: 10, marginRight: 5 }}
-        />
-        <TextInput
-          multiline
-          numberOfLines={3}
-          placeholder="Add your note here..."
-          autoCapitalize="none"
-          autoCorrect={false}
-          value={orderNote}
-          onChangeText={(text) => setOrderNote(text)}
-          style={[styles.textInput, { marginTop: 10 }]}
-        />
-      </View> */}
     </View>
   );
 };
