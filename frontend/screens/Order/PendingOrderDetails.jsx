@@ -57,7 +57,6 @@ const PendingOrderDetails = () => {
         const reason = "Order rejected by the restaurant";
         const paymentId = order?.paymentId;
         const refundPayment = await createRefund(amount, reason, paymentId);
-        console.log(refundPayment);
         if (refundPayment.data.attributes.status === "pending") {
           await axios.post(
             `${baseUrl}/api/orders/reject`,
@@ -170,48 +169,53 @@ const PendingOrderDetails = () => {
         <BackBtn onPress={() => navigation.goBack()} />
         <Text style={styles.heading}>Order Details</Text>
 
-        <View
-          style={{
-            borderColor: COLORS.gray2,
-            borderRadius: 15,
-            padding: 10,
-            marginTop: 10,
-            backgroundColor: COLORS.white,
-            marginBottom: 20,
-          }}
-        >
-          <Text style={{ fontFamily: "bold", fontSize: 18 }}>
-            To be delivered to:
-          </Text>
-
-          <Text
-            style={{ color: COLORS.gray, fontFamily: "regular", fontSize: 12 }}
+        {order?.deliveryAddress?.address && (
+          <View
+            style={{
+              borderColor: COLORS.gray2,
+              borderRadius: 15,
+              padding: 10,
+              backgroundColor: COLORS.white,
+              marginBottom: 20,
+            }}
           >
-            {order?.deliveryAddress?.address}
-          </Text>
+            <Text style={{ fontFamily: "bold", fontSize: 18 }}>
+              To be delivered to:
+            </Text>
 
-          <View style={styles.mapContainer}>
-            {region && (
-              <MapView
-                style={{ height: SIZES.height / 5.2 }}
-                region={{
-                  latitude: region?.latitude,
-                  longitude: region?.longitude,
-                  latitudeDelta: 0.01,
-                  longitudeDelta: 0.01,
-                }}
-              >
-                <Marker
-                  title="Customer Location"
-                  coordinate={{
+            <Text
+              style={{
+                color: COLORS.gray,
+                fontFamily: "regular",
+                fontSize: 12,
+              }}
+            >
+              {order?.deliveryAddress?.address}
+            </Text>
+
+            <View style={styles.mapContainer}>
+              {region && (
+                <MapView
+                  style={{ height: SIZES.height / 5.2 }}
+                  region={{
                     latitude: region?.latitude,
                     longitude: region?.longitude,
+                    latitudeDelta: 0.01,
+                    longitudeDelta: 0.01,
                   }}
-                />
-              </MapView>
-            )}
+                >
+                  <Marker
+                    title="Customer Location"
+                    coordinate={{
+                      latitude: region?.latitude,
+                      longitude: region?.longitude,
+                    }}
+                  />
+                </MapView>
+              )}
+            </View>
           </View>
-        </View>
+        )}
 
         <View
           style={{
@@ -798,6 +802,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     textAlign: "center",
     marginTop: 10,
+    marginBottom: 10,
   },
   mapContainer: {
     width: "100%",

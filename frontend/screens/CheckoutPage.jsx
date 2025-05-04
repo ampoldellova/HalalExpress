@@ -88,7 +88,7 @@ const CheckoutPage = () => {
           longitudeDelta: 0.01,
         });
       }
-    }, [location?.coords, selectedAddressLat, selectedAddressLng])
+    }, [location, selectedAddressLat, selectedAddressLng])
   );
 
   useEffect(() => {
