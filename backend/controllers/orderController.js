@@ -58,32 +58,6 @@ module.exports = {
       cart.totalAmount = 0;
       await cart.save();
 
-      try {
-        const message = `Order placed successfully! Total: ${totalAmount}`;
-
-        const user = await User.findById(req.user.id);
-        const expo = new Expo();
-        const pushToken = user.notificationToken;
-        console.log(pushToken);
-
-        if (Expo.isExpoPushToken(pushToken)) {
-          const messages = [
-            {
-              to: pushToken,
-              sound: "default",
-              body: message,
-              data: newOrder,
-            },
-          ];
-
-          await expo.sendPushNotificationsAsync(messages);
-        } else {
-          console.error("Invalid Expo push token:", pushToken);
-        }
-      } catch (error) {
-        console.log(error.message);
-      }
-
       res.status(200).json({
         status: true,
         message: "Order placed successfully",
@@ -366,6 +340,31 @@ module.exports = {
 
       order.orderStatus = "Preparing";
       await order.save();
+
+      try {
+        const message = `Your order ${orderId} has been accepted and is now being prepared.`;
+
+        const user = await User.findById(req.user.id);
+        const expo = new Expo();
+        const pushToken = user.notificationToken;
+
+        if (Expo.isExpoPushToken(pushToken)) {
+          const messages = [
+            {
+              to: pushToken,
+              sound: "default",
+              body: message,
+              data: newOrder,
+            },
+          ];
+
+          await expo.sendPushNotificationsAsync(messages);
+        } else {
+          console.error("Invalid Expo push token:", pushToken);
+        }
+      } catch (error) {
+        console.log(error.message);
+      }
 
       res.status(200).json({
         status: true,
