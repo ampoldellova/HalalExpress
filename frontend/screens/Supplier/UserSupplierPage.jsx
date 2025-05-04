@@ -11,6 +11,7 @@ import ManageProducts from "../../components/Products/ManageProducts";
 import AddProductButton from "../../components/Products/AddProductButton";
 import EditSupplierButton from "../../components/Supplier/EditSupplierButton";
 import Foundation from "@expo/vector-icons/Foundation";
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 
 const UserSupplierPage = () => {
   const route = useRoute();
@@ -19,8 +20,39 @@ const UserSupplierPage = () => {
 
   return (
     <View style={{ marginHorizontal: 20, marginTop: 15 }}>
-      <BackBtn onPress={() => navigation.goBack()} />
-      <Text style={styles.heading}>Supplier Page</Text>
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.backbtn}
+        >
+          <Ionicons
+            name="chevron-back-circle"
+            size={30}
+            color={COLORS.primary}
+          />
+        </TouchableOpacity>
+        <Text style={styles.heading}>Supplier Page</Text>
+        <TouchableOpacity
+          style={{ marginTop: 10 }}
+          onPress={() =>
+            navigation.navigate("restaurant-chat-list", {
+              restaurant: item,
+            })
+          }
+        >
+          <MaterialCommunityIcons
+            name="message-reply-text"
+            size={24}
+            color={COLORS.secondary}
+          />
+        </TouchableOpacity>
+      </View>
       <View style={{ marginTop: 10 }}>
         <Image
           source={{
