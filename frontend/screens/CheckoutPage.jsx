@@ -40,6 +40,7 @@ import { COLORS, SIZES } from "../styles/theme";
 import Divider from "../components/Divider";
 import { AntDesign, MaterialIcons } from "@expo/vector-icons";
 import SpecialRemarks from "../components/Checkout/SpecialRemarks";
+import PickupPaymentMethod from "../components/Checkout/PickupPaymentMethod";
 
 const CheckoutPage = () => {
   const route = useRoute();
@@ -464,38 +465,7 @@ const CheckoutPage = () => {
           />
 
           {selectedDeliveryOption === "pickup" ? (
-            <View
-              style={{
-                marginBottom: 20,
-              }}
-            >
-              <Text style={{ fontFamily: "bold", fontSize: 18 }}>
-                Payment Method:
-              </Text>
-              <Divider />
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  marginTop: 10,
-                }}
-              >
-                <Image
-                  source={require("../assets/images/gcash.png")}
-                  style={{ width: 27, height: 22, marginLeft: 2.5 }}
-                />
-                <Text
-                  style={{
-                    fontFamily: "medium",
-                    fontSize: 16,
-                    marginLeft: 10,
-                    color: COLORS.black,
-                  }}
-                >
-                  GCash
-                </Text>
-              </View>
-            </View>
+            <PickupPaymentMethod />
           ) : (
             <PaymentMethod
               setPaymentMethodError={setPaymentMethodError}
