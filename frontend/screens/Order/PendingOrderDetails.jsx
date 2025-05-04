@@ -262,7 +262,11 @@ const PendingOrderDetails = () => {
 
                   <View style={{ flexDirection: "row" }}>
                     <Image
-                      source={{ uri: item?.foodId?.imageUrl?.url }}
+                      source={{
+                        uri: item?.foodId
+                          ? item?.foodId?.imageUrl?.url
+                          : item?.productId?.imageUrl?.url,
+                      }}
                       style={{
                         height: 40,
                         width: 40,
@@ -278,14 +282,32 @@ const PendingOrderDetails = () => {
                           marginLeft: 10,
                         }}
                       >
-                        {item?.quantity}x {item?.foodId?.title}
+                        {item?.quantity}x{" "}
+                        {item?.foodId
+                          ? item?.foodId?.title
+                          : item?.productId?.title}
                       </Text>
 
-                      {item?.additives?.length > 0 ? (
+                      {item?.foodId && (
                         <>
-                          {item?.additives?.map((additive) => (
+                          {item?.additives?.length > 0 ? (
+                            <>
+                              {item?.additives?.map((additive) => (
+                                <Text
+                                  key={additive?._id}
+                                  style={{
+                                    fontFamily: "regular",
+                                    fontSize: 12,
+                                    color: COLORS.gray,
+                                    marginLeft: 15,
+                                  }}
+                                >
+                                  + {additive?.title}
+                                </Text>
+                              ))}
+                            </>
+                          ) : (
                             <Text
-                              key={additive?._id}
                               style={{
                                 fontFamily: "regular",
                                 fontSize: 12,
@@ -293,21 +315,10 @@ const PendingOrderDetails = () => {
                                 marginLeft: 15,
                               }}
                             >
-                              + {additive?.title}
+                              - No Additives
                             </Text>
-                          ))}
+                          )}
                         </>
-                      ) : (
-                        <Text
-                          style={{
-                            fontFamily: "regular",
-                            fontSize: 12,
-                            color: COLORS.gray,
-                            marginLeft: 15,
-                          }}
-                        >
-                          - No Additives
-                        </Text>
                       )}
                     </View>
                   </View>
