@@ -1,4 +1,4 @@
-import { Image, StyleSheet, Text, View } from "react-native";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React from "react";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import BackBtn from "../../components/BackBtn";
@@ -10,6 +10,7 @@ import PickupAvailability from "../../components/Supplier/PickupAvailability";
 import ManageProducts from "../../components/Products/ManageProducts";
 import AddProductButton from "../../components/Products/AddProductButton";
 import EditSupplierButton from "../../components/Supplier/EditSupplierButton";
+import Foundation from "@expo/vector-icons/Foundation";
 
 const UserSupplierPage = () => {
   const route = useRoute();
@@ -20,19 +21,28 @@ const UserSupplierPage = () => {
     <View style={{ marginHorizontal: 20, marginTop: 15 }}>
       <BackBtn onPress={() => navigation.goBack()} />
       <Text style={styles.heading}>Supplier Page</Text>
-      <View style={styles.imageContainer}>
+      <View style={{ marginTop: 10 }}>
         <Image
           source={{
             uri: item.imageUrl.url,
           }}
           style={styles.imageUrl}
         />
+        <TouchableOpacity
+          style={styles.editBtn}
+          onPress={() => navigation.navigate("manage-orders-page", item)}
+        >
+          <Foundation name="clipboard-notes" size={16} color={COLORS.white} />
+          <Text style={styles.editTxt}>Manage Orders</Text>
+        </TouchableOpacity>
         <Image
+          style={styles.logoUrl}
           source={{
             uri: item.logoUrl.url,
           }}
-          style={styles.logoUrl}
         />
+      </View>
+      <View style={styles.imageContainer}>
         <View style={styles.wrapper}>
           <Text style={styles.title}>{item.title}</Text>
           <Text style={styles.address}>{item.coords.address}</Text>
@@ -60,7 +70,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   imageContainer: {
-    position: "relative",
+    position: "abosolute",
     marginTop: 10,
   },
   imageUrl: {
@@ -71,12 +81,13 @@ const styles = StyleSheet.create({
   editBtn: {
     position: "absolute",
     backgroundColor: COLORS.primary,
-    bottom: 260,
+    bottom: 10,
     right: 5,
     borderRadius: 10,
     padding: 8,
     flexDirection: "row",
     justifyContent: "space-between",
+    alignItems: "center",
   },
   editTxt: {
     textAlign: "center",
@@ -91,7 +102,7 @@ const styles = StyleSheet.create({
     width: 100,
     borderRadius: 99,
     marginLeft: 10,
-    bottom: -10,
+    bottom: -80,
     backgroundColor: COLORS.offwhite,
     borderColor: COLORS.offwhite,
     borderWidth: 3,

@@ -60,7 +60,7 @@ const UserRestaurantPage = () => {
           />
         </TouchableOpacity>
       </View>
-      <View style={styles.imageContainer}>
+      <View style={{ marginTop: 10 }}>
         <Image
           source={{
             uri: item.imageUrl.url,
@@ -75,11 +75,13 @@ const UserRestaurantPage = () => {
           <Text style={styles.editTxt}>Manage Orders</Text>
         </TouchableOpacity>
         <Image
+          style={styles.logoUrl}
           source={{
             uri: item.logoUrl.url,
           }}
-          style={styles.logoUrl}
         />
+      </View>
+      <View style={styles.imageContainer}>
         <View style={styles.wrapper}>
           <Text style={styles.title}>{item.title}</Text>
           <Text style={styles.address}>{item.coords.address}</Text>
@@ -107,7 +109,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   imageContainer: {
-    position: "relative",
+    position: "abosolute",
     marginTop: 10,
   },
   imageUrl: {
@@ -118,7 +120,7 @@ const styles = StyleSheet.create({
   editBtn: {
     position: "absolute",
     backgroundColor: COLORS.primary,
-    bottom: SIZES.height / 8,
+    bottom: 10,
     right: 5,
     borderRadius: 10,
     padding: 8,
@@ -132,7 +134,6 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 14,
     marginLeft: 5,
-    marginTop: 2,
   },
   logoUrl: {
     position: "absolute",
@@ -140,7 +141,7 @@ const styles = StyleSheet.create({
     width: 100,
     borderRadius: 99,
     marginLeft: 10,
-    bottom: -10,
+    bottom: -80,
     backgroundColor: COLORS.offwhite,
     borderColor: COLORS.offwhite,
     borderWidth: 3,
