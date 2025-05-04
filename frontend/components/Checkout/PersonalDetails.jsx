@@ -14,6 +14,7 @@ import {
 } from "@expo/vector-icons";
 import { COLORS, SIZES } from "../../styles/theme";
 import Button from "../Button";
+import Divider from "../Divider";
 
 const PersonalDetails = ({
   isUserDetailsChanged,
@@ -33,11 +34,6 @@ const PersonalDetails = ({
   return (
     <View
       style={{
-        borderColor: COLORS.gray2,
-        height: "auto",
-        borderWidth: 1,
-        borderRadius: 10,
-        padding: 10,
         marginBottom: 20,
       }}
     >
@@ -48,34 +44,36 @@ const PersonalDetails = ({
           justifyContent: "space-between",
         }}
       >
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            marginTop: 10,
-          }}
-        >
-          <Image
-            source={require("../../assets/images/persons.png")}
-            style={{ width: 25, height: 25 }}
-          />
-          <Text style={{ fontFamily: "bold", fontSize: 18, marginLeft: 5 }}>
-            Personal Details
-          </Text>
-        </View>
+        <Text style={{ fontFamily: "bold", fontSize: 18 }}>
+          Personal Details
+        </Text>
         <TouchableOpacity
           onPress={() =>
             editProfile ? setEditProfile(false) : setEditProfile(true)
           }
         >
-          <FontAwesome
-            name="pencil"
-            size={20}
-            color={COLORS.black}
-            style={{ marginRight: 5 }}
-          />
+          {editProfile ? (
+            <Text
+              style={{
+                fontFamily: "bold",
+                fontSize: 16,
+                color: COLORS.black,
+              }}
+            >
+              Cancel
+            </Text>
+          ) : (
+            <FontAwesome
+              name="pencil"
+              size={20}
+              color={COLORS.black}
+              style={{ marginRight: 5 }}
+            />
+          )}
         </TouchableOpacity>
       </View>
+
+      <Divider />
 
       {editProfile ? (
         <View style={{ marginTop: 10 }}>
@@ -147,7 +145,7 @@ const PersonalDetails = ({
           />
         </View>
       ) : (
-        <View style={{ marginTop: 10, marginBottom: 5, marginLeft: 5 }}>
+        <View style={{ marginBottom: 5, marginLeft: 5 }}>
           <View
             style={{
               flexDirection: "row",

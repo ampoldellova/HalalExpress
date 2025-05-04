@@ -16,11 +16,7 @@ const OrderSummary = ({
   return (
     <View
       style={{
-        borderColor: COLORS.gray2,
-        height: "auto",
-        borderWidth: 1,
-        borderRadius: 10,
-        padding: 10,
+        marginBottom: 20,
       }}
     >
       <View
@@ -31,33 +27,13 @@ const OrderSummary = ({
           marginTop: 10,
         }}
       >
-        <Text style={{ fontFamily: "bold", fontSize: 18 }}>
-          Your order from:
-        </Text>
-      </View>
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          marginBottom: 20,
-        }}
-      >
-        <Image
-          source={{
-            uri:
-              user?.userType === "Vendor"
-                ? supplier?.logoUrl?.url
-                : restaurant?.logoUrl?.url,
-          }}
-          style={{ width: 20, height: 20, borderRadius: 5 }}
-        />
-        <Text style={{ fontFamily: "regular", fontSize: 14, marginLeft: 5 }}>
-          {user?.userType === "Vendor" ? supplier?.title : restaurant?.title}
-        </Text>
+        <Text style={{ fontFamily: "bold", fontSize: 18 }}>Your order</Text>
       </View>
 
+      <Divider />
+
       <FlatList
-        style={{ marginBottom: 20 }}
+        style={{ marginBottom: 20, marginTop: 10 }}
         data={cart?.cartItems}
         keyExtractor={(item) => item?._id}
         renderItem={({ item }) => (
@@ -76,25 +52,43 @@ const OrderSummary = ({
                       ? item?.productId?.imageUrl?.url
                       : item?.foodId?.imageUrl?.url,
                 }}
-                style={{ width: 50, height: 50, borderRadius: 10 }}
+                style={{ width: 80, height: 80, borderRadius: 10 }}
               />
               <View style={{ flexDirection: "column", marginLeft: 10 }}>
                 <Text
                   style={{
                     fontFamily: "regular",
-                    fontSize: 14,
-                    color: COLORS.gray,
+                    fontSize: 16,
+                    color: COLORS.black,
                   }}
                 >
-                  {item?.quantity}x{" "}
-                  {user?.userType === "Vendor"
+                  {item?.productId
                     ? item?.productId?.title
                     : item?.foodId?.title}
                 </Text>
 
-                {item?.productId ? (
-                  <></>
-                ) : (
+                <Text
+                  style={{
+                    fontFamily: "regular",
+                    fontSize: 16,
+                    color: COLORS.black,
+                    marginBottom: 15,
+                  }}
+                >
+                  ₱ {item?.totalPrice.toFixed(2)}
+                </Text>
+
+                <Text
+                  style={{
+                    fontFamily: "regular",
+                    fontSize: 12,
+                    color: COLORS.gray,
+                  }}
+                >
+                  Quantity: {item?.quantity}
+                </Text>
+
+                {item?.foodId && (
                   <>
                     {item?.additives.length > 0 ? (
                       <FlatList
@@ -129,15 +123,6 @@ const OrderSummary = ({
                 )}
               </View>
             </View>
-            <Text
-              style={{
-                fontFamily: "regular",
-                fontSize: 14,
-                color: COLORS.gray,
-              }}
-            >
-              ₱ {item?.totalPrice.toFixed(2)}
-            </Text>
           </View>
         )}
       />

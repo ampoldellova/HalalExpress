@@ -2,17 +2,13 @@ import { Image, StyleSheet, Text, View } from "react-native";
 import React from "react";
 import { COLORS } from "../../styles/theme";
 import { Octicons } from "@expo/vector-icons";
+import Divider from "../Divider";
 
 const PickupLocation = ({ restaurant, supplier }) => {
   return (
     <View style={{ marginBottom: 20 }}>
-      <View style={{ flexDirection: "row", alignItems: "center" }}>
-        <Image
-          source={require("../../assets/images/pickup.png")}
-          style={{ width: 25, height: 25, marginRight: 5 }}
-        />
-        <Text style={{ fontFamily: "bold", fontSize: 18 }}>Pickup at:</Text>
-      </View>
+      <Text style={{ fontFamily: "bold", fontSize: 18 }}>Pickup at:</Text>
+      <Divider />
       <View
         style={{
           flexDirection: "row",

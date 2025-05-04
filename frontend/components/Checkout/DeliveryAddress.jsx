@@ -10,6 +10,7 @@ import { COLORS, SIZES } from "../../styles/theme";
 import { Image } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
+import Divider from "../Divider";
 
 const DeliveryAddress = ({
   region,
@@ -34,11 +35,6 @@ const DeliveryAddress = ({
   return (
     <View
       style={{
-        borderColor: COLORS.gray2,
-        height: "auto",
-        borderWidth: 1,
-        borderRadius: 10,
-        padding: 10,
         marginBottom: 20,
       }}
     >
@@ -46,21 +42,14 @@ const DeliveryAddress = ({
         style={{
           flexDirection: "row",
           alignItems: "center",
-          marginBottom: 10,
           width: "100%",
           justifyContent: "space-between",
           marginTop: 10,
         }}
       >
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
-          <Image
-            source={require("../../assets/images/location.png")}
-            style={{ width: 25, height: 25 }}
-          />
-          <Text style={{ fontFamily: "bold", fontSize: 18, marginLeft: 5 }}>
-            Delivery Address
-          </Text>
-        </View>
+        <Text style={{ fontFamily: "bold", fontSize: 18 }}>
+          Delivery Address
+        </Text>
         <View>
           <TouchableOpacity onPress={() => setShowAddresses(true)}>
             <FontAwesome
@@ -72,7 +61,7 @@ const DeliveryAddress = ({
           </TouchableOpacity>
         </View>
       </View>
-
+      <Divider />
       <View style={styles.mapContainer}>
         {region && (
           <MapView
@@ -110,7 +99,7 @@ const DeliveryAddress = ({
         </Text>
       </View>
 
-      <Text style={styles.label}>Delivery note</Text>
+      {/* <Text style={styles.label}>Delivery note</Text>
       <View style={styles.notesInputWrapper(COLORS.offwhite)}>
         <MaterialIcons
           name="notes"
@@ -128,7 +117,7 @@ const DeliveryAddress = ({
           onChangeText={(text) => setOrderNote(text)}
           style={[styles.textInput, { marginTop: 10 }]}
         />
-      </View>
+      </View> */}
     </View>
   );
 };
@@ -150,6 +139,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 15,
     overflow: "hidden",
+    marginTop: 10,
   },
   label: {
     fontFamily: "regular",

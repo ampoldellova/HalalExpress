@@ -1,4 +1,11 @@
-import { Linking, ScrollView, StyleSheet, Text } from "react-native";
+import {
+  Image,
+  Linking,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import React, { useContext, useEffect, useState } from "react";
 import {
   useFocusEffect,
@@ -28,6 +35,9 @@ import PaymentMethod from "../components/Checkout/PaymentMethod";
 import OrderSummary from "../components/Checkout/OrderSummary";
 import AddressBottomModal from "../components/Checkout/AddressBottomModal";
 import PickupLocation from "../components/Checkout/PickupLocation";
+import { COLORS } from "../styles/theme";
+import Divider from "../components/Divider";
+import { Entypo } from "@expo/vector-icons";
 
 const CheckoutPage = () => {
   const route = useRoute();
@@ -81,8 +91,10 @@ const CheckoutPage = () => {
   useEffect(() => {
     if (restaurant?.delivery === true || supplier?.delivery === true) {
       setSelectedDeliveryOption(null);
+      setSelectedPaymentMethod(null);
     } else {
       setSelectedDeliveryOption("pickup");
+      setSelectedPaymentMethod("gcash");
     }
   }, [restaurant, supplier]);
 
@@ -191,6 +203,7 @@ const CheckoutPage = () => {
     }
   };
 
+  console.log(selectedPaymentMethod);
   const handlePlaceOrder = async () => {
     setLoading(true);
     if (selectedDeliveryOption === null && selectedPaymentMethod === null) {
@@ -432,6 +445,7 @@ const CheckoutPage = () => {
               totalTime={totalTime}
               distanceTime={distanceTime}
               setDeliveryOptionsError={setDeliveryOptionsError}
+              setSelectedPaymentMethod={setSelectedPaymentMethod}
             />
           )}
 
@@ -451,13 +465,48 @@ const CheckoutPage = () => {
             handleSubmitForm={handleSubmitForm}
           />
 
-          <PaymentMethod
-            setPaymentMethodError={setPaymentMethodError}
-            setSelectedPaymentMethod={setSelectedPaymentMethod}
-            paymentMethodError={paymentMethodError}
-            selectedPaymentMethod={selectedPaymentMethod}
-            selectedDeliveryOption={selectedDeliveryOption}
-          />
+          {selectedDeliveryOption === "pickup" ? (
+            <View
+              style={{
+                marginBottom: 20,
+              }}
+            >
+              <Text style={{ fontFamily: "bold", fontSize: 18 }}>
+                Payment Method:
+              </Text>
+              <Divider />
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  marginTop: 10,
+                }}
+              >
+                <Image
+                  source={require("../assets/images/gcash.png")}
+                  style={{ width: 27, height: 22, marginLeft: 2.5 }}
+                />
+                <Text
+                  style={{
+                    fontFamily: "medium",
+                    fontSize: 16,
+                    marginLeft: 10,
+                    color: COLORS.black,
+                  }}
+                >
+                  GCash
+                </Text>
+              </View>
+            </View>
+          ) : (
+            <PaymentMethod
+              setPaymentMethodError={setPaymentMethodError}
+              setSelectedPaymentMethod={setSelectedPaymentMethod}
+              paymentMethodError={paymentMethodError}
+              selectedPaymentMethod={selectedPaymentMethod}
+              selectedDeliveryOption={selectedDeliveryOption}
+            />
+          )}
 
           <OrderSummary
             selectedDeliveryOption={selectedDeliveryOption}
