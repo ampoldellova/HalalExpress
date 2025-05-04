@@ -40,7 +40,7 @@ import { COLORS, SIZES } from "../styles/theme";
 import Divider from "../components/Divider";
 import { AntDesign, MaterialIcons } from "@expo/vector-icons";
 import SpecialRemarks from "../components/Checkout/SpecialRemarks";
-import PickupPaymentMethod from "../components/Checkout/PickupPaymentMethod";
+import PaymentDetails from "../components/Checkout/PaymentDetails";
 
 const CheckoutPage = () => {
   const route = useRoute();
@@ -448,6 +448,21 @@ const CheckoutPage = () => {
 
           <SpecialRemarks orderNote={orderNote} setOrderNote={setOrderNote} />
 
+          {(restaurant?.delivery === true || supplier?.delivery === true) && (
+            <DeliveryOptions
+              deliveryOptionsError={deliveryOptionsError}
+              setDeliveryFee={setDeliveryFee}
+              selectedDeliveryOption={selectedDeliveryOption}
+              setSelectedDeliveryOption={setSelectedDeliveryOption}
+              restaurant={restaurant}
+              supplier={supplier}
+              totalTime={totalTime}
+              distanceTime={distanceTime}
+              setDeliveryOptionsError={setDeliveryOptionsError}
+              setSelectedPaymentMethod={setSelectedPaymentMethod}
+            />
+          )}
+
           <PersonalDetails
             isUserDetailsChanged={isUserDetailsChanged}
             editProfile={editProfile}
@@ -465,7 +480,38 @@ const CheckoutPage = () => {
           />
 
           {selectedDeliveryOption === "pickup" ? (
-            <PickupPaymentMethod />
+            <View
+              style={{
+                marginBottom: 20,
+              }}
+            >
+              <Text style={{ fontFamily: "bold", fontSize: 18 }}>
+                Payment Method:
+              </Text>
+              <Divider />
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  marginTop: 10,
+                }}
+              >
+                <Image
+                  source={require("../assets/images/gcash.png")}
+                  style={{ width: 27, height: 22, marginLeft: 2.5 }}
+                />
+                <Text
+                  style={{
+                    fontFamily: "medium",
+                    fontSize: 16,
+                    marginLeft: 10,
+                    color: COLORS.black,
+                  }}
+                >
+                  GCash
+                </Text>
+              </View>
+            </View>
           ) : (
             <PaymentMethod
               setPaymentMethodError={setPaymentMethodError}
@@ -476,7 +522,14 @@ const CheckoutPage = () => {
             />
           )}
 
-          <View
+          <PaymentDetails
+            cart={cart}
+            selectedDeliveryOption={selectedDeliveryOption}
+            distanceTime={distanceTime}
+            deliveryFee={deliveryFee}
+          />
+
+          {/* <View
             style={{
               flexDirection: "row",
               alignItems: "center",
@@ -548,7 +601,7 @@ const CheckoutPage = () => {
                 parseFloat(deliveryFee)
               ).toFixed(2)}
             </Text>
-          </View>
+          </View> */}
 
           <Button
             title="P L A C E   O R D E R"
