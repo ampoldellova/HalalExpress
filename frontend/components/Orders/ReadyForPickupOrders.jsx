@@ -6,11 +6,13 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { COLORS, SIZES } from "../../styles/theme";
 import LottieView from "lottie-react-native";
+import Modal, { ModalContent, SlideAnimation } from "react-native-modals";
 
 const ReadyForPickupOrders = ({ readyForPickupOrders }) => {
+  const [showQR, setShowQR] = useState(false);
   const animation = useRef(null);
   return (
     <>
@@ -49,7 +51,7 @@ const ReadyForPickupOrders = ({ readyForPickupOrders }) => {
             showsVerticalScrollIndicator={false}
             style={{ marginTop: 10, marginBottom: SIZES.height / 12 }}
             renderItem={({ item }) => (
-              <TouchableOpacity
+              <View
                 style={{
                   padding: 10,
                   borderRadius: 10,
@@ -58,114 +60,94 @@ const ReadyForPickupOrders = ({ readyForPickupOrders }) => {
                   marginHorizontal: 10,
                 }}
               >
-                <View style={{ flexDirection: "row" }}>
-                  <Image
-                    source={{ uri: item?.userId?.profile?.url }}
-                    style={{
-                      width: 30,
-                      height: 30,
-                      borderRadius: 5,
-                      marginRight: 10,
+                <Text style={{ fontSize: 16, fontFamily: "bold" }}>
+                  Order #: {item?._id}
+                </Text>
+                <Text
+                  style={{
+                    fontSize: 12,
+                    fontFamily: "bold",
+                    color: COLORS.gray,
+                  }}
+                >
+                  Customer: {item?.userId?.username}
+                </Text>
+                <Text
+                  style={{
+                    fontSize: 12,
+                    fontFamily: "regular",
+                    color: COLORS.gray,
+                  }}
+                >
+                  Delivery option:{" "}
+                  {item?.deliveryOption === "standard"
+                    ? "For delivery"
+                    : "For pickup"}
+                </Text>
+
+                {item?.deliveryOption === "standard" && (
+                  <TouchableOpacity
+                    onPress={() => {
+                      setShowQR(true);
                     }}
-                  />
-                  <View>
-                    <Text style={{ fontSize: 16, fontFamily: "bold" }}>
-                      Order #:{" "}
-                      {item?._id ? `${item._id.substring(0, 20)}...` : ""}
-                    </Text>
+                    style={{
+                      height: 30,
+                      width: "100%",
+                      marginTop: 10,
+                      backgroundColor: COLORS.primary,
+                      justifyContent: "center",
+                      alignItems: "center",
+                      borderRadius: 8,
+                    }}
+                  >
                     <Text
                       style={{
-                        fontSize: 12,
                         fontFamily: "bold",
-                        color: COLORS.gray,
-                      }}
-                    >
-                      Customer: {item?.userId?.username}
-                    </Text>
-                    <Text
-                      style={{
+                        color: COLORS.white,
                         fontSize: 12,
-                        fontFamily: "regular",
-                        color: COLORS.gray,
                       }}
                     >
-                      Delivery option:{" "}
-                      {item?.deliveryOption === "standard"
-                        ? "For delivery"
-                        : "For pickup"}
+                      D E L I V E R {"  "} O R D E R
                     </Text>
-                    <Text
-                      style={{
-                        fontSize: 12,
-                        fontFamily: "regular",
-                        color: COLORS.gray,
-                      }}
-                    >
-                      Payment method: {item?.paymentMethod}
-                    </Text>
-                    <View
-                      style={{ flexDirection: "row", alignItems: "center" }}
-                    >
-                      <Text
-                        style={{
-                          fontSize: 12,
-                          fontFamily: "regular",
-                          color: COLORS.gray,
-                        }}
-                      >
-                        Payment status:
-                      </Text>
-
-                      <View
-                        style={{
-                          borderRadius: 99,
-                          backgroundColor:
-                            item.paymentStatus === "Pending"
-                              ? COLORS.secondary
-                              : COLORS.primary,
-                          width: 10,
-                          height: 10,
-                          marginLeft: 5,
-                          marginBottom: 2,
-                        }}
-                      />
-                      <Text
-                        style={{
-                          fontSize: 12,
-                          fontFamily: "bold",
-                          color: COLORS.gray,
-                          marginLeft: 2,
-                        }}
-                      >
-                        {item?.paymentStatus}
-                      </Text>
-                    </View>
-
-                    <Text
-                      style={{
-                        fontSize: 12,
-                        fontFamily: "regular",
-                        color: COLORS.gray,
-                      }}
-                    >
-                      Ordered on:{" "}
-                      {new Date(item?.createdAt).toLocaleDateString("en-US", {
-                        month: "long",
-                        day: "numeric",
-                        year: "numeric",
-                      })}{" "}
-                      at{" "}
-                      {new Date(item?.createdAt).toLocaleTimeString("en-US", {
-                        hour: "numeric",
-                        minute: "2-digit",
-                        hour12: true,
-                      })}
-                    </Text>
-                  </View>
-                </View>
-              </TouchableOpacity>
+                  </TouchableOpacity>
+                )}
+              </View>
             )}
           />
+          <Modal
+            visible={showQR}
+            onTouchOutside={() => {
+              setShowQR(false);
+            }}
+            modalAnimation={new SlideAnimation({ slideFrom: "bottom" })}
+            onHardwareBackPress={() => {
+              setShowQR(false);
+            }}
+          >
+            <View
+              style={{
+                height: 10,
+                backgroundColor: COLORS.primary,
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <View
+                style={{
+                  height: 3,
+                  backgroundColor: COLORS.white,
+                  width: SIZES.width / 5,
+                  borderRadius: 10,
+                }}
+              />
+            </View>
+            <ModalContent
+              style={{
+                height: SIZES.height / 4,
+                width: SIZES.width / 1.3,
+              }}
+            ></ModalContent>
+          </Modal>
         </View>
       )}
     </>
