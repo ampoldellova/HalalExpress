@@ -144,11 +144,37 @@ const ReadyForPickupOrders = ({ readyForPickupOrders }) => {
             </View>
             <ModalContent
               style={{
-                height: SIZES.height / 4,
-                width: SIZES.width / 1.3,
+                width: SIZES.width / 1.5,
+                alignItems: "center",
               }}
             >
-              <QRCode value="https://github.com/ampoldellova" />
+              <Text
+                style={{
+                  fontSize: 12,
+                  fontFamily: "bold",
+                  textAlign: "center",
+                  marginBottom: 10,
+                }}
+              >
+                Please present this QR code to the delivery person to accept the
+                order.
+              </Text>
+              <QRCode
+                value="http://192.168.254.114:5173/accept-order"
+                size={200}
+                logo={require("../../assets/logo.png")}
+                logoBackgroundColor="transparent"
+              />
+              <Text
+                style={{
+                  fontSize: 12,
+                  fontFamily: "regular",
+                  marginTop: 10,
+                  textAlign: "center",
+                }}
+              >
+                http://localhost:5173/accept-order
+              </Text>
             </ModalContent>
           </Modal>
         </View>
