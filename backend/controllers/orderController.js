@@ -409,4 +409,30 @@ module.exports = {
       res.status(500).json({ status: false, message: error.message });
     }
   },
+
+  getOrderDetails: async (req, res) => {
+    const { orderId } = req.params;
+    
+    try {
+      const order = await Order.findById(orderId)
+        .populate("restaurant")
+        .populate("supplier")
+        .populate("userId");
+
+      if (!order) {
+        return res
+          .status(404)
+          .json({ status: false, message: "Order not found" });
+      }
+
+      res.status(200).json({
+        status: true,
+        message: "Order details fetched successfully",
+        order,
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ status: false, message: error.message });
+    }
+  },
 };

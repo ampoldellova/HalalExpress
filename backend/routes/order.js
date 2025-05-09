@@ -35,5 +35,6 @@ router.post(
   verifyAndAuthorization,
   orderController.markOrderAsReady
 );
+router.get("/accept-order/:orderId", orderController.getOrderDetails);
 
 module.exports = router;

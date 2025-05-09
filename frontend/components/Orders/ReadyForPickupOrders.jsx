@@ -14,7 +14,9 @@ import QRCode from "react-native-qrcode-svg";
 
 const ReadyForPickupOrders = ({ readyForPickupOrders }) => {
   const [showQR, setShowQR] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
   const animation = useRef(null);
+
   return (
     <>
       {readyForPickupOrders.length === 0 ? (
@@ -89,6 +91,7 @@ const ReadyForPickupOrders = ({ readyForPickupOrders }) => {
                 {item?.deliveryOption === "standard" && (
                   <TouchableOpacity
                     onPress={() => {
+                      setSelectedItem(item);
                       setShowQR(true);
                     }}
                     style={{
@@ -115,14 +118,17 @@ const ReadyForPickupOrders = ({ readyForPickupOrders }) => {
               </View>
             )}
           />
+
           <Modal
             visible={showQR}
             onTouchOutside={() => {
               setShowQR(false);
+              setSelectedItem(null);
             }}
             modalAnimation={new SlideAnimation({ slideFrom: "bottom" })}
             onHardwareBackPress={() => {
               setShowQR(false);
+              setSelectedItem(null);
             }}
           >
             <View
@@ -160,7 +166,7 @@ const ReadyForPickupOrders = ({ readyForPickupOrders }) => {
                 order.
               </Text>
               <QRCode
-                value="http://192.168.254.114:5173/accept-order"
+                value={`http://192.168.254.114:5173/accept-order/${selectedItem?._id}`}
                 size={200}
                 logo={require("../../assets/logo.png")}
                 logoBackgroundColor="transparent"
