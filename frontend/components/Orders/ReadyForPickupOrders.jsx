@@ -10,6 +10,7 @@ import React, { useRef, useState } from "react";
 import { COLORS, SIZES } from "../../styles/theme";
 import LottieView from "lottie-react-native";
 import Modal, { ModalContent, SlideAnimation } from "react-native-modals";
+import QRCode from "react-native-qrcode-svg";
 
 const ReadyForPickupOrders = ({ readyForPickupOrders }) => {
   const [showQR, setShowQR] = useState(false);
@@ -146,7 +147,9 @@ const ReadyForPickupOrders = ({ readyForPickupOrders }) => {
                 height: SIZES.height / 4,
                 width: SIZES.width / 1.3,
               }}
-            ></ModalContent>
+            >
+              <QRCode value="https://github.com/ampoldellova" />
+            </ModalContent>
           </Modal>
         </View>
       )}
