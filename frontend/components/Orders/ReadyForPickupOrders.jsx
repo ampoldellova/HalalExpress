@@ -166,7 +166,7 @@ const ReadyForPickupOrders = ({ readyForPickupOrders }) => {
                 order.
               </Text>
               <QRCode
-                value={`http://192.168.254.114:5173/accept-order/${selectedItem?._id}`}
+                value={`http://localhost:5173/accept-order/${selectedItem?._id}`}
                 size={200}
                 logo={require("../../assets/logo.png")}
                 logoBackgroundColor="transparent"

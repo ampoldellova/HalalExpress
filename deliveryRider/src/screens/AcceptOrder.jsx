@@ -1,11 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { Box, Button, Card, Divider, Typography } from "@mui/material";
+import { Badge, Box, Button, Card, Divider, Typography } from "@mui/material";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import logo from "../assets/logo.png";
 import { COLORS } from "../assets/theme";
 import PersonIcon from "@mui/icons-material/Person";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
+import PaymentIcon from "@mui/icons-material/Payment";
+import MonitorHeartIcon from "@mui/icons-material/MonitorHeart";
+import DeliveryDiningIcon from "@mui/icons-material/DeliveryDining";
+import SellIcon from "@mui/icons-material/Sell";
+import CallIcon from "@mui/icons-material/Call";
 
 const AcceptOrder = () => {
   const [orderDetails, setOrderDetails] = useState(null);
@@ -127,19 +132,134 @@ const AcceptOrder = () => {
           </Box>
         ))}
 
+        <Typography sx={{ fontFamily: "bold", mt: 3 }}>
+          Customer Details:
+        </Typography>
+        <Divider sx={{ mt: 1 }} />
         <Box sx={{ maxWidth: "315px" }}>
-          <Box sx={{ display: "flex", alignItems: "center", mt: 2 }}>
+          <Box sx={{ display: "flex", alignItems: "center", mt: 1 }}>
             <PersonIcon sx={{ color: COLORS.primary, mr: 0.5, fontSize: 15 }} />
             <Typography sx={{ fontFamily: "regular", fontSize: 12 }}>
               Customer: {orderDetails?.userId?.username}
             </Typography>
           </Box>
           <Box sx={{ display: "flex", alignItems: "start" }}>
+            <CallIcon
+              sx={{ color: COLORS.primary, mr: 0.5, fontSize: 15, mt: 0.2 }}
+            />
+            <Typography sx={{ fontFamily: "regular", fontSize: 12 }}>
+              Contact: {orderDetails?.userId?.phone}
+            </Typography>
+          </Box>
+          <Box sx={{ display: "flex", alignItems: "start" }}>
             <LocationOnIcon
-              sx={{ color: COLORS.primary, mr: 0.5, fontSize: 15 }}
+              sx={{ color: COLORS.primary, mr: 0.5, fontSize: 15, mt: 0.2 }}
             />
             <Typography sx={{ fontFamily: "regular", fontSize: 12 }}>
               Delivery Address: {orderDetails?.deliveryAddress?.address}
+            </Typography>
+          </Box>
+        </Box>
+
+        <Typography sx={{ fontFamily: "bold", mt: 3 }}>
+          Payment Details:
+        </Typography>
+        <Divider sx={{ mt: 1 }} />
+        <Box sx={{ maxWidth: "315px" }}>
+          <Box sx={{ display: "flex", alignItems: "start", mt: 1 }}>
+            <PaymentIcon
+              sx={{ color: COLORS.primary, mr: 0.5, fontSize: 15, mt: 0.2 }}
+            />
+            <Typography sx={{ fontFamily: "regular", fontSize: 12 }}>
+              Payment Method: {orderDetails?.paymentMethod}
+            </Typography>
+          </Box>
+          <Box sx={{ display: "flex", alignItems: "start" }}>
+            <MonitorHeartIcon
+              sx={{ color: COLORS.primary, mr: 0.5, fontSize: 15, mt: 0.2 }}
+            />
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center ",
+                alignItems: "center",
+              }}
+            >
+              <Typography sx={{ fontFamily: "regular", fontSize: 12 }}>
+                Payment Status: {orderDetails?.paymentStatus}
+              </Typography>
+              <Box
+                sx={{
+                  backgroundColor:
+                    orderDetails?.paymentStatus === "Paid"
+                      ? COLORS.green
+                      : COLORS.secondary,
+                  height: "10px",
+                  width: "10px",
+                  ml: 0.5,
+                  borderRadius: 99,
+                }}
+              />
+            </Box>
+          </Box>
+          <Box sx={{ display: "flex", alignItems: "start" }}>
+            <SellIcon
+              sx={{ color: COLORS.primary, mr: 0.5, fontSize: 15, mt: 0.2 }}
+            />
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                width: "100%",
+              }}
+            >
+              <Typography sx={{ fontFamily: "regular", fontSize: 12 }}>
+                Subtotal:
+              </Typography>
+              <Typography sx={{ fontFamily: "regular", fontSize: 12 }}>
+                ₱ {orderDetails?.subTotal}
+              </Typography>
+            </Box>
+          </Box>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "start",
+            }}
+          >
+            <DeliveryDiningIcon
+              sx={{ color: COLORS.primary, mr: 0.5, fontSize: 15, mt: 0.2 }}
+            />
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                width: "100%",
+              }}
+            >
+              <Typography sx={{ fontFamily: "regular", fontSize: 12 }}>
+                Delivery Fee:
+              </Typography>
+              <Typography sx={{ fontFamily: "regular", fontSize: 12 }}>
+                ₱ {orderDetails?.deliveryFee}
+              </Typography>
+            </Box>
+          </Box>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              width: "100%",
+            }}
+          >
+            <Typography sx={{ fontFamily: "bold", fontSize: 16 }}>
+              TOTAL:
+            </Typography>
+            <Typography sx={{ fontFamily: "bold", fontSize: 16 }}>
+              ₱ {orderDetails?.totalAmount}
             </Typography>
           </Box>
         </Box>
@@ -157,7 +277,26 @@ const AcceptOrder = () => {
             backgroundColor: COLORS.secondary,
           },
         }}
-        onClick={() => {}}
+        onClick={() => {
+          if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+              (position) => {
+                const { latitude, longitude } = position.coords;
+                console.log("Latitude:", latitude);
+                console.log("Longitude:", longitude);
+                alert(
+                  `Location enabled! Latitude: ${latitude}, Longitude: ${longitude}`
+                );
+              },
+              (error) => {
+                console.error("Error getting location:", error);
+                alert(`Error: ${error.message}`);
+              }
+            );
+          } else {
+            alert("Geolocation is not supported by this browser.");
+          }
+        }}
       >
         Accept Order
       </Button>
