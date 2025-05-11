@@ -19,7 +19,7 @@ const AcceptOrder = () => {
   const fetchOrderDetails = async () => {
     try {
       const response = await axios.get(
-        `http://192.168.254.114:6002/api/orders/accept-order/${orderId}`
+        `https://halalexpress.onrender.com/api/orders/accept-order/${orderId}`
       );
       console.log("Order Details:", response.data);
 
