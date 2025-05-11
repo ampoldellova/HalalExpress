@@ -279,9 +279,12 @@ const AcceptOrder = () => {
         }}
         onClick={() => {
           if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
+            const watchId = navigator.geolocation.watchPosition(
               (position) => {
                 const { latitude, longitude } = position.coords;
+
+                console.log("Updated Latitude:", latitude);
+                console.log("Updated Longitude:", longitude);
 
                 const destinationLatitude =
                   orderDetails?.deliveryAddress?.coordinates?.latitude;
@@ -294,8 +297,20 @@ const AcceptOrder = () => {
               (error) => {
                 console.error("Error getting location:", error);
                 alert(`Error: ${error.message}`);
+              },
+              {
+                enableHighAccuracy: true, // Use GPS for more accurate results
+                maximumAge: 0, // Do not use cached location
+                timeout: 5000, // Timeout after 5 seconds
               }
             );
+
+            // Optional: Stop watching after a certain condition
+            // Example: Stop watching after 10 seconds
+            setTimeout(() => {
+              navigator.geolocation.clearWatch(watchId);
+              console.log("Stopped watching location.");
+            }, 10000);
           } else {
             alert("Geolocation is not supported by this browser.");
           }
