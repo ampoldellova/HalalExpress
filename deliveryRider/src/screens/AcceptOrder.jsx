@@ -299,14 +299,12 @@ const AcceptOrder = () => {
                 alert(`Error: ${error.message}`);
               },
               {
-                enableHighAccuracy: true, // Use GPS for more accurate results
-                maximumAge: 0, // Do not use cached location
-                timeout: 5000, // Timeout after 5 seconds
+                enableHighAccuracy: true,
+                maximumAge: 0,
+                timeout: 5000,
               }
             );
 
-            // Optional: Stop watching after a certain condition
-            // Example: Stop watching after 10 seconds
             setTimeout(() => {
               navigator.geolocation.clearWatch(watchId);
               console.log("Stopped watching location.");
