@@ -11,6 +11,8 @@ import MonitorHeartIcon from "@mui/icons-material/MonitorHeart";
 import DeliveryDiningIcon from "@mui/icons-material/DeliveryDining";
 import SellIcon from "@mui/icons-material/Sell";
 import CallIcon from "@mui/icons-material/Call";
+import { doc, setDoc } from "firebase/firestore";
+import { database } from "../../config/firebase";
 
 const AcceptOrder = () => {
   const [orderDetails, setOrderDetails] = useState(null);
@@ -280,8 +282,21 @@ const AcceptOrder = () => {
         onClick={() => {
           if (navigator.geolocation) {
             const watchId = navigator.geolocation.watchPosition(
-              (position) => {
+              async (position) => {
                 const { latitude, longitude } = position.coords;
+
+                // Update Firestore with the rider's location
+                try {
+                  const riderId = "rider123"; // Replace with the actual rider's ID
+                  await setDoc(doc(database, "riderLocations", riderId), {
+                    latitude,
+                    longitude,
+                    timestamp: new Date().toISOString(),
+                  });
+                  console.log("Rider location updated in Firestore");
+                } catch (error) {
+                  console.error("Error updating rider location:", error);
+                }
 
                 const destinationLatitude =
                   orderDetails?.deliveryAddress?.coordinates?.latitude;

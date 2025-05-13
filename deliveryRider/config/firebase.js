@@ -1,7 +1,8 @@
-import { initializeApp } from "@react-native-firebase/app";
-import { getAuth } from "@react-native-firebase/auth";
-import { getFirestore } from "@react-native-firebase/firestore";
+import { initializeApp } from "firebase/app";
+import { getAuth } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
 
+// Your Firebase configuration object
 const firebaseConfig = {
   apiKey: "AIzaSyChi4RK2bphEVRwJ_Ma_GNmr2sljXEXeJM",
   authDomain: "halalexpress-86dbb.firebaseapp.com",
@@ -11,7 +12,9 @@ const firebaseConfig = {
   appId: "1:239431572065:web:d9ec84ad5922158044a820",
 };
 
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
+// Initialize Firestore
 export const auth = getAuth(app);
-export const database = getFirestore();
+export const database = getFirestore(app);
