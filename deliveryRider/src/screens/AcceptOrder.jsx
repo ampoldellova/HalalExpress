@@ -285,7 +285,7 @@ const AcceptOrder = () => {
               async (position) => {
                 const { latitude, longitude } = position.coords;
 
-                // Update Firestore with the rider's location
+                // Continuously update Firestore with the rider's real-time location
                 try {
                   const riderId = "rider123"; // Replace with the actual rider's ID
                   await setDoc(doc(database, "riderLocations", riderId), {
@@ -293,18 +293,13 @@ const AcceptOrder = () => {
                     longitude,
                     timestamp: new Date().toISOString(),
                   });
-                  console.log("Rider location updated in Firestore");
+                  console.log("Rider location updated in Firestore:", {
+                    latitude,
+                    longitude,
+                  });
                 } catch (error) {
                   console.error("Error updating rider location:", error);
                 }
-
-                const destinationLatitude =
-                  orderDetails?.deliveryAddress?.coordinates?.latitude;
-                const destinationLongitude =
-                  orderDetails?.deliveryAddress?.coordinates?.longitude;
-
-                const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${latitude},${longitude}&destination=${destinationLatitude},${destinationLongitude}&travelmode=driving`;
-                window.open(googleMapsUrl, "_blank");
               },
               (error) => {
                 console.error("Error getting location:", error);
@@ -317,10 +312,11 @@ const AcceptOrder = () => {
               }
             );
 
+            // Optionally, stop watching after a certain time or condition
             setTimeout(() => {
               navigator.geolocation.clearWatch(watchId);
               console.log("Stopped watching location.");
-            }, 10000);
+            }, 600000); // Stops after 10 minutes
           } else {
             alert("Geolocation is not supported by this browser.");
           }
