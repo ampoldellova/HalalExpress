@@ -300,13 +300,6 @@ const AcceptOrder = () => {
                 } catch (error) {
                   console.error("Error updating rider location:", error);
                 }
-                const destinationLatitude =
-                  orderDetails?.deliveryAddress?.coordinates?.latitude;
-                const destinationLongitude =
-                  orderDetails?.deliveryAddress?.coordinates?.longitude;
-
-                const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${latitude},${longitude}&destination=${destinationLatitude},${destinationLongitude}&travelmode=driving`;
-                window.open(googleMapsUrl, "_blank");
               },
               (error) => {
                 console.error("Error getting location:", error);
