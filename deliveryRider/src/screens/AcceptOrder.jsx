@@ -11,8 +11,6 @@ import MonitorHeartIcon from "@mui/icons-material/MonitorHeart";
 import DeliveryDiningIcon from "@mui/icons-material/DeliveryDining";
 import SellIcon from "@mui/icons-material/Sell";
 import CallIcon from "@mui/icons-material/Call";
-import { database } from "../../config/firebase";
-import { doc, setDoc } from "@firebase/firestore";
 
 const AcceptOrder = () => {
   const [orderDetails, setOrderDetails] = useState(null);
@@ -29,46 +27,6 @@ const AcceptOrder = () => {
     } catch (error) {
       console.error("Error fetching order details:", error);
     }
-  };
-
-  const trackRiderLocation = (riderId) => {
-    if (!navigator.geolocation) {
-      alert("Geolocation is not supported by this browser.");
-      return;
-    }
-
-    const watchId = navigator.geolocation.watchPosition(
-      async (position) => {
-        const { latitude, longitude } = position.coords;
-
-        try {
-          // Update Firestore with the rider's current location
-          await setDoc(doc(database, "riders", riderId), {
-            latitude,
-            longitude,
-            timestamp: new Date().toISOString(),
-          });
-          console.log("Location updated:", { latitude, longitude });
-        } catch (error) {
-          console.error("Error updating location in Firestore:", error);
-        }
-      },
-      (error) => {
-        console.error("Error getting location:", error);
-        alert(`Error: ${error.message}`);
-      },
-      {
-        enableHighAccuracy: true,
-        maximumAge: 0,
-        timeout: 5000,
-      }
-    );
-
-    // Stop tracking after a certain time (optional)
-    setTimeout(() => {
-      navigator.geolocation.clearWatch(watchId);
-      console.log("Stopped watching location.");
-    }, 60000); // Stop after 1 minute
   };
 
   useEffect(() => {
@@ -319,7 +277,39 @@ const AcceptOrder = () => {
             backgroundColor: COLORS.secondary,
           },
         }}
-        onClick={() => trackRiderLocation(orderDetails?.userId?._id)}
+        onClick={() => {
+          if (navigator.geolocation) {
+            const watchId = navigator.geolocation.watchPosition(
+              (position) => {
+                const { latitude, longitude } = position.coords;
+
+                const destinationLatitude =
+                  orderDetails?.deliveryAddress?.coordinates?.latitude;
+                const destinationLongitude =
+                  orderDetails?.deliveryAddress?.coordinates?.longitude;
+
+                const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${latitude},${longitude}&destination=${destinationLatitude},${destinationLongitude}&travelmode=driving`;
+                window.open(googleMapsUrl, "_blank");
+              },
+              (error) => {
+                console.error("Error getting location:", error);
+                alert(`Error: ${error.message}`);
+              },
+              {
+                enableHighAccuracy: true,
+                maximumAge: 0,
+                timeout: 5000,
+              }
+            );
+
+            setTimeout(() => {
+              navigator.geolocation.clearWatch(watchId);
+              console.log("Stopped watching location.");
+            }, 10000);
+          } else {
+            alert("Geolocation is not supported by this browser.");
+          }
+        }}
       >
         Accept Order
       </Button>
