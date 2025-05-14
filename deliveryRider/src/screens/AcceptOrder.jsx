@@ -333,6 +333,18 @@ const AcceptOrder = () => {
 
       <Modal open={openRiderForm} onClose={() => setOpenRiderForm(false)}>
         <Box sx={style}>
+          <Typography
+            sx={{
+              fontFamily: "bold",
+              color: COLORS.primary,
+              fontSize: 16,
+              textAlign: "center",
+            }}
+          >
+            RIDER INFORMATION
+          </Typography>
+          <Divider />
+
           <TextField
             placeholder="Enter full name"
             variant="outlined"
