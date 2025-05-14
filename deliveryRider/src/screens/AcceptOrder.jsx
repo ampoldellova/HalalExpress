@@ -1,28 +1,75 @@
 import React, { useEffect, useState } from "react";
-import { Badge, Box, Button, Card, Divider, Typography } from "@mui/material";
+import {
+  Badge,
+  Box,
+  Button,
+  Card,
+  Divider,
+  InputAdornment,
+  MenuItem,
+  Modal,
+  Select,
+  TextField,
+  Typography,
+} from "@mui/material";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import logo from "../assets/logo.png";
 import { COLORS } from "../assets/theme";
 import PersonIcon from "@mui/icons-material/Person";
+import Person2OutlinedIcon from "@mui/icons-material/Person2Outlined";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import PaymentIcon from "@mui/icons-material/Payment";
 import MonitorHeartIcon from "@mui/icons-material/MonitorHeart";
 import DeliveryDiningIcon from "@mui/icons-material/DeliveryDining";
 import SellIcon from "@mui/icons-material/Sell";
 import CallIcon from "@mui/icons-material/Call";
-import { doc, setDoc } from "firebase/firestore";
-import { database } from "../../config/firebase";
+import NumbersOutlinedIcon from "@mui/icons-material/NumbersOutlined";
+import CarCrashOutlinedIcon from "@mui/icons-material/CarCrashOutlined";
+import LocalPhoneOutlinedIcon from "@mui/icons-material/LocalPhoneOutlined";
+// import { doc, setDoc } from "firebase/firestore";
+// import { database } from "../../config/firebase";
+
+const style = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 250,
+  backgroundColor: "white",
+  borderRadius: 3,
+  boxShadow: 24,
+  display: "flex",
+  flexDirection: "column",
+  gap: 2,
+  p: 4,
+};
 
 const AcceptOrder = () => {
+  const [openRiderForm, setOpenRiderForm] = useState(false);
   const [orderDetails, setOrderDetails] = useState(null);
+  const [riderName, setRiderName] = useState("");
+  const [riderPhone, setRiderPhone] = useState("");
+  const [selectedVehicle, setSelectedVehicle] = useState("");
+  const [plateNumber, setPlateNumber] = useState("");
   const { orderId } = useParams();
+
+  const vehicleTypes = [
+    { id: 1, name: "Bicycle" },
+    { id: 2, name: "Motorcycle" },
+    { id: 3, name: "Car" },
+    { id: 4, name: "Truck" },
+    { id: 5, name: "Van" },
+  ];
 
   const fetchOrderDetails = async () => {
     try {
       const response = await axios.get(
-        `https://halalexpress.onrender.com/api/orders/accept-order/${orderId}`
+        `http://localhost:6002/api/orders/accept-order/${orderId}`
       );
+      // const response = await axios.get(
+      //   `https://halalexpress.onrender.com/api/orders/accept-order/${orderId}`
+      // );
       console.log("Order Details:", response.data);
 
       setOrderDetails(response.data.order);
@@ -279,61 +326,299 @@ const AcceptOrder = () => {
             backgroundColor: COLORS.secondary,
           },
         }}
-        onClick={() => {
-          if (navigator.geolocation) {
-            const watchId = navigator.geolocation.watchPosition(
-              async (position) => {
-                const { latitude, longitude } = position.coords;
-
-                // Continuously update Firestore with the rider's real-time location
-                try {
-                  const riderId = "rider123"; // Replace with the actual rider's ID
-                  await setDoc(doc(database, "riderLocations", riderId), {
-                    latitude,
-                    longitude,
-                    timestamp: new Date().toISOString(),
-                  });
-                  console.log("Rider location updated in Firestore:", {
-                    latitude,
-                    longitude,
-                  });
-                } catch (error) {
-                  console.error("Error updating rider location:", error);
-                }
-
-                // const destinationLatitude =
-                //   orderDetails?.deliveryAddress?.coordinates?.latitude;
-                // const destinationLongitude =
-                //   orderDetails?.deliveryAddress?.coordinates?.longitude;
-
-                // const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${latitude},${longitude}&destination=${destinationLatitude},${destinationLongitude}&travelmode=driving`;
-                // window.open(googleMapsUrl, "_blank");
-              },
-              (error) => {
-                console.error("Error getting location:", error);
-                alert(`Error: ${error.message}`);
-              },
-              {
-                enableHighAccuracy: true,
-                maximumAge: 0,
-                timeout: 5000,
-              }
-            );
-
-            // Optionally, stop watching after a certain time or condition
-            setTimeout(() => {
-              navigator.geolocation.clearWatch(watchId);
-              console.log("Stopped watching location.");
-            }, 600000); // Stops after 10 minutes
-          } else {
-            alert("Geolocation is not supported by this browser.");
-          }
-        }}
+        onClick={() => setOpenRiderForm(true)}
       >
         Accept Order
       </Button>
+
+      <Modal open={openRiderForm} onClose={() => setOpenRiderForm(false)}>
+        <Box sx={style}>
+          <TextField
+            placeholder="Enter full name"
+            variant="outlined"
+            name="email"
+            autoComplete="off"
+            onChange={(e) => setRiderName(e.target.value)}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Person2OutlinedIcon sx={{ color: COLORS.gray }} />
+                </InputAdornment>
+              ),
+              sx: {
+                "& input": {
+                  fontFamily: "regular",
+                  fontSize: 12,
+                  "&::placeholder": {
+                    fontFamily: "regular",
+                    fontSize: 12,
+                  },
+                },
+              },
+            }}
+            InputLabelProps={{
+              shrink: false,
+            }}
+            sx={{
+              width: "100%",
+              "& .MuiOutlinedInput-root": {
+                bgcolor: COLORS.offwhite,
+                borderRadius: 8,
+                "& fieldset": {
+                  borderColor: COLORS.offwhite,
+                },
+                "&:hover fieldset": {
+                  borderColor: COLORS.secondary,
+                },
+                "&.Mui-focused fieldset": {
+                  borderColor: COLORS.secondary,
+                },
+              },
+              "& .MuiInputLabel-root": {
+                fontFamily: "regular",
+                fontSize: 12,
+              },
+            }}
+          />
+
+          <TextField
+            placeholder="Enter phone number"
+            variant="outlined"
+            name="email"
+            autoComplete="off"
+            onChange={(e) => {
+              setRiderPhone(e.target.value);
+            }}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <LocalPhoneOutlinedIcon sx={{ color: COLORS.gray }} />
+                </InputAdornment>
+              ),
+              sx: {
+                "& input": {
+                  fontFamily: "regular",
+                  fontSize: 12,
+                  "&::placeholder": {
+                    fontFamily: "regular",
+                    fontSize: 12,
+                  },
+                },
+              },
+            }}
+            InputLabelProps={{
+              shrink: false,
+            }}
+            sx={{
+              width: "100%",
+              "& .MuiOutlinedInput-root": {
+                bgcolor: COLORS.offwhite,
+                borderRadius: 8,
+                "& fieldset": {
+                  borderColor: COLORS.offwhite,
+                },
+                "&:hover fieldset": {
+                  borderColor: COLORS.secondary,
+                },
+                "&.Mui-focused fieldset": {
+                  borderColor: COLORS.secondary,
+                },
+              },
+              "& .MuiInputLabel-root": {
+                fontFamily: "regular",
+                fontSize: 12,
+              },
+            }}
+          />
+
+          <Select
+            displayEmpty
+            variant="outlined"
+            value={selectedVehicle}
+            onChange={(e) => setSelectedVehicle(e.target.value)}
+            sx={{
+              width: "100%",
+              bgcolor: COLORS.offwhite,
+              borderRadius: 8,
+              fontFamily: "regular",
+              fontSize: 12,
+              "& .MuiOutlinedInput-notchedOutline": {
+                borderColor: COLORS.offwhite,
+              },
+              "&:hover .MuiOutlinedInput-notchedOutline": {
+                borderColor: COLORS.secondary,
+              },
+              "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                borderColor: COLORS.secondary,
+              },
+              "& .MuiSelect-select": {
+                fontFamily: "regular",
+                fontSize: 12,
+                display: "flex",
+                alignItems: "center",
+                gap: "2px",
+              },
+            }}
+            inputProps={{
+              sx: {
+                fontFamily: "regular",
+                fontSize: 12,
+              },
+            }}
+            renderValue={(selected) => (
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1,
+                  color: COLORS.gray,
+                  fontFamily: "light",
+                }}
+              >
+                <CarCrashOutlinedIcon sx={{ color: COLORS.gray }} />
+                {selected || "Select Vehicle Type"}
+              </Box>
+            )}
+          >
+            <MenuItem disabled value="">
+              <em style={{ fontFamily: "regular", fontSize: 12 }}>
+                Select Vehicle Type
+              </em>
+            </MenuItem>
+            {vehicleTypes.map((vehicle) => (
+              <MenuItem
+                key={vehicle.id}
+                value={vehicle.name}
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  fontFamily: "regular",
+                  fontSize: 12,
+                }}
+              >
+                {vehicle.name}
+              </MenuItem>
+            ))}
+          </Select>
+
+          {selectedVehicle !== "Bicycle" && (
+            <TextField
+              placeholder="Enter plate number"
+              variant="outlined"
+              name="email"
+              autoComplete="off"
+              onChange={(e) => setPlateNumber(e.target.value)}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <NumbersOutlinedIcon sx={{ color: COLORS.gray }} />
+                  </InputAdornment>
+                ),
+                sx: {
+                  "& input": {
+                    fontFamily: "regular",
+                    fontSize: 12,
+
+                    "&::placeholder": {
+                      fontFamily: "regular",
+                      fontSize: 12,
+                    },
+                  },
+                },
+              }}
+              InputLabelProps={{
+                shrink: false,
+              }}
+              sx={{
+                width: "100%",
+                "& .MuiOutlinedInput-root": {
+                  bgcolor: COLORS.offwhite,
+                  borderRadius: 8,
+                  "& fieldset": {
+                    borderColor: COLORS.offwhite,
+                  },
+                  "&:hover fieldset": {
+                    borderColor: COLORS.secondary,
+                  },
+                  "&.Mui-focused fieldset": {
+                    borderColor: COLORS.secondary,
+                  },
+                },
+                "& .MuiInputLabel-root": {
+                  fontFamily: "regular",
+                  fontSize: 12,
+                },
+              }}
+            />
+          )}
+
+          <Button
+            variant="contained"
+            sx={{
+              backgroundColor: COLORS.primary,
+              color: COLORS.white,
+              width: "100%",
+              fontFamily: "bold",
+              mt: 2,
+              "&:hover": {
+                backgroundColor: COLORS.secondary,
+              },
+            }}
+            onClick={() => {}}
+          >
+            Submit
+          </Button>
+        </Box>
+      </Modal>
     </Box>
   );
 };
 
 export default AcceptOrder;
+
+// if (navigator.geolocation) {
+//   const watchId = navigator.geolocation.watchPosition(
+//     async (position) => {
+//       const { latitude, longitude } = position.coords;
+//       const destinationLatitude =
+//         orderDetails?.deliveryAddress?.coordinates?.latitude;
+//       const destinationLongitude =
+//         orderDetails?.deliveryAddress?.coordinates?.longitude;
+
+//       const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${latitude},${longitude}&destination=${destinationLatitude},${destinationLongitude}&travelmode=driving`;
+//       window.open(googleMapsUrl, "_blank");
+
+//       try {
+//         const riderId = "rider123"; // Replace with the actual rider's ID
+//         await setDoc(doc(database, "riderLocations", riderId), {
+//           latitude,
+//           longitude,
+//           timestamp: new Date().toISOString(),
+//         });
+//         console.log("Rider location updated in Firestore:", {
+//           latitude,
+//           longitude,
+//         });
+//       } catch (error) {
+//         console.error("Error updating rider location:", error);
+//       }
+//     },
+//     (error) => {
+//       console.error("Error getting location:", error);
+//       alert(`Error: ${error.message}`);
+//     },
+//     {
+//       enableHighAccuracy: true,
+//       maximumAge: 0,
+//       timeout: 5000,
+//     }
+//   );
+
+//   // Optionally, stop watching after a certain time or condition
+//   setTimeout(() => {
+//     navigator.geolocation.clearWatch(watchId);
+//     console.log("Stopped watching location.");
+//   }, 600000); // Stops after 10 minutes
+// } else {
+//   alert("Geolocation is not supported by this browser.");
+// }
