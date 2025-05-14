@@ -27,8 +27,8 @@ import CallIcon from "@mui/icons-material/Call";
 import NumbersOutlinedIcon from "@mui/icons-material/NumbersOutlined";
 import CarCrashOutlinedIcon from "@mui/icons-material/CarCrashOutlined";
 import LocalPhoneOutlinedIcon from "@mui/icons-material/LocalPhoneOutlined";
-// import { doc, setDoc } from "firebase/firestore";
-// import { database } from "../../config/firebase";
+import { doc, setDoc } from "firebase/firestore";
+import { database } from "../../config/firebase";
 
 const style = {
   position: "absolute",
@@ -49,10 +49,17 @@ const AcceptOrder = () => {
   const [openRiderForm, setOpenRiderForm] = useState(false);
   const [orderDetails, setOrderDetails] = useState(null);
   const [riderName, setRiderName] = useState("");
+  const [riderNameError, setRiderNameError] = useState(false);
   const [riderPhone, setRiderPhone] = useState("");
+  const [riderPhoneError, setRiderPhoneError] = useState(false);
   const [selectedVehicle, setSelectedVehicle] = useState("");
+  const [selectedVehicleError, setSelectedVehicleError] = useState(false);
   const [plateNumber, setPlateNumber] = useState("");
+  const [plateNumberError, setPlateNumberError] = useState(false);
+  const [loading, setLoading] = useState(false);
   const { orderId } = useParams();
+
+  const philPhoneRegex = /^(09\d{9}|(\+639)\d{9})$/;
 
   const vehicleTypes = [
     { id: 1, name: "Bicycle" },
@@ -78,6 +85,66 @@ const AcceptOrder = () => {
     }
   };
 
+  const submitRiderDetails = async () => {
+    setLoading(true);
+    setRiderNameError(false);
+    setRiderPhoneError(false);
+    setSelectedVehicleError(false);
+    setPlateNumberError(false);
+
+    if (riderName === "") {
+      setRiderNameError(true);
+      setLoading(false);
+      return;
+    }
+    if (riderPhone === "") {
+      setRiderPhoneError(true);
+      setLoading(false);
+      return;
+    }
+
+    if (!philPhoneRegex.test(riderPhone)) {
+      setRiderPhoneError(true);
+      setLoading(false);
+      return;
+    }
+
+    if (selectedVehicle === "") {
+      setSelectedVehicleError(true);
+      setLoading(false);
+      return;
+    }
+    if (selectedVehicle !== "Bicycle" && plateNumber === "") {
+      setPlateNumberError(true);
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const riderData = {
+        riderName,
+        riderPhone,
+        selectedVehicle,
+        plateNumber: selectedVehicle !== "Bicycle" ? plateNumber : "",
+      };
+      // Save rider data to Firestore
+      await setDoc(doc(database, "outForDeliveryOrders", orderId), {
+        ...riderData,
+        orderId,
+      });
+      console.log("Rider details submitted successfully:", riderData);
+    } catch (error) {
+      console.error("Error submitting rider details:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  console.log(
+    riderNameError,
+    riderPhoneError,
+    selectedVehicleError,
+    plateNumberError
+  );
   useEffect(() => {
     fetchOrderDetails();
   }, [orderId]);
@@ -331,7 +398,20 @@ const AcceptOrder = () => {
         Accept Order
       </Button>
 
-      <Modal open={openRiderForm} onClose={() => setOpenRiderForm(false)}>
+      <Modal
+        open={openRiderForm}
+        onClose={() => {
+          setOpenRiderForm(false);
+          setRiderName("");
+          setRiderPhone("");
+          setPlateNumber("");
+          setSelectedVehicle("");
+          setRiderNameError(false);
+          setRiderPhoneError(false);
+          setSelectedVehicleError(false);
+          setPlateNumberError(false);
+        }}
+      >
         <Box sx={style}>
           <Typography
             sx={{
@@ -345,11 +425,25 @@ const AcceptOrder = () => {
           </Typography>
           <Divider />
 
+          {riderNameError && (
+            <Typography
+              sx={{
+                fontFamily: "regular",
+                fontSize: 8,
+                color: COLORS.red,
+                mb: -2,
+                ml: 2,
+              }}
+            >
+              *Please enter your full name
+            </Typography>
+          )}
           <TextField
             placeholder="Enter full name"
             variant="outlined"
             name="email"
             autoComplete="off"
+            value={riderName}
             onChange={(e) => setRiderName(e.target.value)}
             InputProps={{
               startAdornment: (
@@ -377,7 +471,9 @@ const AcceptOrder = () => {
                 bgcolor: COLORS.offwhite,
                 borderRadius: 8,
                 "& fieldset": {
-                  borderColor: COLORS.offwhite,
+                  borderColor: riderNameError
+                    ? COLORS.secondary
+                    : COLORS.offwhite,
                 },
                 "&:hover fieldset": {
                   borderColor: COLORS.secondary,
@@ -393,11 +489,27 @@ const AcceptOrder = () => {
             }}
           />
 
+          {riderPhoneError && (
+            <Typography
+              sx={{
+                fontFamily: "regular",
+                fontSize: 8,
+                color: COLORS.red,
+                mb: -2,
+                ml: 2,
+              }}
+            >
+              {riderPhone === ""
+                ? "*Please enter your phone number"
+                : "*Please input a valid Philippine phone number"}
+            </Typography>
+          )}
           <TextField
             placeholder="Enter phone number"
             variant="outlined"
             name="email"
             autoComplete="off"
+            value={riderPhone}
             onChange={(e) => {
               setRiderPhone(e.target.value);
             }}
@@ -427,7 +539,9 @@ const AcceptOrder = () => {
                 bgcolor: COLORS.offwhite,
                 borderRadius: 8,
                 "& fieldset": {
-                  borderColor: COLORS.offwhite,
+                  borderColor: riderPhoneError
+                    ? COLORS.secondary
+                    : COLORS.offwhite,
                 },
                 "&:hover fieldset": {
                   borderColor: COLORS.secondary,
@@ -443,6 +557,19 @@ const AcceptOrder = () => {
             }}
           />
 
+          {selectedVehicleError && (
+            <Typography
+              sx={{
+                fontFamily: "regular",
+                fontSize: 8,
+                color: COLORS.red,
+                mb: -2,
+                ml: 2,
+              }}
+            >
+              *Please select your vehicle type
+            </Typography>
+          )}
           <Select
             displayEmpty
             variant="outlined"
@@ -455,7 +582,9 @@ const AcceptOrder = () => {
               fontFamily: "regular",
               fontSize: 12,
               "& .MuiOutlinedInput-notchedOutline": {
-                borderColor: COLORS.offwhite,
+                borderColor: selectedVehicleError
+                  ? COLORS.secondary
+                  : COLORS.offwhite,
               },
               "&:hover .MuiOutlinedInput-notchedOutline": {
                 borderColor: COLORS.secondary,
@@ -471,32 +600,31 @@ const AcceptOrder = () => {
                 gap: "2px",
               },
             }}
-            inputProps={{
-              sx: {
-                fontFamily: "regular",
-                fontSize: 12,
-              },
-            }}
             renderValue={(selected) => (
               <Box
                 sx={{
                   display: "flex",
                   alignItems: "center",
                   gap: 1,
-                  color: COLORS.gray,
-                  fontFamily: "light",
                 }}
               >
                 <CarCrashOutlinedIcon sx={{ color: COLORS.gray }} />
-                {selected || "Select Vehicle Type"}
+                <Typography
+                  sx={{
+                    fontFamily: "regular",
+                    fontSize: 12,
+                  }}
+                >
+                  {selected || "Select Vehicle Type"}
+                </Typography>
               </Box>
             )}
           >
-            <MenuItem disabled value="">
+            {/* <MenuItem disabled value="">
               <em style={{ fontFamily: "regular", fontSize: 12 }}>
                 Select Vehicle Type
               </em>
-            </MenuItem>
+            </MenuItem> */}
             {vehicleTypes.map((vehicle) => (
               <MenuItem
                 key={vehicle.id}
@@ -514,54 +642,72 @@ const AcceptOrder = () => {
           </Select>
 
           {selectedVehicle !== "Bicycle" && (
-            <TextField
-              placeholder="Enter plate number"
-              variant="outlined"
-              name="email"
-              autoComplete="off"
-              onChange={(e) => setPlateNumber(e.target.value)}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <NumbersOutlinedIcon sx={{ color: COLORS.gray }} />
-                  </InputAdornment>
-                ),
-                sx: {
-                  "& input": {
+            <>
+              {plateNumberError && (
+                <Typography
+                  sx={{
                     fontFamily: "regular",
-                    fontSize: 12,
-
-                    "&::placeholder": {
+                    fontSize: 8,
+                    color: COLORS.red,
+                    mb: -2,
+                    ml: 2,
+                  }}
+                >
+                  *Please enter your plate number
+                </Typography>
+              )}
+              <TextField
+                placeholder="Enter plate number"
+                variant="outlined"
+                name="email"
+                autoComplete="off"
+                value={plateNumber}
+                onChange={(e) => setPlateNumber(e.target.value)}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <NumbersOutlinedIcon sx={{ color: COLORS.gray }} />
+                    </InputAdornment>
+                  ),
+                  sx: {
+                    "& input": {
                       fontFamily: "regular",
                       fontSize: 12,
+
+                      "&::placeholder": {
+                        fontFamily: "regular",
+                        fontSize: 12,
+                      },
                     },
                   },
-                },
-              }}
-              InputLabelProps={{
-                shrink: false,
-              }}
-              sx={{
-                width: "100%",
-                "& .MuiOutlinedInput-root": {
-                  bgcolor: COLORS.offwhite,
-                  borderRadius: 8,
-                  "& fieldset": {
-                    borderColor: COLORS.offwhite,
+                }}
+                InputLabelProps={{
+                  shrink: false,
+                }}
+                sx={{
+                  width: "100%",
+                  "& .MuiOutlinedInput-root": {
+                    bgcolor: COLORS.offwhite,
+                    borderRadius: 8,
+                    "& fieldset": {
+                      borderColor: plateNumberError
+                        ? COLORS.secondary
+                        : COLORS.offwhite,
+                    },
+                    "&:hover fieldset": {
+                      borderColor: COLORS.secondary,
+                    },
+                    "&.Mui-focused fieldset": {
+                      borderColor: COLORS.secondary,
+                    },
                   },
-                  "&:hover fieldset": {
-                    borderColor: COLORS.secondary,
+                  "& .MuiInputLabel-root": {
+                    fontFamily: "regular",
+                    fontSize: 12,
                   },
-                  "&.Mui-focused fieldset": {
-                    borderColor: COLORS.secondary,
-                  },
-                },
-                "& .MuiInputLabel-root": {
-                  fontFamily: "regular",
-                  fontSize: 12,
-                },
-              }}
-            />
+                }}
+              />
+            </>
           )}
 
           <Button
@@ -576,7 +722,53 @@ const AcceptOrder = () => {
                 backgroundColor: COLORS.secondary,
               },
             }}
-            onClick={() => {}}
+            loading={loading}
+            onClick={() => {
+              submitRiderDetails();
+              // if (navigator.geolocation) {
+              //   const watchId = navigator.geolocation.watchPosition(
+              //     async (position) => {
+              //       const { latitude, longitude } = position.coords;
+              //       const destinationLatitude =
+              //         orderDetails?.deliveryAddress?.coordinates?.latitude;
+              //       const destinationLongitude =
+              //         orderDetails?.deliveryAddress?.coordinates?.longitude;
+              //       const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${latitude},${longitude}&destination=${destinationLatitude},${destinationLongitude}&travelmode=driving`;
+              //       window.open(googleMapsUrl, "_blank");
+              //       try {
+              //         const riderId = "rider123"; // Replace with the actual rider's ID
+              //         await setDoc(doc(database, "riderLocations", riderId), {
+              //           latitude,
+              //           longitude,
+              //           timestamp: new Date().toISOString(),
+              //         });
+              //         console.log("Rider location updated in Firestore:", {
+              //           latitude,
+              //           longitude,
+              //         });
+              //       } catch (error) {
+              //         console.error("Error updating rider location:", error);
+              //       }
+              //     },
+              //     (error) => {
+              //       console.error("Error getting location:", error);
+              //       alert(`Error: ${error.message}`);
+              //     },
+              //     {
+              //       enableHighAccuracy: true,
+              //       maximumAge: 0,
+              //       timeout: 5000,
+              //     }
+              //   );
+              //   // Optionally, stop watching after a certain time or condition
+              //   setTimeout(() => {
+              //     navigator.geolocation.clearWatch(watchId);
+              //     console.log("Stopped watching location.");
+              //   }, 600000); // Stops after 10 minutes
+              // } else {
+              //   alert("Geolocation is not supported by this browser.");
+              // }
+            }}
           >
             Submit
           </Button>
