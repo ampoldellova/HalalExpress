@@ -212,8 +212,7 @@ const RiderDirection = () => {
             ml: 3,
           }}
         >
-          Delivery Address: {" "}
-          {orderDetails?.deliveryAddress?.address}
+          Delivery Address: {orderDetails?.deliveryAddress?.address}
         </Typography>
 
         <Divider sx={{ width: "350px", my: 1 }} />
@@ -319,7 +318,7 @@ const RiderDirection = () => {
                 ml: 3,
               }}
             >
-              {orderDetails?.paymentMethod}
+              Cash on delivery
             </Typography>
           )}
         </Box>
