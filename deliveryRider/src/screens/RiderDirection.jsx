@@ -11,6 +11,10 @@ import { doc, onSnapshot } from "firebase/firestore";
 import { database } from "../../config/firebase";
 import { COLORS } from "../assets/theme";
 import { Box, Divider, Typography } from "@mui/material";
+import Rider from "../assets/Rider.png";
+import Destination from "../assets/location.png";
+import Payment from "../assets/payment.png";
+import GCash from "../assets/gcash.png";
 
 const containerStyle = {
   width: "350px",
@@ -122,56 +126,259 @@ const RiderDirection = () => {
         justifyContent: "center",
       }}
     >
-      {/* <Box component="img" src={logo} sx={{ height: 100, width: 100 }} /> */}
+      <Box sx={{ width: "350px" }}>
+        <Typography
+          sx={{
+            fontFamily: "bold",
+            textAlign: "center",
+            fontSize: 20,
+            color: COLORS.primary,
+          }}
+        >
+          📍 Delivery Route 📍
+        </Typography>
+        <Divider sx={{ width: "350px", my: 1, mb: 2 }} />
+        <GoogleMap
+          mapContainerStyle={containerStyle}
+          mapTypeId="roadmap"
+          center={center}
+          zoom={15}
+        >
+          {riderDetails?.currentLocation && (
+            <Marker
+              position={{
+                lat: riderDetails?.currentLocation?.latitude,
+                lng: riderDetails?.currentLocation?.longitude,
+              }}
+              icon={{
+                url: Rider,
+                scaledSize: { width: 40, height: 40 },
+              }}
+            />
+          )}
 
-      <Typography
-        sx={{
-          fontFamily: "bold",
-          textAlign: "center",
-          fontSize: 20,
-          color: COLORS.primary,
-        }}
-      >
-        Destination Route
-      </Typography>
-      <Divider sx={{ width: "350px", my: 1, mb: 2 }} />
-      <GoogleMap
-        mapContainerStyle={containerStyle}
-        mapTypeId="roadmap"
-        center={center}
-        zoom={15}
-      >
-        {riderDetails?.currentLocation && (
-          <Marker
-            position={{
-              lat: riderDetails?.currentLocation?.latitude,
-              lng: riderDetails?.currentLocation?.longitude,
-            }}
-            label="Rider"
-          />
-        )}
+          {orderDetails?.deliveryAddress?.coordinates && (
+            <Marker
+              position={{
+                lat: orderDetails?.deliveryAddress?.coordinates?.latitude,
+                lng: orderDetails?.deliveryAddress?.coordinates?.longitude,
+              }}
+              icon={{
+                url: Destination,
+                scaledSize: { width: 40, height: 40 },
+              }}
+            />
+          )}
 
-        {orderDetails?.deliveryAddress?.coordinates && (
-          <Marker
-            position={{
-              lat: orderDetails?.deliveryAddress?.coordinates?.latitude,
-              lng: orderDetails?.deliveryAddress?.coordinates?.longitude,
-            }}
-            label="Destination"
-          />
-        )}
+          {coordinates.length > 0 && (
+            <Polyline
+              path={coordinates}
+              options={{
+                strokeColor: COLORS.secondary,
+                strokeWeight: 5,
+              }}
+            />
+          )}
+        </GoogleMap>
 
-        {coordinates.length > 0 && (
-          <Polyline
-            path={coordinates}
-            options={{
-              strokeColor: COLORS.primary,
-              strokeOpacity: 1,
-              strokeWeight: 7,
-            }}
+        <Box sx={{ display: "flex", alignItems: "center", mt: 2 }}>
+          <Box
+            component="img"
+            src={Destination}
+            sx={{ width: 20, height: 20, mr: 0.5 }}
           />
-        )}
-      </GoogleMap>
+          <Typography
+            sx={{
+              fontFamily: "bold",
+              fontSize: 16,
+            }}
+          >
+            Delivery Details:
+          </Typography>
+        </Box>
+        <Typography
+          sx={{
+            fontFamily: "regular",
+            fontSize: 12,
+            ml: 3,
+          }}
+        >
+          Ordered by: {orderDetails?.userId?.username}
+        </Typography>
+        <Typography
+          sx={{
+            fontFamily: "regular",
+            fontSize: 12,
+            ml: 3,
+          }}
+        >
+          Delivery Address: {" "}
+          {orderDetails?.deliveryAddress?.address}
+        </Typography>
+
+        <Divider sx={{ width: "350px", my: 1 }} />
+
+        <Box sx={{ display: "flex", alignItems: "center", mt: 2 }}>
+          <Box
+            component="img"
+            src={Payment}
+            sx={{ width: 20, height: 20, mr: 0.5 }}
+          />
+          <Typography
+            sx={{
+              fontFamily: "bold",
+              fontSize: 16,
+            }}
+          >
+            Payment Details:
+          </Typography>
+        </Box>
+
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          <Typography
+            sx={{
+              fontFamily: "regular",
+              fontSize: 12,
+              ml: 3,
+            }}
+          >
+            Subtotal:
+          </Typography>
+          <Typography
+            sx={{
+              fontFamily: "regular",
+              fontSize: 12,
+              ml: 3,
+            }}
+          >
+            ₱ {orderDetails?.subTotal}
+          </Typography>
+        </Box>
+
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          <Typography
+            sx={{
+              fontFamily: "regular",
+              fontSize: 12,
+              ml: 3,
+            }}
+          >
+            Delivery fee:
+          </Typography>
+          <Typography
+            sx={{
+              fontFamily: "regular",
+              fontSize: 12,
+              ml: 3,
+            }}
+          >
+            ₱ {orderDetails?.deliveryFee}
+          </Typography>
+        </Box>
+
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          <Typography
+            sx={{
+              fontFamily: "regular",
+              fontSize: 12,
+              ml: 3,
+            }}
+          >
+            Payment method:
+          </Typography>
+
+          {orderDetails?.paymentMethod === "gcash" ? (
+            <Box
+              component="img"
+              src={GCash}
+              sx={{ width: "auto", height: 15 }}
+            />
+          ) : (
+            <Typography
+              sx={{
+                fontFamily: "regular",
+                fontSize: 12,
+                ml: 3,
+              }}
+            >
+              {orderDetails?.paymentMethod}
+            </Typography>
+          )}
+        </Box>
+
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          <Typography
+            sx={{
+              fontFamily: "regular",
+              fontSize: 12,
+              ml: 3,
+            }}
+          >
+            Payment status:
+          </Typography>
+          <Typography
+            sx={{
+              fontFamily: "regular",
+              fontSize: 12,
+              ml: 3,
+            }}
+          >
+            {orderDetails?.paymentStatus}{" "}
+            {orderDetails?.paymentStatus === "Paid" ? "🟢" : "🟡"}
+          </Typography>
+        </Box>
+
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          <Typography
+            sx={{
+              fontFamily: "bold",
+              fontSize: 16,
+              ml: 3,
+            }}
+          >
+            TOTAL:
+          </Typography>
+          <Typography
+            sx={{
+              fontFamily: "bold",
+              fontSize: 16,
+              ml: 3,
+            }}
+          >
+            ₱ {orderDetails?.totalAmount}
+          </Typography>
+        </Box>
+      </Box>
     </Box>
   );
 };
