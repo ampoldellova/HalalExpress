@@ -126,24 +126,24 @@ const AcceptOrder = () => {
       if (navigator.geolocation) {
         const riderId = Math.random().toString(36).substring(2, 10);
 
-        try {
-          await setDoc(doc(database, "outForDeliveryOrders", riderId), {
-            riderId,
-            riderName,
-            riderPhone,
-            selectedVehicle,
-            plateNumber: selectedVehicle !== "Bicycle" ? plateNumber : "",
-            orderId,
-            timestamp: new Date().toISOString(),
-            currentLocation: {},
-          });
-        } catch (error) {
-          console.error("Error saving rider details:", error);
-        }
-
         const watchId = navigator.geolocation.watchPosition(
           async (position) => {
             const { latitude, longitude } = position.coords;
+
+            try {
+              await setDoc(doc(database, "outForDeliveryOrders", riderId), {
+                riderId,
+                riderName,
+                riderPhone,
+                selectedVehicle,
+                plateNumber: selectedVehicle !== "Bicycle" ? plateNumber : "",
+                orderId,
+                timestamp: new Date().toISOString(),
+                currentLocation: {},
+              });
+            } catch (error) {
+              console.error("Error saving rider details:", error);
+            }
 
             try {
               await setDoc(
@@ -161,6 +161,7 @@ const AcceptOrder = () => {
                 latitude,
                 longitude,
               });
+
               navigation(`/directions/${orderId}/${riderId}`);
             } catch (error) {
               console.error("Error updating rider location:", error);
