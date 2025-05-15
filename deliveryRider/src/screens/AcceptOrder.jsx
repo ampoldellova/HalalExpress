@@ -13,7 +13,7 @@ import {
   Typography,
 } from "@mui/material";
 import axios from "axios";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import logo from "../assets/logo.png";
 import { COLORS } from "../assets/theme";
 import PersonIcon from "@mui/icons-material/Person";
@@ -58,6 +58,7 @@ const AcceptOrder = () => {
   const [plateNumberError, setPlateNumberError] = useState(false);
   const [loading, setLoading] = useState(false);
   const { orderId } = useParams();
+  const navigation = useNavigate();
 
   const philPhoneRegex = /^(09\d{9}|(\+639)\d{9})$/;
 
@@ -114,6 +115,7 @@ const AcceptOrder = () => {
       setLoading(false);
       return;
     }
+
     if (selectedVehicle !== "Bicycle" && plateNumber === "") {
       setPlateNumberError(true);
       setLoading(false);
@@ -122,10 +124,8 @@ const AcceptOrder = () => {
 
     try {
       if (navigator.geolocation) {
-        // Generate riderId ONCE before starting location tracking
         const riderId = Math.random().toString(36).substring(2, 10);
 
-        // Save rider details (except currentLocation) once
         try {
           await setDoc(doc(database, "outForDeliveryOrders", riderId), {
             riderId,
@@ -141,23 +141,10 @@ const AcceptOrder = () => {
           console.error("Error saving rider details:", error);
         }
 
-        let mapOpened = false;
         const watchId = navigator.geolocation.watchPosition(
           async (position) => {
             const { latitude, longitude } = position.coords;
 
-            // Open Google Maps only on the first successful permission/location
-            if (!mapOpened) {
-              const destinationLatitude =
-                orderDetails?.deliveryAddress?.coordinates?.latitude;
-              const destinationLongitude =
-                orderDetails?.deliveryAddress?.coordinates?.longitude;
-              const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${latitude},${longitude}&destination=${destinationLatitude},${destinationLongitude}&travelmode=driving`;
-              window.open(googleMapsUrl, "_blank");
-              mapOpened = true;
-            }
-
-            // Update currentLocation in Firestore
             try {
               await setDoc(
                 doc(database, "outForDeliveryOrders", riderId),
@@ -174,6 +161,7 @@ const AcceptOrder = () => {
                 latitude,
                 longitude,
               });
+              navigation(`/directions/${orderId}/${riderId}`);
             } catch (error) {
               console.error("Error updating rider location:", error);
             }
@@ -192,7 +180,6 @@ const AcceptOrder = () => {
         setTimeout(() => {
           navigator.geolocation.clearWatch(watchId);
           console.log("Stopped watching location.");
-          mapOpened = false;
         }, 600000); // Stops after 10 minutes
       } else {
         alert("Geolocation is not supported by this browser.");
@@ -795,50 +782,3 @@ const AcceptOrder = () => {
 };
 
 export default AcceptOrder;
-
-// if (navigator.geolocation) {
-//   const watchId = navigator.geolocation.watchPosition(
-//     async (position) => {
-//       const { latitude, longitude } = position.coords;
-//       const destinationLatitude =
-//         orderDetails?.deliveryAddress?.coordinates?.latitude;
-//       const destinationLongitude =
-//         orderDetails?.deliveryAddress?.coordinates?.longitude;
-
-//       const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${latitude},${longitude}&destination=${destinationLatitude},${destinationLongitude}&travelmode=driving`;
-//       window.open(googleMapsUrl, "_blank");
-
-//       try {
-//         const riderId = "rider123"; // Replace with the actual rider's ID
-//         await setDoc(doc(database, "riderLocations", riderId), {
-//           latitude,
-//           longitude,
-//           timestamp: new Date().toISOString(),
-//         });
-//         console.log("Rider location updated in Firestore:", {
-//           latitude,
-//           longitude,
-//         });
-//       } catch (error) {
-//         console.error("Error updating rider location:", error);
-//       }
-//     },
-//     (error) => {
-//       console.error("Error getting location:", error);
-//       alert(`Error: ${error.message}`);
-//     },
-//     {
-//       enableHighAccuracy: true,
-//       maximumAge: 0,
-//       timeout: 5000,
-//     }
-//   );
-
-//   // Optionally, stop watching after a certain time or condition
-//   setTimeout(() => {
-//     navigator.geolocation.clearWatch(watchId);
-//     console.log("Stopped watching location.");
-//   }, 600000); // Stops after 10 minutes
-// } else {
-//   alert("Geolocation is not supported by this browser.");
-// }
