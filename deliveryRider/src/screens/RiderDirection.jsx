@@ -10,11 +10,15 @@ import {
 import { doc, onSnapshot } from "firebase/firestore";
 import { database } from "../../config/firebase";
 import { COLORS } from "../assets/theme";
+import { Box, Divider, Typography } from "@mui/material";
 
 const containerStyle = {
   width: "350px",
   height: "400px",
-  marginTop: 20,
+  borderRadius: "15px",
+  borderWidth: "1px",
+  borderColor: COLORS.gray2,
+  borderStyle: "solid",
 };
 
 const RiderDirection = () => {
@@ -110,43 +114,65 @@ const RiderDirection = () => {
   }
 
   return (
-    <div>
-      <h2>Rider Direction</h2>
-      <div style={{ width: "100%", height: "400px" }}>
-        <GoogleMap mapContainerStyle={containerStyle} center={center} zoom={14}>
-          {riderDetails?.currentLocation && (
-            <Marker
-              position={{
-                lat: riderDetails?.currentLocation?.latitude,
-                lng: riderDetails?.currentLocation?.longitude,
-              }}
-              label="Rider"
-            />
-          )}
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      {/* <Box component="img" src={logo} sx={{ height: 100, width: 100 }} /> */}
 
-          {orderDetails?.deliveryAddress?.coordinates && (
-            <Marker
-              position={{
-                lat: orderDetails?.deliveryAddress?.coordinates?.latitude,
-                lng: orderDetails?.deliveryAddress?.coordinates?.longitude,
-              }}
-              label="Destination"
-            />
-          )}
+      <Typography
+        sx={{
+          fontFamily: "bold",
+          textAlign: "center",
+          fontSize: 20,
+          color: COLORS.primary,
+        }}
+      >
+        Destination Route
+      </Typography>
+      <Divider sx={{ width: "350px", my: 1, mb: 2 }} />
+      <GoogleMap
+        mapContainerStyle={containerStyle}
+        mapTypeId="roadmap"
+        center={center}
+        zoom={15}
+      >
+        {riderDetails?.currentLocation && (
+          <Marker
+            position={{
+              lat: riderDetails?.currentLocation?.latitude,
+              lng: riderDetails?.currentLocation?.longitude,
+            }}
+            label="Rider"
+          />
+        )}
 
-          {coordinates.length > 0 && (
-            <Polyline
-              path={coordinates}
-              options={{
-                strokeColor: COLORS.primary,
-                strokeOpacity: 1,
-                strokeWeight: 7,
-              }}
-            />
-          )}
-        </GoogleMap>
-      </div>
-    </div>
+        {orderDetails?.deliveryAddress?.coordinates && (
+          <Marker
+            position={{
+              lat: orderDetails?.deliveryAddress?.coordinates?.latitude,
+              lng: orderDetails?.deliveryAddress?.coordinates?.longitude,
+            }}
+            label="Destination"
+          />
+        )}
+
+        {coordinates.length > 0 && (
+          <Polyline
+            path={coordinates}
+            options={{
+              strokeColor: COLORS.primary,
+              strokeOpacity: 1,
+              strokeWeight: 7,
+            }}
+          />
+        )}
+      </GoogleMap>
+    </Box>
   );
 };
 
