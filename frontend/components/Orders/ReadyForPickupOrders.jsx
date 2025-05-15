@@ -179,7 +179,7 @@ const ReadyForPickupOrders = ({ readyForPickupOrders }) => {
                   textAlign: "center",
                 }}
               >
-                http://localhost:5173/accept-order
+                {`http://localhost:5173/accept-order/${selectedItem?._id}`}
               </Text>
             </ModalContent>
           </Modal>
