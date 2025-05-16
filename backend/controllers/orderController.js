@@ -412,7 +412,7 @@ module.exports = {
 
   getOrderDetails: async (req, res) => {
     const { orderId } = req.params;
-    
+
     try {
       const order = await Order.findById(orderId)
         .populate("restaurant")
@@ -428,6 +428,39 @@ module.exports = {
       res.status(200).json({
         status: true,
         message: "Order details fetched successfully",
+        order,
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ status: false, message: error.message });
+    }
+  },
+
+  markOrderAsOutForDelivery: async (req, res) => {
+    const { orderId } = req.params;
+
+    try {
+      const order = await Order.findById(orderId);
+
+      if (!order) {
+        return res
+          .status(404)
+          .json({ status: false, message: "Order not found" });
+      }
+
+      if (order.orderStatus === "Out for delivery") {
+        return res.status(400).json({
+          status: false,
+          message: "Order is already marked as Out for delivery",
+        });
+      }
+
+      order.orderStatus = "Out for delivery";
+      await order.save();
+
+      res.status(200).json({
+        status: true,
+        message: "Order status updated successfully",
         order,
       });
     } catch (error) {

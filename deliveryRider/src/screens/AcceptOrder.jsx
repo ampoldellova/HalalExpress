@@ -78,9 +78,17 @@ const AcceptOrder = () => {
       // const response = await axios.get(
       //   `https://halalexpress.onrender.com/api/orders/accept-order/${orderId}`
       // );
-      console.log("Order Details:", response.data);
-
-      setOrderDetails(response.data.order);
+      if (
+        response?.data?.order?.deliveryOption !== "standard" ||
+        response?.data?.order?.orderStatus !== "Ready for pickup"
+      ) {
+        alert(
+          "This order is not available for delivery. Please check your orders."
+        );
+        navigation("/");
+      } else {
+        setOrderDetails(response.data.order);
+      }
     } catch (error) {
       console.error("Error fetching order details:", error);
     }
@@ -125,6 +133,17 @@ const AcceptOrder = () => {
     try {
       if (navigator.geolocation) {
         const riderId = Math.random().toString(36).substring(2, 10);
+
+        try {
+          await axios.post(
+            `http://localhost:6002/api/orders/mark-as-out-for-delivery/${orderId}`
+          );
+        } catch (error) {
+          navigation("/");
+          alert("This order is already out for delivery.");
+          console.log("Error", error);
+          return;
+        }
 
         const watchId = navigator.geolocation.watchPosition(
           async (position) => {

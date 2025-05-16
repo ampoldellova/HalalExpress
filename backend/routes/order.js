@@ -35,6 +35,10 @@ router.post(
   verifyAndAuthorization,
   orderController.markOrderAsReady
 );
+router.post(
+  "/mark-as-out-for-delivery/:orderId",
+  orderController.markOrderAsOutForDelivery
+);
 router.get("/accept-order/:orderId", orderController.getOrderDetails);
 
 module.exports = router;
