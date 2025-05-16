@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   GoogleMap,
   Marker,
@@ -30,6 +30,7 @@ const RiderDirection = () => {
   const [orderDetails, setOrderDetails] = useState(null);
   const [riderDetails, setRiderDetails] = useState(null);
   const { orderId, riderId } = useParams();
+  const navigation = useNavigate();
 
   const { isLoaded, loadError } = useJsApiLoader({
     googleMapsApiKey: "AIzaSyBb5KicFxg9zwfu05AjPuacFyT0AtwW6sE",
@@ -40,7 +41,18 @@ const RiderDirection = () => {
       const response = await axios.get(
         `http://localhost:6002/api/orders/accept-order/${orderId}`
       );
-      setOrderDetails(response.data.order);
+
+      if (
+        response?.data?.order?.deliveryOption !== "standard" ||
+        response?.data?.order?.orderStatus !== "Out for delivery"
+      ) {
+        navigation("/");
+        alert(
+          "This order is not available for delivery. Please check your orders."
+        );
+      } else {
+        setOrderDetails(response.data.order);
+      }
     } catch (error) {
       console.error("Error fetching order details:", error);
     }

@@ -197,10 +197,19 @@ const AcceptOrder = () => {
           }
         );
 
-        setTimeout(() => {
-          navigator.geolocation.clearWatch(watchId);
-          console.log("Stopped watching location.");
-        }, 600000); // Stops after 10 minutes
+        const intervalId = setInterval(async () => {
+          try {
+            if (orderDetails?.orderStatus === "Delivered") {
+              navigator.geolocation.clearWatch(watchId);
+              clearInterval(intervalId);
+              console.log(
+                "Stopped watching location because order is delivered."
+              );
+            }
+          } catch (error) {
+            console.error("Error checking order status:", error);
+          }
+        }, 3000);
       } else {
         alert("Geolocation is not supported by this browser.");
       }
