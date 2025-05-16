@@ -137,7 +137,19 @@ const RiderDirection = () => {
         >
           📍 Delivery Route 📍
         </Typography>
-        <Divider sx={{ width: "350px", my: 1, mb: 2 }} />
+        <Divider sx={{ width: "350px", my: 1 }} />
+        <Typography
+          sx={{
+            fontFamily: "regular",
+            fontSize: 12,
+            textAlign: "center",
+            fontStyle: "italic",
+            mb: 1,
+          }}
+        >
+          <b>Note:</b> Don't minimize this page while tracking the route, as it
+          may cause the map to not update properly.
+        </Typography>
         <GoogleMap
           mapContainerStyle={containerStyle}
           mapTypeId="roadmap"
