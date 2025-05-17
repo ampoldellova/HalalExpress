@@ -10,11 +10,12 @@ import {
 import { addDoc, collection, doc, onSnapshot } from "firebase/firestore";
 import { database } from "../../config/firebase";
 import { COLORS } from "../assets/theme";
-import { Box, Button, Divider, Typography } from "@mui/material";
+import { Box, Button, Divider, Modal, Typography } from "@mui/material";
 import Rider from "../assets/Rider.png";
 import Destination from "../assets/location.png";
 import Payment from "../assets/payment.png";
 import GCash from "../assets/gcash.png";
+import { toast } from "react-toastify";
 
 const containerStyle = {
   width: "350px",
@@ -30,6 +31,7 @@ const RiderDirection = () => {
   const [coordinates, setCoordinates] = useState([]);
   const [orderDetails, setOrderDetails] = useState(null);
   const [riderDetails, setRiderDetails] = useState(null);
+  const [deliveredModal, setDeliveredModal] = useState(false);
   const { orderId, riderId } = useParams();
   const navigation = useNavigate();
 
@@ -45,7 +47,8 @@ const RiderDirection = () => {
 
       if (
         response?.data?.order?.deliveryOption !== "standard" ||
-        response?.data?.order?.orderStatus !== "Out for delivery"
+        (response?.data?.order?.orderStatus !== "Out for delivery" &&
+          response?.data?.order?.orderStatus !== "Delivered")
       ) {
         navigation("/");
         alert(
@@ -85,7 +88,6 @@ const RiderDirection = () => {
     }
   };
 
-  // Fetch order details and rider details
   useEffect(() => {
     fetchOrderDetails();
     const unsub = onSnapshot(
@@ -139,7 +141,7 @@ const RiderDirection = () => {
 
       const message = {
         _id: new Date().getTime().toString(),
-        text: `The delivery rider has arrived at your location, please claim it and mark your order as delivered.`,
+        text: `The delivery rider has arrived at your location, please claim your order`,
         createdAt: new Date(),
         user: {
           _id: orderDetails?.restaurant
@@ -158,39 +160,44 @@ const RiderDirection = () => {
       };
 
       await addDoc(collection(database, "chats"), message);
-      setTimeout(() => {
-        setLoading(false);
-      }, 1000);
+      toast.success("Order delivered successfully!", {
+        position: "top-center",
+      });
+      if (orderDetails?.paymentStatus === "Paid") {
+        await navigation("/");
+      } else {
+        await navigation(`/confirm-payment/${orderId}`);
+      }
     } catch (error) {
       console.error("Error sending message:", error);
       setLoading(false);
     }
   };
 
-  // function getDistanceFromLatLonInMeters(lat1, lon1, lat2, lon2) {
-  //   const R = 6371000; // Radius of the earth in meters
-  //   const dLat = ((lat2 - lat1) * Math.PI) / 180;
-  //   const dLon = ((lon2 - lon1) * Math.PI) / 180;
-  //   const a =
-  //     Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-  //     Math.cos((lat1 * Math.PI) / 180) *
-  //       Math.cos((lat2 * Math.PI) / 180) *
-  //       Math.sin(dLon / 2) *
-  //       Math.sin(dLon / 2);
-  //   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  //   const d = R * c; // Distance in meters
-  //   return d;
-  // }
+  function getDistanceFromLatLonInMeters(lat1, lon1, lat2, lon2) {
+    const R = 6371000;
+    const dLat = ((lat2 - lat1) * Math.PI) / 180;
+    const dLon = ((lon2 - lon1) * Math.PI) / 180;
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos((lat1 * Math.PI) / 180) *
+        Math.cos((lat2 * Math.PI) / 180) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const d = R * c;
+    return d;
+  }
 
-  // const isRiderClose =
-  //   riderDetails?.currentLocation &&
-  //   orderDetails?.deliveryAddress?.coordinates &&
-  //   getDistanceFromLatLonInMeters(
-  //     riderDetails?.currentLocation?.latitude,
-  //     riderDetails?.currentLocation?.longitude,
-  //     orderDetails?.deliveryAddress?.coordinates.latitude,
-  //     orderDetails?.deliveryAddress?.coordinates.longitude
-  //   ) < 300; // 100 meters threshold
+  const isRiderClose =
+    riderDetails?.currentLocation &&
+    orderDetails?.deliveryAddress?.coordinates &&
+    getDistanceFromLatLonInMeters(
+      riderDetails?.currentLocation?.latitude,
+      riderDetails?.currentLocation?.longitude,
+      orderDetails?.deliveryAddress?.coordinates.latitude,
+      orderDetails?.deliveryAddress?.coordinates.longitude
+    ) < 300;
 
   return (
     <Box
@@ -465,34 +472,8 @@ const RiderDirection = () => {
           </Typography>
         </Box>
 
-        {orderDetails?.paymentStatus === "Paid" ? (
-          // <>
-          //   {isRiderClose && (
-          <Button
-            variant="contained"
-            sx={{
-              backgroundColor: COLORS.primary,
-              color: COLORS.white,
-              width: "100%",
-              fontFamily: "bold",
-              mt: 2,
-              "&:hover": {
-                backgroundColor: COLORS.secondary,
-              },
-            }}
-            loading={loading}
-            onClick={() => {
-              OrderArrived();
-            }}
-          >
-            ARRIVED
-          </Button>
-        ) : (
-          //   )}
-          // </>
+        {isRiderClose && (
           <>
-            {/* {isRiderClose && (
-              <> */}
             <Button
               variant="contained"
               sx={{
@@ -505,36 +486,86 @@ const RiderDirection = () => {
                   backgroundColor: COLORS.secondary,
                 },
               }}
-              loading={loading}
               onClick={() => {
-                OrderArrived();
+                setDeliveredModal(true);
               }}
             >
-              ARRIVED
+              MARK AS DELIVERED
+            </Button>
+          </>
+        )}
+      </Box>
+
+      <Modal
+        open={deliveredModal}
+        onClose={() => {
+          setDeliveredModal(false);
+        }}
+      >
+        <Box sx={style}>
+          <Typography sx={{ fontFamily: "bold", fontSize: 20 }}>
+            Mark as Delivered?
+          </Typography>
+
+          <Typography sx={{ fontFamily: "regular", fontSize: 14 }}>
+            Is this order already delivered? click "Yes" to confirm.
+          </Typography>
+
+          <Box sx={{ display: "flex", gap: 1, justifyContent: "end" }}>
+            <Button
+              variant="contained"
+              sx={{
+                backgroundColor: COLORS.gray,
+                color: COLORS.white,
+                fontFamily: "bold",
+                "&:hover": {
+                  backgroundColor: COLORS.secondary,
+                },
+              }}
+              onClick={async () => {
+                setDeliveredModal(false);
+              }}
+            >
+              No
             </Button>
             <Button
               variant="contained"
               sx={{
                 backgroundColor: COLORS.primary,
                 color: COLORS.white,
-                width: "100%",
                 fontFamily: "bold",
-                mt: 1,
                 "&:hover": {
                   backgroundColor: COLORS.secondary,
                 },
               }}
-              onClick={() => {}}
+              loading={loading}
+              onClick={() => {
+                OrderArrived();
+                setDeliveredModal(false);
+              }}
             >
-              RECEIVED PAYMENT
+              YES
             </Button>
-            {/* </>
-            )} */}
-          </>
-        )}
-      </Box>
+          </Box>
+        </Box>
+      </Modal>
     </Box>
   );
 };
 
 export default RiderDirection;
+
+const style = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 320,
+  backgroundColor: "white",
+  borderRadius: 3,
+  boxShadow: 24,
+  display: "flex",
+  flexDirection: "column",
+  gap: 2,
+  p: 2,
+};

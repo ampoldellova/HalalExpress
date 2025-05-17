@@ -362,7 +362,10 @@ const AcceptOrder = () => {
               sx={{ color: COLORS.primary, mr: 0.5, fontSize: 15, mt: 0.2 }}
             />
             <Typography sx={{ fontFamily: "regular", fontSize: 12 }}>
-              Payment Method: {orderDetails?.paymentMethod}
+              Payment Method:{" "}
+              {orderDetails?.paymentMethod === "cod"
+                ? "Cash On Delivery"
+                : "GCash"}
             </Typography>
           </Box>
           <Box sx={{ display: "flex", alignItems: "start" }}>
