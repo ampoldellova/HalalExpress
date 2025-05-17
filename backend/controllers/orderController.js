@@ -538,6 +538,23 @@ module.exports = {
       order.paymentStatus = "Paid";
       await order.save();
 
+      const message = `${orderId} cash on delivery payment has been confirmed. Thank you for your order!`;
+      const user = await User.findById(order.userId._id);
+      const expo = new Expo();
+      const pushToken = user.notificationToken;
+      if (Expo.isExpoPushToken(pushToken)) {
+        const messages = [
+          {
+            to: pushToken,
+            sound: "default",
+            body: message,
+          },
+        ];
+        await expo.sendPushNotificationsAsync(messages);
+      } else {
+        console.error("Invalid Expo push token:", pushToken);
+      }
+
       res.status(200).json({
         status: true,
         message: "Order payment status updated successfully",

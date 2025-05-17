@@ -6,8 +6,12 @@ import logo from "../assets/logo.png";
 import axios from "axios";
 import ReceiptLongOutlinedIcon from "@mui/icons-material/ReceiptLongOutlined";
 import GCash from "../assets/gcash.png";
+import { addDoc, collection } from "firebase/firestore";
+import { toast } from "react-toastify";
+import { database } from "../../config/firebase";
 
 const ConfirmPayment = () => {
+  const [loading, setLoading] = useState(false);
   const [orderDetails, setOrderDetails] = useState(null);
   const navigation = useNavigate();
   const { orderId } = useParams();
@@ -28,6 +32,45 @@ const ConfirmPayment = () => {
       }
     } catch (error) {
       console.error("Error fetching order details:", error);
+    }
+  };
+
+  const confirmPayment = async () => {
+    setLoading(true);
+    try {
+      await axios.post(
+        `http://localhost:6002/api/orders/update-payment/${orderId}`
+      );
+
+      const message = {
+        _id: new Date().getTime().toString(),
+        text: `Your cash on delivery payment has been confirmed. Thank you for your order!`,
+        createdAt: new Date(),
+        user: {
+          _id: orderDetails?.restaurant
+            ? orderDetails?.restaurant?._id
+            : orderDetails?.supplier?._id,
+          name: orderDetails?.restaurant
+            ? orderDetails?.restaurant?.title
+            : orderDetails?.supplier?.title,
+          avatar: orderDetails?.restaurant
+            ? orderDetails?.restaurant?.logoUrl?.url
+            : orderDetails?.supplier?.logoUrl?.url,
+        },
+        receiverId: orderDetails?.userId?._id,
+        receiverName: orderDetails?.userId?.username,
+        receiverAvatar: orderDetails?.userId?.profile?.url,
+      };
+
+      await addDoc(collection(database, "chats"), message);
+      navigation("/");
+      toast.success("Order successfully confirmed!", {
+        position: "top-center",
+      });
+      setLoading(false);
+    } catch (error) {
+      console.log("Error confirming payment:", error);
+      setLoading(false);
     }
   };
 
@@ -234,6 +277,7 @@ const ConfirmPayment = () => {
         </Box>
 
         <Button
+          loading={loading}
           sx={{
             backgroundColor: COLORS.primary,
             color: COLORS.white,
@@ -244,6 +288,7 @@ const ConfirmPayment = () => {
             mt: 2,
             width: "100%",
           }}
+          onClick={() => confirmPayment()}
         >
           Confirm Payment
         </Button>

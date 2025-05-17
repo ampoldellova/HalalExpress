@@ -168,6 +168,7 @@ const RiderDirection = () => {
       } else {
         await navigation(`/confirm-payment/${orderId}`);
       }
+      setLoading(false);
     } catch (error) {
       console.error("Error sending message:", error);
       setLoading(false);
