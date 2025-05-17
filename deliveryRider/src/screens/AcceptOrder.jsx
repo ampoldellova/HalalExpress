@@ -30,21 +30,6 @@ import LocalPhoneOutlinedIcon from "@mui/icons-material/LocalPhoneOutlined";
 import { doc, setDoc } from "firebase/firestore";
 import { database } from "../../config/firebase";
 
-const style = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 250,
-  backgroundColor: "white",
-  borderRadius: 3,
-  boxShadow: 24,
-  display: "flex",
-  flexDirection: "column",
-  gap: 2,
-  p: 4,
-};
-
 const AcceptOrder = () => {
   const [openRiderForm, setOpenRiderForm] = useState(false);
   const [orderDetails, setOrderDetails] = useState(null);
@@ -809,3 +794,18 @@ const AcceptOrder = () => {
 };
 
 export default AcceptOrder;
+
+const style = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 250,
+  backgroundColor: "white",
+  borderRadius: 3,
+  boxShadow: 24,
+  display: "flex",
+  flexDirection: "column",
+  gap: 2,
+  p: 4,
+};
