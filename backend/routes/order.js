@@ -44,5 +44,9 @@ router.get(
   "/arrived-notification/:orderId",
   orderController.sendArrivedNotification
 );
+router.post(
+  "/update-payment/:orderId",
+  orderController.updatePaymentStatusToPaid
+);
 
 module.exports = router;

@@ -479,6 +479,16 @@ module.exports = {
           .json({ status: false, message: "Order not found" });
       }
 
+      if (order.orderStatus === "Delivered") {
+        return res.status(400).json({
+          status: false,
+          message: "Order is already marked as Delivered",
+        });
+      }
+
+      order.orderStatus = "Delivered";
+      await order.save();
+
       const message = `Your order ${orderId} has arrived at your location, please pickup your order.`;
       const user = await User.findById(order.userId._id);
       const expo = new Expo();
@@ -499,6 +509,39 @@ module.exports = {
       res.status(200).json({
         status: true,
         message: "Notification sent successfully",
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ status: false, message: error.message });
+    }
+  },
+
+  updatePaymentStatusToPaid: async (req, res) => {
+    const { orderId } = req.params;
+
+    try {
+      const order = await Order.findById(orderId);
+
+      if (!order) {
+        return res
+          .status(404)
+          .json({ status: false, message: "Order not found" });
+      }
+
+      if (order.paymentStatus === "Paid") {
+        return res.status(400).json({
+          status: false,
+          message: "Order is already paid by the customer",
+        });
+      }
+
+      order.paymentStatus = "Paid";
+      await order.save();
+
+      res.status(200).json({
+        status: true,
+        message: "Order payment status updated successfully",
+        order,
       });
     } catch (error) {
       console.error(error);
