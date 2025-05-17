@@ -40,5 +40,9 @@ router.post(
   orderController.markOrderAsOutForDelivery
 );
 router.get("/accept-order/:orderId", orderController.getOrderDetails);
+router.get(
+  "/arrived-notification/:orderId",
+  orderController.sendArrivedNotification
+);
 
 module.exports = router;

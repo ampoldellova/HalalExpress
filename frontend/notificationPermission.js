@@ -38,7 +38,7 @@ export const registerForPushNotificationsAsync = async (login) => {
     }
 
     const token = (await Notifications.getExpoPushTokenAsync()).data;
-
+    console.log("Push token:", token);
     if (token !== currentPushToken || !currentPushToken) {
       try {
         await axios.put(

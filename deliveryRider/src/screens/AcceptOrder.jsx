@@ -695,11 +695,6 @@ const AcceptOrder = () => {
               </Box>
             )}
           >
-            {/* <MenuItem disabled value="">
-              <em style={{ fontFamily: "regular", fontSize: 12 }}>
-                Select Vehicle Type
-              </em>
-            </MenuItem> */}
             {vehicleTypes.map((vehicle) => (
               <MenuItem
                 key={vehicle.id}

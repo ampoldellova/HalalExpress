@@ -7,10 +7,10 @@ import {
   Polyline,
   useJsApiLoader,
 } from "@react-google-maps/api";
-import { doc, onSnapshot } from "firebase/firestore";
+import { addDoc, collection, doc, onSnapshot } from "firebase/firestore";
 import { database } from "../../config/firebase";
 import { COLORS } from "../assets/theme";
-import { Box, Divider, Typography } from "@mui/material";
+import { Box, Button, Divider, Typography } from "@mui/material";
 import Rider from "../assets/Rider.png";
 import Destination from "../assets/location.png";
 import Payment from "../assets/payment.png";
@@ -26,6 +26,7 @@ const containerStyle = {
 };
 
 const RiderDirection = () => {
+  const [loading, setLoading] = useState(false);
   const [coordinates, setCoordinates] = useState([]);
   const [orderDetails, setOrderDetails] = useState(null);
   const [riderDetails, setRiderDetails] = useState(null);
@@ -129,6 +130,68 @@ const RiderDirection = () => {
     return <div>Loading Map...</div>;
   }
 
+  const OrderArrived = async () => {
+    setLoading(true);
+    try {
+      await axios.get(
+        `http://localhost:6002/api/orders/arrived-notification/${orderId}`
+      );
+
+      const message = {
+        _id: new Date().getTime().toString(),
+        text: `The delivery rider has arrived at your location, please claim it and mark your order as delivered.`,
+        createdAt: new Date(),
+        user: {
+          _id: orderDetails?.restaurant
+            ? orderDetails?.restaurant?._id
+            : orderDetails?.supplier?._id,
+          name: orderDetails?.restaurant
+            ? orderDetails?.restaurant?.title
+            : orderDetails?.supplier?.title,
+          avatar: orderDetails?.restaurant
+            ? orderDetails?.restaurant?.logoUrl?.url
+            : orderDetails?.supplier?.logoUrl?.url,
+        },
+        receiverId: orderDetails?.userId?._id,
+        receiverName: orderDetails?.userId?.username,
+        receiverAvatar: orderDetails?.userId?.profile?.url,
+      };
+
+      await addDoc(collection(database, "chats"), message);
+      setTimeout(() => {
+        setLoading(false);
+      }, 1000);
+    } catch (error) {
+      console.error("Error sending message:", error);
+      setLoading(false);
+    }
+  };
+
+  // function getDistanceFromLatLonInMeters(lat1, lon1, lat2, lon2) {
+  //   const R = 6371000; // Radius of the earth in meters
+  //   const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  //   const dLon = ((lon2 - lon1) * Math.PI) / 180;
+  //   const a =
+  //     Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+  //     Math.cos((lat1 * Math.PI) / 180) *
+  //       Math.cos((lat2 * Math.PI) / 180) *
+  //       Math.sin(dLon / 2) *
+  //       Math.sin(dLon / 2);
+  //   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  //   const d = R * c; // Distance in meters
+  //   return d;
+  // }
+
+  // const isRiderClose =
+  //   riderDetails?.currentLocation &&
+  //   orderDetails?.deliveryAddress?.coordinates &&
+  //   getDistanceFromLatLonInMeters(
+  //     riderDetails?.currentLocation?.latitude,
+  //     riderDetails?.currentLocation?.longitude,
+  //     orderDetails?.deliveryAddress?.coordinates.latitude,
+  //     orderDetails?.deliveryAddress?.coordinates.longitude
+  //   ) < 300; // 100 meters threshold
+
   return (
     <Box
       sx={{
@@ -159,8 +222,8 @@ const RiderDirection = () => {
             mb: 1,
           }}
         >
-          <b>Note:</b> Don't minimize this page while tracking the route, as it
-          may cause the map to not update properly.
+          <b>Note:</b> Don't minimize this page while tracking the destination
+          route, as it may cause the map to not update properly.
         </Typography>
         <GoogleMap
           mapContainerStyle={containerStyle}
@@ -401,6 +464,74 @@ const RiderDirection = () => {
             ₱ {orderDetails?.totalAmount}
           </Typography>
         </Box>
+
+        {orderDetails?.paymentStatus === "Paid" ? (
+          // <>
+          //   {isRiderClose && (
+          <Button
+            variant="contained"
+            sx={{
+              backgroundColor: COLORS.primary,
+              color: COLORS.white,
+              width: "100%",
+              fontFamily: "bold",
+              mt: 2,
+              "&:hover": {
+                backgroundColor: COLORS.secondary,
+              },
+            }}
+            loading={loading}
+            onClick={() => {
+              OrderArrived();
+            }}
+          >
+            ARRIVED
+          </Button>
+        ) : (
+          //   )}
+          // </>
+          <>
+            {/* {isRiderClose && (
+              <> */}
+            <Button
+              variant="contained"
+              sx={{
+                backgroundColor: COLORS.primary,
+                color: COLORS.white,
+                width: "100%",
+                fontFamily: "bold",
+                mt: 2,
+                "&:hover": {
+                  backgroundColor: COLORS.secondary,
+                },
+              }}
+              loading={loading}
+              onClick={() => {
+                OrderArrived();
+              }}
+            >
+              ARRIVED
+            </Button>
+            <Button
+              variant="contained"
+              sx={{
+                backgroundColor: COLORS.primary,
+                color: COLORS.white,
+                width: "100%",
+                fontFamily: "bold",
+                mt: 1,
+                "&:hover": {
+                  backgroundColor: COLORS.secondary,
+                },
+              }}
+              onClick={() => {}}
+            >
+              RECEIVED PAYMENT
+            </Button>
+            {/* </>
+            )} */}
+          </>
+        )}
       </Box>
     </Box>
   );
