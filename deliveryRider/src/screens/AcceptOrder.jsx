@@ -27,7 +27,7 @@ import CallIcon from "@mui/icons-material/Call";
 import NumbersOutlinedIcon from "@mui/icons-material/NumbersOutlined";
 import CarCrashOutlinedIcon from "@mui/icons-material/CarCrashOutlined";
 import LocalPhoneOutlinedIcon from "@mui/icons-material/LocalPhoneOutlined";
-import { doc, setDoc } from "firebase/firestore";
+import { addDoc, collection, doc, setDoc } from "firebase/firestore";
 import { database } from "../../config/firebase";
 
 const AcceptOrder = () => {
@@ -125,6 +125,32 @@ const AcceptOrder = () => {
               await axios.post(
                 `http://localhost:6002/api/orders/mark-as-out-for-delivery/${orderId}`
               );
+
+              const message = {
+                _id: new Date().getTime().toString(),
+                text: `Your order is out for delivery!\n\nDelivery rider's information:\n\nRider:\n${riderName}\n\nContact Number:\n${riderPhone}\n\nVehicle Type:\n${selectedVehicle}${
+                  selectedVehicle !== "Bicycle"
+                    ? `\n\nPlate Number:\n ${plateNumber}`
+                    : ""
+                }`,
+                createdAt: new Date(),
+                user: {
+                  _id: orderDetails?.restaurant
+                    ? orderDetails?.restaurant?._id
+                    : orderDetails?.supplier?._id,
+                  name: orderDetails?.restaurant
+                    ? orderDetails?.restaurant?.title
+                    : orderDetails?.supplier?.title,
+                  avatar: orderDetails?.restaurant
+                    ? orderDetails?.restaurant?.logoUrl?.url
+                    : orderDetails?.supplier?.logoUrl?.url,
+                },
+                receiverId: orderDetails?.userId?._id,
+                receiverName: orderDetails?.userId?.username,
+                receiverAvatar: orderDetails?.userId?.profile?.url,
+              };
+
+              await addDoc(collection(database, "chats"), message);
             } catch (error) {
               navigation("/");
               alert("This order is already out for delivery.");
@@ -186,19 +212,7 @@ const AcceptOrder = () => {
               }
             );
 
-            const intervalId = setInterval(async () => {
-              try {
-                if (orderDetails?.orderStatus === "Delivered") {
-                  navigator.geolocation.clearWatch(watchId);
-                  clearInterval(intervalId);
-                  console.log(
-                    "Stopped watching location because order is delivered."
-                  );
-                }
-              } catch (error) {
-                console.error("Error checking order status:", error);
-              }
-            }, 3000);
+            localStorage.setItem("riderWatchId", watchId);
           },
           (error) => {
             console.error("Error getting location:", error);

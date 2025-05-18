@@ -135,6 +135,13 @@ const RiderDirection = () => {
   const OrderArrived = async () => {
     setLoading(true);
     try {
+      const watchId = localStorage.getItem("riderWatchId");
+      if (watchId) {
+        navigator.geolocation.clearWatch(Number(watchId));
+        localStorage.removeItem("riderWatchId");
+        console.log("Stopped location tracking on delivery.");
+      }
+
       await axios.get(
         `http://localhost:6002/api/orders/arrived-notification/${orderId}`
       );
@@ -474,26 +481,24 @@ const RiderDirection = () => {
         </Box>
 
         {isRiderClose && (
-          <>
-            <Button
-              variant="contained"
-              sx={{
-                backgroundColor: COLORS.primary,
-                color: COLORS.white,
-                width: "100%",
-                fontFamily: "bold",
-                mt: 2,
-                "&:hover": {
-                  backgroundColor: COLORS.secondary,
-                },
-              }}
-              onClick={() => {
-                setDeliveredModal(true);
-              }}
-            >
-              MARK AS DELIVERED
-            </Button>
-          </>
+          <Button
+            variant="contained"
+            sx={{
+              backgroundColor: COLORS.primary,
+              color: COLORS.white,
+              width: "100%",
+              fontFamily: "bold",
+              mt: 2,
+              "&:hover": {
+                backgroundColor: COLORS.secondary,
+              },
+            }}
+            onClick={() => {
+              setDeliveredModal(true);
+            }}
+          >
+            MARK AS DELIVERED
+          </Button>
         )}
       </Box>
 
