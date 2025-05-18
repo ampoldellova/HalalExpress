@@ -119,61 +119,91 @@ const AcceptOrder = () => {
       if (navigator.geolocation) {
         const riderId = Math.random().toString(36).substring(2, 10);
 
-        try {
-          await axios.post(
-            `http://localhost:6002/api/orders/mark-as-out-for-delivery/${orderId}`
-          );
-        } catch (error) {
-          navigation("/");
-          alert("This order is already out for delivery.");
-          console.log("Error", error);
-          return;
-        }
-
-        const watchId = navigator.geolocation.watchPosition(
-          async (position) => {
-            const { latitude, longitude } = position.coords;
-
+        navigator.geolocation.getCurrentPosition(
+          async () => {
             try {
-              await setDoc(doc(database, "outForDeliveryOrders", riderId), {
-                riderId,
-                riderName,
-                riderPhone,
-                selectedVehicle,
-                plateNumber: selectedVehicle !== "Bicycle" ? plateNumber : "",
-                orderId,
-                timestamp: new Date().toISOString(),
-                currentLocation: {},
-              });
+              await axios.post(
+                `http://localhost:6002/api/orders/mark-as-out-for-delivery/${orderId}`
+              );
             } catch (error) {
-              console.error("Error saving rider details:", error);
+              navigation("/");
+              alert("This order is already out for delivery.");
+              console.log("Error", error);
+              setLoading(false);
+              return;
             }
 
-            try {
-              await setDoc(
-                doc(database, "outForDeliveryOrders", riderId),
-                {
-                  currentLocation: {
+            const watchId = navigator.geolocation.watchPosition(
+              async (position) => {
+                const { latitude, longitude } = position.coords;
+
+                try {
+                  await setDoc(doc(database, "outForDeliveryOrders", riderId), {
+                    riderId,
+                    riderName,
+                    riderPhone,
+                    selectedVehicle,
+                    plateNumber:
+                      selectedVehicle !== "Bicycle" ? plateNumber : "",
+                    orderId,
+                    timestamp: new Date().toISOString(),
+                    currentLocation: {},
+                  });
+                } catch (error) {
+                  console.error("Error saving rider details:", error);
+                }
+
+                try {
+                  await setDoc(
+                    doc(database, "outForDeliveryOrders", riderId),
+                    {
+                      currentLocation: {
+                        latitude,
+                        longitude,
+                      },
+                      timestamp: new Date().toISOString(),
+                    },
+                    { merge: true }
+                  );
+                  console.log("Rider location updated in Firestore:", {
                     latitude,
                     longitude,
-                  },
-                  timestamp: new Date().toISOString(),
-                },
-                { merge: true }
-              );
-              console.log("Rider location updated in Firestore:", {
-                latitude,
-                longitude,
-              });
+                  });
 
-              navigation(`/directions/${orderId}/${riderId}`);
-            } catch (error) {
-              console.error("Error updating rider location:", error);
-            }
+                  navigation(`/directions/${orderId}/${riderId}`);
+                } catch (error) {
+                  console.error("Error updating rider location:", error);
+                }
+              },
+              (error) => {
+                console.error("Error getting location:", error);
+                alert(`Error: ${error.message}`);
+              },
+              {
+                enableHighAccuracy: true,
+                maximumAge: 0,
+                timeout: 5000,
+              }
+            );
+
+            const intervalId = setInterval(async () => {
+              try {
+                if (orderDetails?.orderStatus === "Delivered") {
+                  navigator.geolocation.clearWatch(watchId);
+                  clearInterval(intervalId);
+                  console.log(
+                    "Stopped watching location because order is delivered."
+                  );
+                }
+              } catch (error) {
+                console.error("Error checking order status:", error);
+              }
+            }, 3000);
           },
           (error) => {
             console.error("Error getting location:", error);
             alert(`Error: ${error.message}`);
+            setLoading(false);
           },
           {
             enableHighAccuracy: true,
@@ -181,26 +211,12 @@ const AcceptOrder = () => {
             timeout: 5000,
           }
         );
-
-        const intervalId = setInterval(async () => {
-          try {
-            if (orderDetails?.orderStatus === "Delivered") {
-              navigator.geolocation.clearWatch(watchId);
-              clearInterval(intervalId);
-              console.log(
-                "Stopped watching location because order is delivered."
-              );
-            }
-          } catch (error) {
-            console.error("Error checking order status:", error);
-          }
-        }, 3000);
       } else {
         alert("Geolocation is not supported by this browser.");
+        setLoading(false);
       }
     } catch (error) {
       console.error("Error submitting rider details:", error);
-    } finally {
       setLoading(false);
     }
   };
