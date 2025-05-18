@@ -344,7 +344,7 @@ module.exports = {
       try {
         const message = `Your order ${orderId} has been accepted and is now being prepared.`;
 
-        const user = await User.findById(req.user.id);
+        const user = await User.findById(order.userId._id);
         const expo = new Expo();
         const pushToken = user.notificationToken;
 
@@ -456,6 +456,29 @@ module.exports = {
 
       order.orderStatus = "Out for delivery";
       await order.save();
+
+      try {
+        const message = `Your order ${orderId} is out for delivery.`;
+        const user = await User.findById(order.userId._id);
+        const expo = new Expo();
+        const pushToken = user.notificationToken;
+
+        if (Expo.isExpoPushToken(pushToken)) {
+          const messages = [
+            {
+              to: pushToken,
+              sound: "default",
+              body: message,
+            },
+          ];
+
+          await expo.sendPushNotificationsAsync(messages);
+        } else {
+          console.error("Invalid Expo push token:", pushToken);
+        }
+      } catch (error) {
+        console.log(error.message);
+      }
 
       res.status(200).json({
         status: true,

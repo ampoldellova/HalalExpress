@@ -64,7 +64,7 @@ const ConfirmPayment = () => {
 
       await addDoc(collection(database, "chats"), message);
       navigation("/");
-      toast.success("Order successfully confirmed!", {
+      toast.success("Order Payment confirmed!", {
         position: "top-center",
       });
       setLoading(false);
