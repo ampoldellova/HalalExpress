@@ -285,6 +285,7 @@ const AcceptOrder = () => {
                 height: "100px",
                 width: "100px",
                 borderRadius: 3,
+                objectFit: "cover",
                 mr: 2,
               }}
               src={
