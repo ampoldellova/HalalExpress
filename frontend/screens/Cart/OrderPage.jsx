@@ -180,7 +180,7 @@ const OrderPage = () => {
                         orderType === "Previous" ? COLORS.primary : COLORS.gray,
                     }}
                   >
-                    Previous
+                    Completed
                   </Text>
                 </TouchableOpacity>
                 <Text style={{ marginHorizontal: 10 }}>|</Text>
