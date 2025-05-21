@@ -124,7 +124,7 @@ const OrderTrackingMapView = ({ order }) => {
 
           <Polyline
             coordinates={coordinates}
-            strokeColor={COLORS.primary}
+            strokeColor={COLORS.secondary}
             strokeWidth={5}
           />
         </MapView>
