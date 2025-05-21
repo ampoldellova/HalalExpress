@@ -42,7 +42,7 @@ const RiderDirection = () => {
   const fetchOrderDetails = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:6002/api/orders/accept-order/${orderId}`
+        `https://halalexpress.onrender.com/api/orders/accept-order/${orderId}`
       );
 
       if (
@@ -143,7 +143,7 @@ const RiderDirection = () => {
       }
 
       await axios.get(
-        `http://localhost:6002/api/orders/arrived-notification/${orderId}`
+        `https://halalexpress.onrender.com/api/orders/arrived-notification/${orderId}`
       );
 
       const message = {
