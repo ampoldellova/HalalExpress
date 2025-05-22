@@ -1,28 +1,21 @@
-import {
-  FlatList,
-  Image,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { FlatList, Image, StyleSheet, Text, View } from "react-native";
 import React, { useRef, useState } from "react";
 import { useFocusEffect } from "@react-navigation/native";
-import baseUrl from "../../assets/common/baseUrl";
 import { COLORS, SIZES } from "../../styles/theme";
+import LottieView from "lottie-react-native";
+import baseUrl from "../../assets/common/baseUrl";
 import { RatingInput } from "react-native-stock-star-rating";
 import {
   differenceInDays,
   differenceInMonths,
   differenceInYears,
 } from "date-fns";
-import LottieView from "lottie-react-native";
 
 const Reviews = ({ item }) => {
   const [reviews, setReviews] = useState([]);
   const animation = useRef(null);
 
-  const fetchRestaurantReviews = async () => {
+  const fetchSupplierReviews = async () => {
     try {
       const response = await fetch(
         `${baseUrl}/api/orders/${item?._id}/reviews`
@@ -53,7 +46,7 @@ const Reviews = ({ item }) => {
 
   useFocusEffect(
     React.useCallback(() => {
-      fetchRestaurantReviews();
+      fetchSupplierReviews();
     }, [])
   );
 
@@ -90,7 +83,7 @@ const Reviews = ({ item }) => {
         <FlatList
           data={reviews?.reviews}
           showsVerticalScrollIndicator={false}
-          keyExtractor={(item) => item._id}
+          keyExtractor={(item) => item?._id}
           style={{
             marginTop: 10,
             marginBottom: 80,
@@ -142,7 +135,7 @@ const Reviews = ({ item }) => {
                       marginTop: 6,
                     }}
                   >
-                    - {getTimeDifference(item.createdAt)}
+                    - {getTimeDifference(item?.createdAt)}
                   </Text>
                 </View>
 
@@ -153,14 +146,14 @@ const Reviews = ({ item }) => {
                     fontSize: 12,
                   }}
                 >
-                  {item.rating.feedback}
+                  {item?.rating.feedback}
                 </Text>
 
                 <FlatList
                   showsHorizontalScrollIndicator={false}
                   data={item?.orderItems}
                   horizontal
-                  keyExtractor={(item) => item._id}
+                  keyExtractor={(item) => item?._id}
                   renderItem={({ item }) => (
                     <View
                       key={item?._id}
@@ -175,7 +168,7 @@ const Reviews = ({ item }) => {
                       }}
                     >
                       <Image
-                        source={{ uri: item?.foodId?.imageUrl?.url }}
+                        source={{ uri: item?.productId?.imageUrl?.url }}
                         style={{ width: 50, height: 50, borderRadius: 5 }}
                       />
 
@@ -186,7 +179,7 @@ const Reviews = ({ item }) => {
                             fontSize: 12,
                           }}
                         >
-                          {item?.foodId?.title}
+                          {item?.productId?.title}
                         </Text>
 
                         <Text
@@ -196,7 +189,7 @@ const Reviews = ({ item }) => {
                             color: COLORS.gray,
                           }}
                         >
-                          ₱ {item?.foodId?.price}
+                          ₱ {item?.productId?.price}
                         </Text>
                       </View>
                     </View>

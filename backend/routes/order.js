@@ -18,10 +18,7 @@ router.post(
 );
 router.post("/receive", verifyAndAuthorization, orderController.receiveOrder);
 router.post("/rate", verifyAndAuthorization, orderController.submitRating);
-router.get(
-  "/restaurant/:restaurantId/reviews",
-  orderController.getRestaurantReviews
-);
+router.get("/:storeId/reviews", orderController.getStoreReviews);
 
 router.get(
   "/store/:storeId/orders",

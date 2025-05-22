@@ -217,12 +217,12 @@ module.exports = {
     }
   },
 
-  getRestaurantReviews: async (req, res) => {
-    const { restaurantId } = req.params;
+  getStoreReviews: async (req, res) => {
+    const { storeId } = req.params;
 
     try {
       const reviews = await Order.find({
-        restaurant: restaurantId,
+        $or: [{ restaurant: storeId }, { supplier: storeId }],
         "rating.status": "submitted",
       }).select("rating userId createdAt");
 

@@ -5,13 +5,13 @@ import { COLORS } from "../styles/theme";
 import "react-native-gesture-handler";
 import Products from "../screens/Supplier/Products";
 import Directions from "../screens/Supplier/Directions";
-import Info from "../screens/Supplier/Info";
+import Reviews from "../screens/Supplier/Reviews";
 
 const FirstRoute = () => <Products />;
 
 const SecondRoute = ({ item }) => <Directions item={item} />;
 
-const ThirdRoute = () => <Info />;
+const ThirdRoute = ({ item }) => <Reviews item={item} />;
 
 const SupplierPage = ({ item }) => {
   const layout = useWindowDimensions();
@@ -19,7 +19,7 @@ const SupplierPage = ({ item }) => {
   const [routes] = React.useState([
     { key: "first", title: "Products" },
     { key: "second", title: "Directions" },
-    { key: "third", title: "Info" },
+    { key: "third", title: "Reviews" },
   ]);
 
   const renderScene = ({ route }) => {
@@ -29,7 +29,7 @@ const SupplierPage = ({ item }) => {
       case "second":
         return <SecondRoute item={item} />;
       case "third":
-        return <ThirdRoute />;
+        return <ThirdRoute item={item} />;
       default:
         return null;
     }
