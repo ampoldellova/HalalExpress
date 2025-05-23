@@ -88,7 +88,7 @@ const Menu = () => {
                 marginHorizontal: 10,
               }}
               renderItem={({ item }) => (
-                <View style={{ flex: 1, alignItems: "center", margin: 5 }}>
+                <View style={{ flex: 1, alignItems: "center" }}>
                   <CategoryFoodComp item={item} />
                 </View>
               )}

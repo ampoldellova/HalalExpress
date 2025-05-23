@@ -6,14 +6,16 @@ const HomeProductCategories = ({ ingredients }) => {
   const navigation = useNavigation();
 
   const renderIngredientCategoryItem = ({ item }) => (
-    <CategoryIngredientComp
-      item={item}
-      onPress={() => navigation.navigate("product-page", item)}
-    />
+    <View style={{ flex: 1, alignItems: "center" }}>
+      <CategoryIngredientComp
+        item={item}
+        onPress={() => navigation.navigate("product-page", item)}
+      />
+    </View>
   );
 
   return (
-    <View style={{ marginHorizontal: 8 }}>
+    <View>
       <FlatList
         key={2}
         numColumns={2}
