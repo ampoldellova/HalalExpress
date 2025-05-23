@@ -62,9 +62,7 @@ const CheckoutPage = () => {
   const [selectedDeliveryOption, setSelectedDeliveryOption] = useState(null);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
   const [distanceTime, setDistanceTime] = useState({});
-  const [deliveryFee, setDeliveryFee] = useState(
-    selectedDeliveryOption === "standard" ? distanceTime.finalPrice : 0
-  );
+  const [deliveryFee, setDeliveryFee] = useState(0);
   const [editProfile, setEditProfile] = useState(false);
   const [loading, setLoading] = useState(false);
   const [deliveryOptionsError, setDeliveryOptionsError] = useState(false);
@@ -101,7 +99,15 @@ const CheckoutPage = () => {
     }
   }, [restaurant, supplier]);
 
-  const getUserAddresses = async () => {
+  useEffect(() => {
+    if (selectedDeliveryOption === "standard" && distanceTime.finalPrice) {
+      setDeliveryFee(distanceTime.finalPrice);
+    } else {
+      setDeliveryFee(0);
+    }
+  }, [selectedDeliveryOption, distanceTime.finalPrice]);
+
+  async function getUserAddresses() {
     try {
       const token = await AsyncStorage.getItem("token");
       if (token) {
@@ -120,7 +126,7 @@ const CheckoutPage = () => {
     } catch (error) {
       console.error(error);
     }
-  };
+  }
 
   const fetchRestaurant = async () => {
     if (cart?.cartItems.length > 0) {
