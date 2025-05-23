@@ -8,6 +8,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import Toast from "react-native-toast-message";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { useDispatch, useSelector } from "react-redux";
+import { updateCartCount } from "../../redux/UserReducer";
 
 const CategoryIngredientComp = ({ item }) => {
   const navigation = useNavigation();
