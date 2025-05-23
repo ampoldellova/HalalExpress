@@ -43,7 +43,7 @@ const Menu = () => {
   );
 
   return (
-    <View style={{ marginTop: 5, marginBottom: 80 }}>
+    <View style={{ marginBottom: 80 }}>
       {loading && (
         <View
           style={{
@@ -76,13 +76,19 @@ const Menu = () => {
         <>
           {item.isAvailable ? (
             <FlatList
+              key={2}
+              numColumns={2}
               data={foods}
               showsVerticalScrollIndicator={false}
               style={{ marginTop: 5 }}
               scrollEnabled
               keyExtractor={(item) => item._id}
+              columnWrapperStyle={{
+                justifyContent: "space-between",
+                marginHorizontal: 10,
+              }}
               renderItem={({ item }) => (
-                <View style={{ alignItems: "center" }}>
+                <View style={{ flex: 1, alignItems: "center", margin: 5 }}>
                   <CategoryFoodComp item={item} />
                 </View>
               )}

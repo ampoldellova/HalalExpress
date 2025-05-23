@@ -34,7 +34,7 @@ const Products = () => {
   );
 
   return (
-    <View style={{ marginTop: 5, marginBottom: 80 }}>
+    <View style={{ marginBottom: 80 }}>
       {loading && (
         <View
           style={{
