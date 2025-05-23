@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import Toast from "react-native-toast-message";
 import AntDesign from "@expo/vector-icons/AntDesign";
+import { updateCartCount } from "../../redux/UserReducer";
 
 const CategoryFoodComp = ({ item }) => {
   const navigation = useNavigation();
@@ -16,8 +17,8 @@ const CategoryFoodComp = ({ item }) => {
 
   const addProductToCart = async () => {
     const cartItem = {
-      productId: item?._id,
-      supplierId: item?.supplier?._id,
+      foodId: item?._id,
+      restaurantId: item?.restaurant?._id,
       instructions: "",
       quantity: 1,
       totalPrice: item?.price,
