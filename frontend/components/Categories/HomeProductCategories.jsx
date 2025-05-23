@@ -13,14 +13,20 @@ const HomeProductCategories = ({ ingredients }) => {
   );
 
   return (
-    <View style={{ marginLeft: 12, marginBottom: 12 }}>
+    <View style={{ marginHorizontal: 8 }}>
       <FlatList
+        key={2}
+        numColumns={2}
         data={ingredients}
         showsHorizontalScrollIndicator={false}
         keyExtractor={(item) => item._id}
         style={{ marginTop: 10 }}
         scrollEnabled
         renderItem={renderIngredientCategoryItem}
+        columnWrapperStyle={{
+          justifyContent: "space-between",
+          marginHorizontal: 10,
+        }}
       />
     </View>
   );
