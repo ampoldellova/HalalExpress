@@ -42,7 +42,6 @@ const SignUp = ({ navigation }) => {
   const animation = useRef(null);
   const [loader, setLoader] = useState(false);
   const [obsecureText, setObsecureText] = useState(false);
-  const { login, setLogin } = useContext(LoginContext);
 
   const inValidForm = () => {
     Alert.alert("Invalid Form 🚨", "Please provide all required fields");

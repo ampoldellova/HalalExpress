@@ -79,7 +79,7 @@ const CategoryIngredientComp = ({ item }) => {
       </Text>
       <Text
         style={{
-          fontFamily: "bold",
+          fontFamily: "regular",
           textAlign: "left",
           fontSize: 16,
         }}
