@@ -1,17 +1,13 @@
 import { Image, StyleSheet, Text, View } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useFocusEffect } from "@react-navigation/native";
-import {
-  collection,
-  onSnapshot,
-  query,
-  where,
-} from "@react-native-firebase/firestore";
-import { database } from "../config/firebase";
+import Feather from "@expo/vector-icons/Feather";
 import firestore from "@react-native-firebase/firestore";
 import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from "react-native-maps";
-import { COLORS } from "../styles/theme";
-import PlaceMarker from "./PlaceMarker";
+import { COLORS, SIZES } from "../styles/theme";
+import AntDesign from "@expo/vector-icons/AntDesign";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
+import LottieView from "lottie-react-native";
 
 const OrderTrackingMapView = ({ order }) => {
   const orderId = order?._id;
@@ -19,6 +15,7 @@ const OrderTrackingMapView = ({ order }) => {
   const [mapRegion, setMapRegion] = useState(null);
   const [coordinates, setCoordinates] = useState([]);
   const [riderDetails, setRiderDetails] = useState(null);
+  const animation = useRef(null);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -89,46 +86,134 @@ const OrderTrackingMapView = ({ order }) => {
   };
 
   return (
-    <View style={styles.mapContainer}>
-      {mapRegion && (
-        <MapView
-          style={styles.map}
-          provider={PROVIDER_GOOGLE}
-          region={mapRegion}
-        >
-          <Marker title="Rider" coordinate={mapRegion}>
-            <Image
-              source={require("../assets/images/Rider.png")}
-              style={{ width: 30, height: 30 }}
-              resizeMode="contain"
-            />
-          </Marker>
-
-          {placeList && (
-            <Marker
-              title={"Destination"}
-              coordinate={{
-                latitude: placeList.latitude,
-                longitude: placeList.longitude,
-                latitudeDelta: 0.003,
-                longitudeDelta: 0.01,
-              }}
-            >
+    <View
+      style={{
+        padding: 10,
+        backgroundColor: COLORS.white,
+        borderRadius: 15,
+        marginTop: 10,
+      }}
+    >
+      <View style={styles.mapContainer}>
+        {mapRegion && (
+          <MapView
+            style={styles.map}
+            provider={PROVIDER_GOOGLE}
+            region={mapRegion}
+          >
+            <Marker title="Rider" coordinate={mapRegion}>
               <Image
-                source={require("../assets/images/location.png")}
+                source={require("../assets/images/Rider.png")}
                 style={{ width: 30, height: 30 }}
                 resizeMode="contain"
               />
             </Marker>
-          )}
 
-          <Polyline
-            coordinates={coordinates}
-            strokeColor={COLORS.secondary}
-            strokeWidth={5}
-          />
-        </MapView>
-      )}
+            {placeList && (
+              <Marker
+                title={"Destination"}
+                coordinate={{
+                  latitude: placeList.latitude,
+                  longitude: placeList.longitude,
+                  latitudeDelta: 0.003,
+                  longitudeDelta: 0.01,
+                }}
+              >
+                <Image
+                  source={require("../assets/images/location.png")}
+                  style={{ width: 30, height: 30 }}
+                  resizeMode="contain"
+                />
+              </Marker>
+            )}
+
+            <Polyline
+              coordinates={coordinates}
+              strokeColor={COLORS.secondary}
+              strokeWidth={5}
+            />
+          </MapView>
+        )}
+      </View>
+
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginTop: 10,
+        }}
+      >
+        <View>
+          <Text
+            style={{
+              fontFamily: "bold",
+              fontSize: 18,
+            }}
+          >
+            Rider Details
+          </Text>
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <Feather name="user" size={12} color="black" />
+            <Text
+              style={{
+                fontFamily: "regular",
+                fontSize: 12,
+                marginLeft: 5,
+              }}
+            >
+              Rider: {riderDetails?.riderName}
+            </Text>
+          </View>
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <Feather name="phone" size={12} color="black" />
+            <Text
+              style={{
+                fontFamily: "regular",
+                fontSize: 12,
+                marginLeft: 5,
+              }}
+            >
+              Contact #: {riderDetails?.riderPhone}
+            </Text>
+          </View>
+
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <AntDesign name="car" size={12} color="black" />
+            <Text
+              style={{
+                fontFamily: "regular",
+                fontSize: 12,
+                marginLeft: 5,
+              }}
+            >
+              Vehicle Type: {riderDetails?.selectedVehicle}
+            </Text>
+          </View>
+
+          {riderDetails?.selectedVehicle !== "Bicycle" && (
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <FontAwesome name="drivers-license-o" size={12} color="black" />
+              <Text
+                style={{
+                  fontFamily: "regular",
+                  fontSize: 12,
+                  marginLeft: 5,
+                }}
+              >
+                Plate #: {riderDetails?.plateNumber}
+              </Text>
+            </View>
+          )}
+        </View>
+
+        <LottieView
+          autoPlay
+          ref={animation}
+          style={{ width: 100, height: 100 }}
+          source={require("../assets/anime/delivery.json")}
+        />
+      </View>
     </View>
   );
 };
@@ -137,13 +222,10 @@ export default OrderTrackingMapView;
 
 const styles = StyleSheet.create({
   mapContainer: {
-    height: "30%",
+    height: SIZES.height / 3,
     borderColor: COLORS.gray2,
     borderWidth: 1,
-    borderRadius: 10,
-    marginHorizontal: 10,
-    marginTop: 10,
-    borderRadius: 15,
+    borderRadius: 8,
     overflow: "hidden",
   },
   map: {

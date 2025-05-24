@@ -36,9 +36,6 @@ const OrderDetails = () => {
   const [rating, setRating] = useState(0);
   const [feedback, setFeedback] = useState("");
   const [ratingError, setRatingError] = useState(false);
-  // const coords = order?.restaurant
-  //   ? order?.restaurant?.coords
-  //   : order?.supplier?.coords;
 
   const cancelOrder = async () => {
     setLoading(true);
