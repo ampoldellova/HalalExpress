@@ -78,14 +78,12 @@ module.exports = {
           );
 
           if (differentRestaurantItemIndex > -1) {
-            if (differentRestaurantItemIndex > -1) {
-              return res.status(200).json({
-                status: true,
-                message:
-                  "Cart contains items from a different store. Do you want to clear the cart and proceed?",
-                cartConflict: true,
-              });
-            }
+            return res.status(200).json({
+              status: true,
+              message:
+                "Cart contains items from a different store. Do you want to clear the cart and proceed?",
+              cartConflict: true,
+            });
           }
           const existingItemIndex = cart.cartItems.findIndex(
             (item) => item.foodId._id.toString() === foodId

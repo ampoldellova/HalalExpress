@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, TouchableOpacity, Image } from "react-native";
+import { StyleSheet, Text, View, TouchableOpacity, Image, Alert } from "react-native";
 import React from "react";
 import { COLORS, SIZES } from "../../styles/theme";
 import { useNavigation } from "@react-navigation/native";
@@ -14,6 +14,26 @@ const CategoryIngredientComp = ({ item }) => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const { cartCount } = useSelector((state) => state.user);
+
+  const handleConfirmClearCart = async (cartItem, config) => {
+    try {
+      await axios.delete(`${baseUrl}/api/cart/clear-cart`, config);
+      await axios.post(`${baseUrl}/api/cart/`, cartItem, config);
+      Toast.show({
+        type: "success",
+        text1: "Success ✅",
+        text2: "Product has been added to your cart 🛒",
+      });
+      dispatch(updateCartCount(1));
+    } catch (error) {
+      console.error("Error clearing cart or adding product:", error);
+      Toast.show({
+        type: "error",
+        text1: "Error ❌",
+        text2: "Failed to add the product to your cart.",
+      });
+    }
+  };
 
   const addProductToCart = async () => {
     const cartItem = {
@@ -33,13 +53,37 @@ const CategoryIngredientComp = ({ item }) => {
             Authorization: `Bearer ${JSON.parse(token)}`,
           },
         };
-        await axios.post(`${baseUrl}/api/cart/`, cartItem, config);
-        Toast.show({
-          type: "success",
-          text1: "Success ✅",
-          text2: "Product has been added to your cart 🛒",
-        });
-        dispatch(updateCartCount(cartCount + 1));
+
+        const response = await axios.post(
+          `${baseUrl}/api/cart/`,
+          cartItem,
+          config
+        );
+
+        if (response.data.cartConflict) {
+          Alert.alert(
+            "Warning ⚠️",
+            "Products from different supplier cannot exist in the same cart. Do you want to clear your cart to add this product?",
+            [
+              {
+                text: "Cancel",
+                onPress: () => {},
+                style: "cancel",
+              },
+              {
+                text: "Confirm",
+                onPress: () => handleConfirmClearCart(cartItem, config),
+              },
+            ]
+          );
+        } else {
+          Toast.show({
+            type: "success",
+            text1: "Success ✅",
+            text2: "Product has been added to your cart 🛒",
+          });
+          dispatch(updateCartCount(cartCount + 1));
+        }
       } else {
         Toast.show({
           type: "error",

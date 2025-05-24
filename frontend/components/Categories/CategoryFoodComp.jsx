@@ -29,15 +29,15 @@ const CategoryFoodComp = ({ item }) => {
       Toast.show({
         type: "success",
         text1: "Success ✅",
-        text2: "Product has been added to your cart 🛒",
+        text2: "Food has been added to your cart 🛒",
       });
       dispatch(updateCartCount(1));
     } catch (error) {
-      console.error("Error clearing cart or adding item:", error);
+      console.error("Error clearing cart or adding food:", error);
       Toast.show({
         type: "error",
         text1: "Error ❌",
-        text2: "Failed to add the product to your cart.",
+        text2: "Failed to add the food to your cart.",
       });
     }
   };
@@ -70,7 +70,7 @@ const CategoryFoodComp = ({ item }) => {
         if (response.data.cartConflict) {
           Alert.alert(
             "Warning ⚠️",
-            "Items from different restaurants cannot exist in the same cart. Do you want to clear your cart to add this item?",
+            "Food from different restaurants cannot exist in the same cart. Do you want to clear your cart to add this food?",
             [
               {
                 text: "Cancel",
