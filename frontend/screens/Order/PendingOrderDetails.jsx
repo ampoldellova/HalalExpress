@@ -519,24 +519,40 @@ const PendingOrderDetails = () => {
           <View
             style={{
               flexDirection: "row",
+              alignItems: "center",
               justifyContent: "space-between",
             }}
           >
-            <Text style={{ fontFamily: "regular", fontSize: 12 }}>
-              Payment Method:
-            </Text>
             <Text
               style={{
-                fontFamily: "regular",
                 fontSize: 12,
+                fontFamily: "regular",
               }}
             >
-              {order?.paymentMethod === "gcash"
-                ? "Gcash"
-                : order?.paymentMethod === "cod"
-                ? "Cash On Delivery"
-                : order?.paymentMethod}
+              Payment method:
             </Text>
+
+            {order?.paymentMethod === "gcash" ? (
+              <Image
+                source={require("../../assets/images/gcash1.png")}
+                style={{
+                  width: 60,
+                  objectFit: "contain",
+                  height: 15,
+                  marginLeft: 5,
+                  borderRadius: 5,
+                }}
+              />
+            ) : (
+              <Text
+                style={{
+                  fontSize: 12,
+                  fontFamily: "regular",
+                }}
+              >
+                Cash On Delivery
+              </Text>
+            )}
           </View>
 
           <View
