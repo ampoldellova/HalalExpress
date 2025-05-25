@@ -174,52 +174,57 @@ const PendingOrderDetails = () => {
         <BackBtn onPress={() => navigation.goBack()} />
         <Text style={styles.heading}>Order Details</Text>
 
-        {order?.deliveryAddress?.address && (
-          <View
-            style={{
-              borderColor: COLORS.gray2,
-              borderRadius: 15,
-              padding: 10,
-              backgroundColor: COLORS.white,
-              marginBottom: 20,
-            }}
-          >
-            <Text style={{ fontFamily: "bold", fontSize: 18 }}>
-              To be delivered to:
-            </Text>
-
-            <Text
-              style={{
-                color: COLORS.gray,
-                fontFamily: "regular",
-                fontSize: 12,
-              }}
-            >
-              {order?.deliveryAddress?.address}
-            </Text>
-
-            <View style={styles.mapContainer}>
-              {region && (
-                <MapView
-                  style={{ height: SIZES.height / 5.2 }}
-                  region={{
-                    latitude: region?.latitude,
-                    longitude: region?.longitude,
-                    latitudeDelta: 0.01,
-                    longitudeDelta: 0.01,
+        {order?.orderStatus === "Pending" && (
+          <>
+            {order?.deliveryAddress?.address &&
+              order?.deliveryOption === "standard" && (
+                <View
+                  style={{
+                    borderColor: COLORS.gray2,
+                    borderRadius: 15,
+                    padding: 10,
+                    backgroundColor: COLORS.white,
+                    marginBottom: 20,
                   }}
                 >
-                  <Marker
-                    title="Customer Location"
-                    coordinate={{
-                      latitude: region?.latitude,
-                      longitude: region?.longitude,
+                  <Text style={{ fontFamily: "bold", fontSize: 18 }}>
+                    To be delivered to:
+                  </Text>
+
+                  <Text
+                    style={{
+                      color: COLORS.gray,
+                      fontFamily: "regular",
+                      fontSize: 12,
                     }}
-                  />
-                </MapView>
+                  >
+                    {order?.deliveryAddress?.address}
+                  </Text>
+
+                  <View style={styles.mapContainer}>
+                    {region && (
+                      <MapView
+                        style={{ height: SIZES.height / 5.2 }}
+                        region={{
+                          latitude: region?.latitude,
+                          longitude: region?.longitude,
+                          latitudeDelta: 0.01,
+                          longitudeDelta: 0.01,
+                        }}
+                      >
+                        <Marker
+                          title="Customer Location"
+                          coordinate={{
+                            latitude: region?.latitude,
+                            longitude: region?.longitude,
+                          }}
+                        />
+                      </MapView>
+                    )}
+                  </View>
+                </View>
               )}
-            </View>
-          </View>
+          </>
         )}
 
         <View
@@ -630,69 +635,71 @@ const PendingOrderDetails = () => {
           )}
         </View>
 
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            marginBottom: 20,
-          }}
-        >
-          <TouchableOpacity
-            onPress={() => setShowRejectConfirmation(true)}
+        {order?.orderStatus === "Pending" && (
+          <View
             style={{
-              backgroundColor: COLORS.secondary,
-              padding: 10,
-              borderRadius: 15,
-              width: SIZES.width / 2.3,
-              alignItems: "center",
+              flexDirection: "row",
+              justifyContent: "space-between",
+              marginBottom: 20,
             }}
           >
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
-              <Entypo name="trash" size={16} color={COLORS.white} />
-              <Text
-                style={{
-                  color: COLORS.white,
-                  fontFamily: "bold",
-                  textAlign: "center",
-                  fontSize: 16,
-                  marginLeft: 5,
-                }}
-              >
-                R E J E C T
-              </Text>
-            </View>
-          </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => setShowRejectConfirmation(true)}
+              style={{
+                backgroundColor: COLORS.secondary,
+                padding: 10,
+                borderRadius: 15,
+                width: SIZES.width / 2.3,
+                alignItems: "center",
+              }}
+            >
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <Entypo name="trash" size={16} color={COLORS.white} />
+                <Text
+                  style={{
+                    color: COLORS.white,
+                    fontFamily: "bold",
+                    textAlign: "center",
+                    fontSize: 16,
+                    marginLeft: 5,
+                  }}
+                >
+                  R E J E C T
+                </Text>
+              </View>
+            </TouchableOpacity>
 
-          <TouchableOpacity
-            onPress={() => setShowAcceptConfirmation(true)}
-            style={{
-              backgroundColor: COLORS.primary,
-              padding: 10,
-              borderRadius: 15,
-              width: SIZES.width / 2.3,
-              alignItems: "center",
-            }}
-          >
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
-              <FontAwesome
-                name="check-circle-o"
-                size={18}
-                color={COLORS.white}
-              />
-              <Text
-                style={{
-                  color: COLORS.white,
-                  fontFamily: "bold",
-                  textAlign: "center",
-                  fontSize: 16,
-                  marginLeft: 5,
-                }}
-              >
-                A C C E P T
-              </Text>
-            </View>
-          </TouchableOpacity>
-        </View>
+            <TouchableOpacity
+              onPress={() => setShowAcceptConfirmation(true)}
+              style={{
+                backgroundColor: COLORS.primary,
+                padding: 10,
+                borderRadius: 15,
+                width: SIZES.width / 2.3,
+                alignItems: "center",
+              }}
+            >
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <FontAwesome
+                  name="check-circle-o"
+                  size={18}
+                  color={COLORS.white}
+                />
+                <Text
+                  style={{
+                    color: COLORS.white,
+                    fontFamily: "bold",
+                    textAlign: "center",
+                    fontSize: 16,
+                    marginLeft: 5,
+                  }}
+                >
+                  A C C E P T
+                </Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+        )}
       </View>
 
       <Modal
