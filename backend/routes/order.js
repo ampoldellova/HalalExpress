@@ -45,5 +45,6 @@ router.post(
   "/update-payment/:orderId",
   orderController.updatePaymentStatusToPaid
 );
+router.post("/mark-as-completed", orderController.markOrderAsCompleted);
 
 module.exports = router;
