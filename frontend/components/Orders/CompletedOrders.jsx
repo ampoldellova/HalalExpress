@@ -129,6 +129,7 @@ const CompletedOrders = ({ completedOrders }) => {
                           style={{
                             fontSize: 12,
                             fontFamily: "regular",
+                            marginLeft: 5,
                             color: COLORS.gray,
                           }}
                         >

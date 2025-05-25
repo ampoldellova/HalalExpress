@@ -130,6 +130,7 @@ const PendingOrders = ({ pendingOrders }) => {
                             fontSize: 12,
                             fontFamily: "regular",
                             color: COLORS.gray,
+                            marginLeft: 5,
                           }}
                         >
                           Cash On Delivery
