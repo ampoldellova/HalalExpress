@@ -72,22 +72,25 @@ const ManageProductPage = () => {
             <Text style={styles.heading}>Manage Products</Text>
           </View>
           <FlatList
-            data={ingredients}
-            showsVerticalScrollIndicator={false}
-            scrollEnabled={false}
-            numColumns={2}
-            keyExtractor={(item, index) => index.toString()}
             key={2}
-            contentContainerStyle={{
-              alignItems: "center",
+            numColumns={2}
+            data={ingredients}
+            scrollEnabled={false}
+            showsVerticalScrollIndicator={false}
+            keyExtractor={(item, index) => index.toString()}
+            columnWrapperStyle={{
+              justifyContent: "space-between",
+              marginHorizontal: 5,
             }}
             renderItem={({ item }) => (
-              <ManageProductCard
-                item={item}
-                onPress={() => {
-                  navigation.navigate("supplier-product-page", item);
-                }}
-              />
+              <View style={{ flex: 1, alignItems: "center" }}>
+                <ManageProductCard
+                  item={item}
+                  onPress={() => {
+                    navigation.navigate("supplier-product-page", item);
+                  }}
+                />
+              </View>
             )}
           />
         </>

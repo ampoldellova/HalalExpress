@@ -46,11 +46,12 @@ export default ManageProductCard;
 
 const styles = StyleSheet.create({
   wrapper: {
-    borderColor: COLORS.lightWhite,
-    borderRadius: 16,
-    marginTop: 10,
+    backgroundColor: COLORS.lightWhite,
+    width: SIZES.width / 2.3,
+    height: "auto",
     marginBottom: 10,
-    marginHorizontal: 10,
+    borderRadius: 12,
+    padding: 5,
   },
   heading: {
     fontSize: 14,
