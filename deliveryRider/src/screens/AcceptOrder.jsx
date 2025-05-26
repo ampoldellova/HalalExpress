@@ -58,7 +58,7 @@ const AcceptOrder = () => {
   const fetchOrderDetails = async () => {
     try {
       const response = await axios.get(
-        `https://halalexpress.onrender.com/api/orders/accept-order/${orderId}`
+        `https://localhost:6002/api/orders/accept-order/${orderId}`
       );
       // const response = await axios.get(
       //   `https://halalexpress.onrender.com/api/orders/accept-order/${orderId}`
@@ -123,8 +123,12 @@ const AcceptOrder = () => {
           async () => {
             try {
               await axios.post(
-                `https://halalexpress.onrender.com/api/orders/mark-as-out-for-delivery/${orderId}`
+                `https://localhost:6002/api/orders/mark-as-out-for-delivery/${orderId}`
               );
+
+              // await axios.post(
+              //   `https://halalexpress.onrender.com/api/orders/mark-as-out-for-delivery/${orderId}`
+              // );
 
               const message = {
                 _id: new Date().getTime().toString(),

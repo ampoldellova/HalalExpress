@@ -42,8 +42,11 @@ const RiderDirection = () => {
   const fetchOrderDetails = async () => {
     try {
       const response = await axios.get(
-        `https://halalexpress.onrender.com/api/orders/accept-order/${orderId}`
+        `https://localhost:6002/api/orders/accept-order/${orderId}`
       );
+      // const response = await axios.get(
+      //   `https://halalexpress.onrender.com/api/orders/accept-order/${orderId}`
+      // );
 
       if (
         response?.data?.order?.deliveryOption !== "standard" ||
@@ -143,7 +146,7 @@ const RiderDirection = () => {
       }
 
       await axios.get(
-        `https://halalexpress.onrender.com/api/orders/arrived-notification/${orderId}`
+        `https://localhost:6002/api/orders/arrived-notification/${orderId}`
       );
 
       const message = {

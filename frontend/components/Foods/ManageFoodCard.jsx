@@ -9,9 +9,9 @@ const ManageFoodCard = ({ item, onPress }) => {
       <Image
         source={{ uri: item.imageUrl.url }}
         style={{
-          width: SIZES.width / 2.5,
-          height: SIZES.height / 5.8,
-          borderRadius: 15,
+          width: "100%",
+          height: 100,
+          borderRadius: 10,
         }}
       />
       <Text style={styles.heading}>{item.title}</Text>
@@ -52,11 +52,12 @@ export default ManageFoodCard;
 
 const styles = StyleSheet.create({
   wrapper: {
-    borderColor: COLORS.lightWhite,
-    borderRadius: 16,
-    marginTop: 10,
+    backgroundColor: COLORS.lightWhite,
+    width: SIZES.width / 2.3,
+    height: "auto",
     marginBottom: 10,
-    marginHorizontal: 10,
+    borderRadius: 12,
+    padding: 5,
   },
   heading: {
     fontSize: 14,
