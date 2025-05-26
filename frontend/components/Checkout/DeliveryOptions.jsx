@@ -58,80 +58,94 @@ const DeliveryOptions = ({
             selectedDeliveryOption === "standard"
               ? COLORS.primary
               : COLORS.gray2,
-          opacity: restaurant?.delivery || supplier?.delivery ? 1 : 0.5,
         }}
       >
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "space-between",
-            width: "100%",
-          }}
-        >
+        <View style={{ flexDirection: "column" }}>
           <View
             style={{
               flexDirection: "row",
               alignItems: "center",
-              height: 30,
+              justifyContent: "space-between",
+              width: "100%",
             }}
           >
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
-              <Image
-                source={require("../../assets/images/delivery.png")}
-                style={{ width: 20, height: 20, marginLeft: 2.5 }}
-              />
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                height: 30,
+              }}
+            >
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <Image
+                  source={require("../../assets/images/delivery.png")}
+                  style={{ width: 20, height: 20, marginLeft: 2.5 }}
+                />
+                <Text
+                  style={{
+                    fontFamily: "medium",
+                    fontSize: 16,
+                    marginLeft: 10,
+                    color: COLORS.black,
+                  }}
+                >
+                  Standard
+                </Text>
+              </View>
+
               <Text
                 style={{
-                  fontFamily: "medium",
-                  fontSize: 16,
-                  marginLeft: 10,
-                  color: COLORS.black,
+                  fontFamily: "regular",
+                  fontSize: 12,
+                  color: COLORS.gray,
+                  marginLeft: 5,
                 }}
               >
-                Standard
+                ({totalTime.toFixed(0)} mins)
               </Text>
             </View>
 
+            {restaurant?.delivery || supplier?.delivery ? (
+              <View
+                style={{
+                  backgroundColor: COLORS.secondary,
+                  paddingHorizontal: 5,
+                  borderRadius: 10,
+                }}
+              >
+                <Text
+                  style={{
+                    fontFamily: "bold",
+                    fontSize: 12,
+                    color: COLORS.white,
+                  }}
+                >
+                  + ₱{distanceTime.finalPrice}
+                </Text>
+              </View>
+            ) : (
+              <Text
+                style={{
+                  fontFamily: "bold",
+                  fontSize: 16,
+                  color: COLORS.red,
+                }}
+              >
+                Not Available
+              </Text>
+            )}
+          </View>
+
+          {selectedDeliveryOption === "standard" && (
             <Text
               style={{
                 fontFamily: "regular",
                 fontSize: 12,
                 color: COLORS.gray,
-                marginLeft: 5,
               }}
             >
-              ({totalTime.toFixed(0)} mins)
-            </Text>
-          </View>
-
-          {restaurant?.delivery || supplier?.delivery ? (
-            <View
-              style={{
-                backgroundColor: COLORS.secondary,
-                paddingHorizontal: 5,
-                borderRadius: 10,
-              }}
-            >
-              <Text
-                style={{
-                  fontFamily: "bold",
-                  fontSize: 12,
-                  color: COLORS.white,
-                }}
-              >
-                + ₱{distanceTime.finalPrice}
-              </Text>
-            </View>
-          ) : (
-            <Text
-              style={{
-                fontFamily: "bold",
-                fontSize: 16,
-                color: COLORS.red,
-              }}
-            >
-              Not Available
+              Your order will be delivered to your address by the{" "}
+              {restaurant ? "restaurant's" : "store's"} delivery service.
             </Text>
           )}
         </View>
@@ -163,32 +177,56 @@ const DeliveryOptions = ({
             selectedDeliveryOption === "pickup" ? COLORS.primary : COLORS.gray2,
         }}
       >
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
-          <Image
-            source={require("../../assets/images/pickup.png")}
-            style={{ width: 20, height: 20, marginLeft: 2.5 }}
-          />
-          <View style={{ flex: 1, height: 30, justifyContent: "center" }}>
-            <Text
-              style={{
-                fontFamily: "medium",
-                fontSize: 16,
-                marginLeft: 10,
-                color: COLORS.black,
-              }}
-            >
-              Pickup
-            </Text>
-          </View>
-          <Text
+        <View style={{ flexDirection: "column" }}>
+          <View
             style={{
-              fontFamily: "bold",
-              fontSize: 16,
-              color: COLORS.primary,
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+              width: "100%",
             }}
           >
-            Free
-          </Text>
+            <Image
+              source={require("../../assets/images/pickup.png")}
+              style={{ width: 20, height: 20, marginLeft: 2.5 }}
+            />
+            <View style={{ flex: 1, height: 30, justifyContent: "center" }}>
+              <Text
+                style={{
+                  fontFamily: "medium",
+                  fontSize: 16,
+                  marginLeft: 10,
+                  color: COLORS.black,
+                }}
+              >
+                Pickup
+              </Text>
+            </View>
+            <Text
+              style={{
+                fontFamily: "bold",
+                fontSize: 16,
+                color: COLORS.primary,
+              }}
+            >
+              Free
+            </Text>
+          </View>
+
+          {selectedDeliveryOption === "pickup" && (
+            <Text
+              style={{
+                fontFamily: "regular",
+                fontSize: 12,
+                color: COLORS.gray,
+              }}
+            >
+              You can collect your order directly from the{" "}
+              {restaurant ? "restaurant" : "store"} at your preferred time. This
+              is ideal for those who are nearby or prefer to save on delivery
+              fees.
+            </Text>
+          )}
         </View>
       </TouchableOpacity>
 
