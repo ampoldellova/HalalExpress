@@ -151,7 +151,10 @@ const RiderDirection = () => {
 
       const message = {
         _id: new Date().getTime().toString(),
-        text: `The delivery rider has arrived at your location, please claim your order`,
+        text:
+          orderDetails?.paymentStatus === "Paid"
+            ? `The delivery rider has arrived at you location, please claim your order. Thank you for trusting HalalExpress`
+            : `The delivery rider has arrived at your location, please claim your order`,
         createdAt: new Date(),
         user: {
           _id: orderDetails?.restaurant

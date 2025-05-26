@@ -384,6 +384,7 @@ module.exports = {
             {
               to: pushToken,
               sound: "default",
+              title: `Order Notification`,
               body: message,
             },
           ];
@@ -499,6 +500,7 @@ module.exports = {
             {
               to: pushToken,
               sound: "default",
+              title: `Order Notification`,
               body: message,
             },
           ];
@@ -552,6 +554,7 @@ module.exports = {
           {
             to: pushToken,
             sound: "default",
+            title: `Order Notification`,
             body: message,
           },
         ];
@@ -601,6 +604,7 @@ module.exports = {
           {
             to: pushToken,
             sound: "default",
+            title: `Order Notification`,
             body: message,
           },
         ];
