@@ -25,19 +25,11 @@ import CancelledOrders from "../../components/Cart/CancelledOrders";
 
 const OrderPage = () => {
   const navigation = useNavigation();
-  const [user, setUser] = useState(null);
   const [orders, setOrders] = useState([]);
-  const [vendorOrders, setVendorOrders] = useState([]);
   const [loading, setLoading] = useState(false);
   const [orderType, setOrderType] = useState("Active");
 
-  const fetchProfile = async () => {
-    const profile = await getProfile();
-    setUser(profile);
-  };
-
   const fetchUserOrders = async () => {
-    setLoading(true);
     try {
       const token = await AsyncStorage.getItem("token");
       if (token) {
@@ -48,9 +40,7 @@ const OrderPage = () => {
         };
 
         const response = await axios.get(`${baseUrl}/api/orders/`, config);
-        setVendorOrders(response.data.vendorOrders);
         setOrders(response.data.orders);
-        setLoading(false);
       } else {
         Toast.show({
           type: "error",
@@ -69,9 +59,8 @@ const OrderPage = () => {
 
   useFocusEffect(
     React.useCallback(() => {
-      fetchProfile();
       fetchUserOrders();
-    }, [])
+    }, [orders])
   );
 
   useFocusEffect(
@@ -180,7 +169,7 @@ const OrderPage = () => {
                         orderType === "Previous" ? COLORS.primary : COLORS.gray,
                     }}
                   >
-                    Previous
+                    Completed
                   </Text>
                 </TouchableOpacity>
                 <Text style={{ marginHorizontal: 10 }}>|</Text>

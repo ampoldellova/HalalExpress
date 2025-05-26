@@ -297,7 +297,9 @@ const PreparingOrders = ({ preparingOrders }) => {
                             <View style={{ flexDirection: "row" }}>
                               <Image
                                 source={{
-                                  uri: orderItem?.foodId?.imageUrl?.url,
+                                  uri: orderItem?.foodId
+                                    ? orderItem?.foodId?.imageUrl?.url
+                                    : orderItem?.productId?.imageUrl?.url,
                                 }}
                                 style={{
                                   height: 40,
@@ -314,14 +316,33 @@ const PreparingOrders = ({ preparingOrders }) => {
                                     marginLeft: 10,
                                   }}
                                 >
-                                  {orderItem?.foodId?.title}
+                                  {orderItem?.foodId
+                                    ? orderItem?.foodId?.title
+                                    : orderItem?.productId?.title}
                                 </Text>
 
-                                {orderItem?.additives?.length > 0 ? (
+                                {orderItem?.foodId ? (
                                   <>
-                                    {orderItem?.additives?.map((additive) => (
+                                    {orderItem?.additives?.length > 0 ? (
+                                      <>
+                                        {orderItem?.additives?.map(
+                                          (additive) => (
+                                            <Text
+                                              key={additive?._id}
+                                              style={{
+                                                fontFamily: "regular",
+                                                fontSize: 12,
+                                                color: COLORS.gray,
+                                                marginLeft: 15,
+                                              }}
+                                            >
+                                              + {additive?.title}
+                                            </Text>
+                                          )
+                                        )}
+                                      </>
+                                    ) : (
                                       <Text
-                                        key={additive?._id}
                                         style={{
                                           fontFamily: "regular",
                                           fontSize: 12,
@@ -329,9 +350,9 @@ const PreparingOrders = ({ preparingOrders }) => {
                                           marginLeft: 15,
                                         }}
                                       >
-                                        + {additive?.title}
+                                        - No Additives
                                       </Text>
-                                    ))}
+                                    )}
                                   </>
                                 ) : (
                                   <Text
@@ -339,10 +360,10 @@ const PreparingOrders = ({ preparingOrders }) => {
                                       fontFamily: "regular",
                                       fontSize: 12,
                                       color: COLORS.gray,
-                                      marginLeft: 15,
+                                      marginLeft: 10,
                                     }}
                                   >
-                                    - No Additives
+                                    Quantity: {orderItem?.quantity}
                                   </Text>
                                 )}
                               </View>

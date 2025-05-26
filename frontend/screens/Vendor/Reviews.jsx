@@ -6,8 +6,8 @@ import {
   Text,
   View,
 } from "react-native";
-import React, { useContext, useRef, useState } from "react";
-import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import React, { useRef, useState } from "react";
+import { useFocusEffect } from "@react-navigation/native";
 import baseUrl from "../../assets/common/baseUrl";
 import { COLORS, SIZES } from "../../styles/theme";
 import { RatingInput } from "react-native-stock-star-rating";
@@ -19,14 +19,13 @@ import {
 import LottieView from "lottie-react-native";
 
 const Reviews = ({ item }) => {
-  const navigation = useNavigation();
   const [reviews, setReviews] = useState([]);
   const animation = useRef(null);
 
   const fetchRestaurantReviews = async () => {
     try {
       const response = await fetch(
-        `${baseUrl}/api/orders/restaurant/${item._id}/reviews`
+        `${baseUrl}/api/orders/${item?._id}/reviews`
       );
 
       const data = await response.json();

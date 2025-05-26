@@ -9,8 +9,10 @@ import {
 import React, { useRef } from "react";
 import { COLORS, SIZES } from "../../styles/theme";
 import LottieView from "lottie-react-native";
+import { useNavigation } from "@react-navigation/native";
 
 const CompletedOrders = ({ completedOrders }) => {
+  const navigation = useNavigation();
   const animation = useRef(null);
   return (
     <>
@@ -57,6 +59,9 @@ const CompletedOrders = ({ completedOrders }) => {
                   marginBottom: 10,
                   marginHorizontal: 10,
                 }}
+                onPress={() =>
+                  navigation.navigate("pending-order-details-page", item)
+                }
               >
                 <View style={{ flexDirection: "row" }}>
                   <Image
@@ -94,15 +99,7 @@ const CompletedOrders = ({ completedOrders }) => {
                         ? "For delivery"
                         : "For pickup"}
                     </Text>
-                    <Text
-                      style={{
-                        fontSize: 12,
-                        fontFamily: "regular",
-                        color: COLORS.gray,
-                      }}
-                    >
-                      Payment method: {item?.paymentMethod}
-                    </Text>
+
                     <View
                       style={{ flexDirection: "row", alignItems: "center" }}
                     >
@@ -113,33 +110,45 @@ const CompletedOrders = ({ completedOrders }) => {
                           color: COLORS.gray,
                         }}
                       >
-                        Payment status:
+                        Payment method:
                       </Text>
 
-                      <View
-                        style={{
-                          borderRadius: 99,
-                          backgroundColor:
-                            item.paymentStatus === "Pending"
-                              ? COLORS.secondary
-                              : COLORS.primary,
-                          width: 10,
-                          height: 10,
-                          marginLeft: 5,
-                          marginBottom: 2,
-                        }}
-                      />
-                      <Text
-                        style={{
-                          fontSize: 12,
-                          fontFamily: "bold",
-                          color: COLORS.gray,
-                          marginLeft: 2,
-                        }}
-                      >
-                        {item?.paymentStatus}
-                      </Text>
+                      {item?.paymentMethod === "gcash" ? (
+                        <Image
+                          source={require("../../assets/images/gcash1.png")}
+                          style={{
+                            width: 60,
+                            objectFit: "contain",
+                            height: 15,
+                            marginLeft: 5,
+                            borderRadius: 5,
+                          }}
+                        />
+                      ) : (
+                        <Text
+                          style={{
+                            fontSize: 12,
+                            fontFamily: "regular",
+                            marginLeft: 5,
+                            color: COLORS.gray,
+                          }}
+                        >
+                          Cash On Delivery
+                        </Text>
+                      )}
                     </View>
+
+                    <Text
+                      style={{
+                        fontSize: 12,
+                        fontFamily: "regular",
+                        color: COLORS.gray,
+                      }}
+                    >
+                      Payment status:{" "}
+                      {item?.paymentStatus === "Paid" ? "🟢" : "🟡"}{" "}
+                      {item?.paymentStatus}
+                    </Text>
 
                     <Text
                       style={{

@@ -42,8 +42,11 @@ const RiderDirection = () => {
   const fetchOrderDetails = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:6002/api/orders/accept-order/${orderId}`
+        `https://localhost:6002/api/orders/accept-order/${orderId}`
       );
+      // const response = await axios.get(
+      //   `https://halalexpress.onrender.com/api/orders/accept-order/${orderId}`
+      // );
 
       if (
         response?.data?.order?.deliveryOption !== "standard" ||
@@ -143,12 +146,15 @@ const RiderDirection = () => {
       }
 
       await axios.get(
-        `http://localhost:6002/api/orders/arrived-notification/${orderId}`
+        `https://localhost:6002/api/orders/arrived-notification/${orderId}`
       );
 
       const message = {
         _id: new Date().getTime().toString(),
-        text: `The delivery rider has arrived at your location, please claim your order`,
+        text:
+          orderDetails?.paymentStatus === "Paid"
+            ? `The delivery rider has arrived at you location, please claim your order. Thank you for trusting HalalExpress`
+            : `The delivery rider has arrived at your location, please claim your order`,
         createdAt: new Date(),
         user: {
           _id: orderDetails?.restaurant

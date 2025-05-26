@@ -99,15 +99,7 @@ const PendingOrders = ({ pendingOrders }) => {
                         ? "For delivery"
                         : "For pickup"}
                     </Text>
-                    <Text
-                      style={{
-                        fontSize: 12,
-                        fontFamily: "regular",
-                        color: COLORS.gray,
-                      }}
-                    >
-                      Payment method: {item?.paymentMethod}
-                    </Text>
+
                     <View
                       style={{ flexDirection: "row", alignItems: "center" }}
                     >
@@ -118,33 +110,45 @@ const PendingOrders = ({ pendingOrders }) => {
                           color: COLORS.gray,
                         }}
                       >
-                        Payment status:
+                        Payment method:
                       </Text>
 
-                      <View
-                        style={{
-                          borderRadius: 99,
-                          backgroundColor:
-                            item.paymentStatus === "Pending"
-                              ? COLORS.secondary
-                              : COLORS.primary,
-                          width: 10,
-                          height: 10,
-                          marginLeft: 5,
-                          marginBottom: 2,
-                        }}
-                      />
-                      <Text
-                        style={{
-                          fontSize: 12,
-                          fontFamily: "bold",
-                          color: COLORS.gray,
-                          marginLeft: 2,
-                        }}
-                      >
-                        {item?.paymentStatus}
-                      </Text>
+                      {item?.paymentMethod === "gcash" ? (
+                        <Image
+                          source={require("../../assets/images/gcash1.png")}
+                          style={{
+                            width: 60,
+                            objectFit: "contain",
+                            height: 15,
+                            marginLeft: 5,
+                            borderRadius: 5,
+                          }}
+                        />
+                      ) : (
+                        <Text
+                          style={{
+                            fontSize: 12,
+                            fontFamily: "regular",
+                            color: COLORS.gray,
+                            marginLeft: 5,
+                          }}
+                        >
+                          Cash On Delivery
+                        </Text>
+                      )}
                     </View>
+
+                    <Text
+                      style={{
+                        fontSize: 12,
+                        fontFamily: "regular",
+                        color: COLORS.gray,
+                      }}
+                    >
+                      Payment status:{" "}
+                      {item?.paymentStatus === "Paid" ? "🟢" : "🟡"}{" "}
+                      {item?.paymentStatus}
+                    </Text>
 
                     <Text
                       style={{

@@ -85,10 +85,9 @@ const CartProducts = ({ item, getCartItems }) => {
     <View style={{ marginTop: 15, flexDirection: "row", alignItems: "center" }}>
       <Image
         source={{
-          uri:
-            user.userType === "Vendor"
-              ? item?.productId?.imageUrl?.url
-              : item?.foodId?.imageUrl?.url,
+          uri: item?.productId
+            ? item?.productId?.imageUrl?.url
+            : item?.foodId?.imageUrl?.url,
         }}
         style={styles.image}
       />
@@ -100,15 +99,13 @@ const CartProducts = ({ item, getCartItems }) => {
         }}
       >
         <Text style={{ fontFamily: "bold" }}>
-          {user.userType === "Vendor"
-            ? item?.productId?.title
-            : item?.foodId?.title}
+          {item?.productId ? item?.productId?.title : item?.foodId?.title}
         </Text>
 
-        {(user.userType === "Client" || user.userType === "Supplier") &&
-          (item.additives.length > 0 ? (
+        {item?.foodId &&
+          (item?.additives?.length > 0 ? (
             <FlatList
-              data={item.additives}
+              data={item?.additives}
               horizontal
               showsHorizontalScrollIndicator={false}
               style={{ rowGap: 10 }}
@@ -122,8 +119,8 @@ const CartProducts = ({ item, getCartItems }) => {
                     fontSize: 12,
                   }}
                 >
-                  {additive.title}
-                  {index < item.additives.length - 1 ? ", " : ""}
+                  {additive?.title}
+                  {index < item?.additives?.length - 1 ? ", " : ""}
                 </Text>
               )}
             />
@@ -162,9 +159,7 @@ const CartProducts = ({ item, getCartItems }) => {
                 <TouchableOpacity
                   onPress={() =>
                     removeItem(
-                      user.userType === "Vendor"
-                        ? item?.productId?._id
-                        : item?.foodId?._id
+                      item?.productId ? item?.productId?._id : item?.foodId?._id
                     )
                   }
                 >
@@ -174,9 +169,7 @@ const CartProducts = ({ item, getCartItems }) => {
                 <TouchableOpacity
                   onPress={() =>
                     decrement(
-                      user.userType === "Vendor"
-                        ? item?.productId?._id
-                        : item?.foodId?._id
+                      item?.productId ? item?.productId?._id : item?.foodId?._id
                     )
                   }
                 >
@@ -190,9 +183,7 @@ const CartProducts = ({ item, getCartItems }) => {
             <TouchableOpacity
               onPress={() =>
                 increment(
-                  user.userType === "Vendor"
-                    ? item?.productId?._id
-                    : item?.foodId?._id
+                  item?.productId ? item?.productId?._id : item?.foodId?._id
                 )
               }
             >

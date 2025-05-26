@@ -1,4 +1,6 @@
 const { Expo } = require("expo-server-sdk");
+const Restaurant = require("../models/Restaurant");
+const Supplier = require("../models/Supplier");
 const Order = require("../models/Order");
 const Cart = require("../models/Cart");
 const User = require("../models/User");
@@ -57,6 +59,35 @@ module.exports = {
       cart.cartItems = [];
       cart.totalAmount = 0;
       await cart.save();
+
+      try {
+        const target = await (restaurant
+          ? Restaurant.findById(restaurant)
+          : Supplier.findById(supplier));
+
+        console.log(target.owner.notificationToken);
+        if (target && target.owner.notificationToken) {
+          const expo = new Expo();
+          const pushToken = target.owner.notificationToken;
+
+          if (Expo.isExpoPushToken(pushToken)) {
+            const message = {
+              to: pushToken,
+              sound: "default",
+              title: `${target.title} - New Order Received`,
+              body: `You have received a new order. Order ID: ${newOrder._id}`,
+            };
+
+            await expo.sendPushNotificationsAsync([message]);
+          } else {
+            console.error("Invalid Expo push token:", pushToken);
+          }
+        } else {
+          console.error("Notification token not found for the target entity.");
+        }
+      } catch (notificationError) {
+        console.error("Error sending notification:", notificationError.message);
+      }
 
       res.status(200).json({
         status: true,
@@ -217,19 +248,19 @@ module.exports = {
     }
   },
 
-  getRestaurantReviews: async (req, res) => {
-    const { restaurantId } = req.params;
+  getStoreReviews: async (req, res) => {
+    const { storeId } = req.params;
 
     try {
       const reviews = await Order.find({
-        restaurant: restaurantId,
+        $or: [{ restaurant: storeId }, { supplier: storeId }],
         "rating.status": "submitted",
       }).select("rating userId createdAt");
 
       if (!reviews || reviews.length === 0) {
         return res.status(404).json({
           status: false,
-          message: "No reviews found for this restaurant",
+          message: "No reviews found for this store",
         });
       }
 
@@ -353,6 +384,7 @@ module.exports = {
             {
               to: pushToken,
               sound: "default",
+              title: `Order Notification`,
               body: message,
             },
           ];
@@ -468,6 +500,7 @@ module.exports = {
             {
               to: pushToken,
               sound: "default",
+              title: `Order Notification`,
               body: message,
             },
           ];
@@ -521,6 +554,7 @@ module.exports = {
           {
             to: pushToken,
             sound: "default",
+            title: `Order Notification`,
             body: message,
           },
         ];
@@ -570,6 +604,7 @@ module.exports = {
           {
             to: pushToken,
             sound: "default",
+            title: `Order Notification`,
             body: message,
           },
         ];
@@ -581,6 +616,39 @@ module.exports = {
       res.status(200).json({
         status: true,
         message: "Order payment status updated successfully",
+        order,
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ status: false, message: error.message });
+    }
+  },
+
+  markOrderAsCompleted: async (req, res) => {
+    const { orderId } = req.body;
+
+    try {
+      const order = await Order.findById(orderId);
+
+      if (!order) {
+        return res
+          .status(404)
+          .json({ status: false, message: "Order not found" });
+      }
+
+      if (order.orderStatus === "Completed") {
+        return res.status(400).json({
+          status: false,
+          message: "Order is already marked as Completed",
+        });
+      }
+
+      order.orderStatus = "Completed";
+      await order.save();
+
+      res.status(200).json({
+        status: true,
+        message: "Order status updated successfully",
         order,
       });
     } catch (error) {

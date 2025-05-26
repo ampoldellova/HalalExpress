@@ -24,10 +24,12 @@ module.exports = {
           );
 
           if (differentRestaurantItemIndex > -1) {
-            cart.cartItems = cart.cartItems.filter(
-              (item) => item.productId.supplier.toString() === supplierId
-            );
-            cart.totalAmount = 0;
+            return res.status(200).json({
+              status: true,
+              message:
+                "Cart contains items from a different store. Do you want to clear the cart and proceed?",
+              cartConflict: true,
+            });
           }
 
           const existingItemIndex = cart.cartItems.findIndex(
@@ -74,11 +76,14 @@ module.exports = {
           const differentRestaurantItemIndex = cart.cartItems.findIndex(
             (item) => item.foodId.restaurant.toString() !== restaurantId
           );
+
           if (differentRestaurantItemIndex > -1) {
-            cart.cartItems = cart.cartItems.filter(
-              (item) => item.foodId.restaurant.toString() === restaurantId
-            );
-            cart.totalAmount = 0;
+            return res.status(200).json({
+              status: true,
+              message:
+                "Cart contains items from a different store. Do you want to clear the cart and proceed?",
+              cartConflict: true,
+            });
           }
           const existingItemIndex = cart.cartItems.findIndex(
             (item) => item.foodId._id.toString() === foodId

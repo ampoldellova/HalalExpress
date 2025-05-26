@@ -66,27 +66,31 @@ const ManageFoodPage = () => {
         <Loader />
       ) : (
         <>
-          <View style={{ marginHorizontal: 20, marginTop: 15 }}>
+          <View style={{ marginHorizontal: 10, marginTop: 15 }}>
             <BackBtn onPress={() => navigation.goBack()} />
             <Text style={styles.heading}>Manage Foods</Text>
           </View>
           <FlatList
+            key={2}
+            numColumns={2}
             data={foods}
             showsVerticalScrollIndicator={false}
             scrollEnabled={false}
-            numColumns={2}
             keyExtractor={(item, index) => index.toString()}
-            key={2}
-            contentContainerStyle={{
-              alignItems: "center",
+            style={{ marginHorizontal: 10 }}
+            columnWrapperStyle={{
+              justifyContent: "space-between",
+              marginHorizontal: 5,
             }}
             renderItem={({ item }) => (
-              <ManageFoodCard
-                item={item}
-                onPress={() => {
-                  navigation.navigate("vendor-food-page", item);
-                }}
-              />
+              <View style={{ flex: 1, alignItems: "center" }}>
+                <ManageFoodCard
+                  item={item}
+                  onPress={() => {
+                    navigation.navigate("vendor-food-page", item);
+                  }}
+                />
+              </View>
             )}
           />
         </>

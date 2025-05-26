@@ -6,21 +6,29 @@ const HomeProductCategories = ({ ingredients }) => {
   const navigation = useNavigation();
 
   const renderIngredientCategoryItem = ({ item }) => (
-    <CategoryIngredientComp
-      item={item}
-      onPress={() => navigation.navigate("product-page", item)}
-    />
+    <View style={{ flex: 1, alignItems: "center" }}>
+      <CategoryIngredientComp
+        item={item}
+        onPress={() => navigation.navigate("product-page", item)}
+      />
+    </View>
   );
 
   return (
-    <View style={{ marginLeft: 12, marginBottom: 12 }}>
+    <View>
       <FlatList
+        key={2}
+        numColumns={2}
         data={ingredients}
         showsHorizontalScrollIndicator={false}
         keyExtractor={(item) => item._id}
         style={{ marginTop: 10 }}
         scrollEnabled
         renderItem={renderIngredientCategoryItem}
+        columnWrapperStyle={{
+          justifyContent: "space-between",
+          marginHorizontal: 10,
+        }}
       />
     </View>
   );

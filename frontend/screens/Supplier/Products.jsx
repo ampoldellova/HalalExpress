@@ -34,7 +34,7 @@ const Products = () => {
   );
 
   return (
-    <View style={{ marginTop: 5, marginBottom: 80 }}>
+    <View style={{ marginBottom: 80 }}>
       {loading && (
         <View
           style={{
@@ -68,12 +68,18 @@ const Products = () => {
           {item.isAvailable ? (
             <FlatList
               data={products}
+              key={2}
+              numColumns={2}
               showsVerticalScrollIndicator={false}
               style={{ marginTop: 5 }}
               scrollEnabled
               keyExtractor={(item) => item._id}
+              columnWrapperStyle={{
+                justifyContent: "space-between",
+                marginHorizontal: 10,
+              }}
               renderItem={({ item }) => (
-                <View style={{ alignItems: "center" }}>
+                <View style={{ flex: 1, alignItems: "center" }}>
                   <CategoryIngredientComp item={item} />
                 </View>
               )}

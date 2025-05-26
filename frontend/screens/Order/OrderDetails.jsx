@@ -22,6 +22,7 @@ import axios from "axios";
 import baseUrl from "../../assets/common/baseUrl";
 import Toast from "react-native-toast-message";
 import { RatingInput } from "react-native-stock-star-rating";
+import OrderTrackingMapView from "../../components/OrderTrackingMapView";
 
 const OrderDetails = () => {
   const route = useRoute();
@@ -221,6 +222,10 @@ const OrderDetails = () => {
         <View style={{ marginHorizontal: 20 }}>
           <BackBtn onPress={() => navigation.goBack()} />
           <Text style={styles.heading}>Order Details</Text>
+
+          {order?.orderStatus === "Out for delivery" && (
+            <OrderTrackingMapView order={order} />
+          )}
 
           <View
             style={{

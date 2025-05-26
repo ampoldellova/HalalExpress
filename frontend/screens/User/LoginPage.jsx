@@ -39,7 +39,7 @@ const LoginPage = () => {
   const dispatch = useDispatch();
   const animation = useRef(null);
   const [loader, setLoader] = useState(false);
-  const [obsecureText, setObsecureText] = useState(false);
+  const [obsecureText, setObsecureText] = useState(true);
   const { login, setLogin } = useContext(LoginContext);
   const navigation = useNavigation();
   const { user } = useSelector((state) => state.user);
@@ -210,7 +210,7 @@ const LoginPage = () => {
                         >
                           <MaterialCommunityIcons
                             name={
-                              obsecureText ? "eye-outline" : "eye-off-outline"
+                              obsecureText ? "eye-off-outline" : "eye-outline"
                             }
                             size={18}
                           />

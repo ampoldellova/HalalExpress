@@ -39,8 +39,11 @@ const ConfirmPayment = () => {
     setLoading(true);
     try {
       await axios.post(
-        `http://localhost:6002/api/orders/update-payment/${orderId}`
+        `https://localhost:6002/api/orders/update-payment/${orderId}`
       );
+      // await axios.post(
+      //   `https://halalexpress.onrender.com/api/orders/update-payment/${orderId}`
+      // );
 
       const message = {
         _id: new Date().getTime().toString(),
