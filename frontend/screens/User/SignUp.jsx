@@ -19,6 +19,7 @@ import BackBtn from "../../components/BackBtn";
 import baseUrl from "../../assets/common/baseUrl";
 import { LoginContext } from "../../contexts/LoginContext";
 import axios from "axios";
+import Toast from "react-native-toast-message";
 
 const validationSchema = Yup.object().shape({
   password: Yup.string()
@@ -41,34 +42,33 @@ const validationSchema = Yup.object().shape({
 const SignUp = ({ navigation }) => {
   const animation = useRef(null);
   const [loader, setLoader] = useState(false);
-  const [obsecureText, setObsecureText] = useState(false);
+  const [obsecureText, setObsecureText] = useState(true);
 
   const inValidForm = () => {
     Alert.alert("Invalid Form 🚨", "Please provide all required fields");
   };
 
   const registerUser = async (values) => {
+    setLoader(true);
     try {
       const endpoint = `${baseUrl}/register`;
       const data = values;
       const response = await axios.post(endpoint, data);
-      if (response.status === 201) {
-        Alert.alert(
-          "Registered Sucessfully ✅",
-          "You can now proceed to login."
-        );
 
-        navigation.goBack();
-      } else {
-        Alert.alert("Error Logging in 🚨", "Please provide valid credentials ");
+      if (response.status === 200) {
+        setLoader(false);
+        navigation.navigate("verification-page", {
+          values,
+        });
       }
     } catch (error) {
-      Alert.alert(
-        "Error ❌",
-        "Oops, Error logging in try again with correct credentials"
-      );
-    } finally {
       setLoader(false);
+      Toast.show({
+        type: "error",
+        text1: "Error ❌",
+        text2: "The email you entered is already registered",
+      });
+      return;
     }
   };
 
@@ -243,7 +243,7 @@ const SignUp = ({ navigation }) => {
                     }}
                   >
                     <MaterialCommunityIcons
-                      name={obsecureText ? "eye-outline" : "eye-off-outline"}
+                      name={obsecureText ? "eye-off-outline" : "eye-outline"}
                       size={18}
                     />
                   </TouchableOpacity>

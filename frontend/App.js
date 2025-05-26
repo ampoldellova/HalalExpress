@@ -49,6 +49,7 @@ import FoodPage from "./screens/Food/FoodPage";
 import RestaurantChatList from "./screens/Chat/RestaurantChatList";
 import RestaurantChatRoom from "./screens/Chat/RestaurantChatRoom";
 import Product from "./screens/Product/Product";
+import VerificationPage from "./screens/User/VerificationPage";
 
 const Stack = createNativeStackNavigator();
 
@@ -149,6 +150,11 @@ export default function App() {
                       <Stack.Screen
                         name="register-page"
                         component={SignUp}
+                        options={{ headerShown: false }}
+                      />
+                      <Stack.Screen
+                        name="verification-page"
+                        component={VerificationPage}
                         options={{ headerShown: false }}
                       />
                       <Stack.Screen
