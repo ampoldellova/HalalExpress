@@ -164,7 +164,7 @@ const EditProfilePage = ({ navigation, route }) => {
             </View>
 
             {/* Email Field */}
-            <View style={styles.wrapper}>
+            {/* <View style={styles.wrapper}>
               <Text style={styles.label}>Email</Text>
               <View
                 style={styles.inputWrapper(
@@ -194,7 +194,7 @@ const EditProfilePage = ({ navigation, route }) => {
               {touched.email && errors.email && (
                 <Text style={styles.errorMessage}>{errors.email}</Text>
               )}
-            </View>
+            </View> */}
 
             {/* Phone Field */}
             <View style={styles.wrapper}>

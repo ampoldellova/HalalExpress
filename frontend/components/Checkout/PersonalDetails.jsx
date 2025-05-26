@@ -97,7 +97,7 @@ const PersonalDetails = ({
             </View>
           </View>
 
-          <View style={{ marginBottom: 10 }}>
+          {/* <View style={{ marginBottom: 10 }}>
             <Text style={styles.label}>Email</Text>
             <View style={styles.inputWrapper(COLORS.offwhite)}>
               <MaterialCommunityIcons
@@ -115,7 +115,7 @@ const PersonalDetails = ({
                 onChangeText={(text) => setEmail(text)}
               />
             </View>
-          </View>
+          </View> */}
 
           <View style={{ marginBottom: 10 }}>
             <Text style={styles.label}>Phone number</Text>
