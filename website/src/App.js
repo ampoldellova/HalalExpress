@@ -12,6 +12,7 @@ import CheckOutPage from "./screens/CheckOutPage";
 import OrderPage from "./screens/Order/OrderPage";
 import OrderDetails from "./screens/Order/OrderDetails";
 import PaymentConfirmation from "./screens/PaymentConfirmation";
+import VerificationPage from "./screens/User/VerificationPage";
 
 function App() {
   const user = getUser();
@@ -22,6 +23,7 @@ function App() {
         <NavigationBar />
         <Routes>
           <Route path="/" element={<HomePage />} />
+          <Route path="/verification" element={<VerificationPage />} />
           <Route path="/admin/dashboard" element={<Dashboard />} />
           <Route path="/restaurant/:id" element={<RestaurantPage />} />
           <Route path="/supplier/:id" element={<SupplierPage />} />
