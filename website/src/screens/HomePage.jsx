@@ -8,7 +8,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import Lottie from "lottie-react";
 import vegetables from "../assets/anime/vegetables.json";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
@@ -24,6 +24,7 @@ import ProductCategories from "../components/Categories/ProductCategories";
 import CategoryProducts from "../components/Categories/CategoryProducts";
 import Products from "../components/Products/Products";
 import Suppliers from "../components/Suppliers/Suppliers";
+import mockup from "../assets/images/mockup.png";
 
 const COLORS = {
   primary: "#30b9b2",
@@ -135,10 +136,10 @@ const HomePage = () => {
   }, [restaurantsLoaded, foodsLoaded, productsLoaded, suppliersLoaded]);
 
   useEffect(() => {
+    getProducts();
+    getFoods();
     getRestaurants();
     getSuppliers();
-    getFoods();
-    getProducts();
     if (selectedCategory) {
       const filteredFoods = foods.filter(
         (food) => food.category._id === selectedCategory
@@ -160,120 +161,208 @@ const HomePage = () => {
         <Loader />
       ) : (
         <>
-          <Box sx={styles.container}>
-            <Grid2 container spacing={5} sx={styles.grid}>
-              <Box>
-                <Typography sx={styles.title}>
-                  Welcome to HalalExpress!
-                </Typography>
-                <Typography sx={styles.subTitle}>
-                  We deliver certified halal foods and products right to your
-                  doorstep. Enjoy a wide variety of halal options, ensuring
-                  quality and authenticity in every order.
-                </Typography>
-                <TextField
-                  sx={{ mt: 3 }}
-                  fullWidth
-                  placeholder="Search for food..."
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <SearchOutlinedIcon />
-                      </InputAdornment>
-                    ),
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <Button
-                          variant="contained"
-                          sx={{
-                            bgcolor: COLORS.primary,
-                            color: COLORS.white,
-                            borderRadius: 2,
-                            textTransform: "none",
-                            fontFamily: "regular",
-                          }}
-                        >
-                          Find food
-                        </Button>
-                      </InputAdornment>
-                    ),
-                  }}
-                />
-              </Box>
-              <Box sx={styles.vegetables}>
-                <Lottie
-                  animationData={vegetables}
-                  loop={true}
-                  style={{ width: "100%", height: "100%" }}
-                />
-              </Box>
-            </Grid2>
-          </Box>
+          <>
+            <Box sx={styles.container}>
+              <Grid2 container spacing={5} sx={styles.grid}>
+                <Box>
+                  <Typography sx={styles.title}>
+                    Welcome to HalalExpress!
+                  </Typography>
+                  <Typography sx={styles.subTitle}>
+                    We deliver certified halal foods and products right to your
+                    doorstep. Enjoy a wide variety of halal options, ensuring
+                    quality and authenticity in every order.
+                  </Typography>
+                  <TextField
+                    sx={{ mt: 3 }}
+                    fullWidth
+                    placeholder="Search for food..."
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <SearchOutlinedIcon />
+                        </InputAdornment>
+                      ),
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <Button
+                            variant="contained"
+                            sx={{
+                              bgcolor: COLORS.primary,
+                              color: COLORS.white,
+                              borderRadius: 2,
+                              textTransform: "none",
+                              fontFamily: "regular",
+                            }}
+                          >
+                            Find food
+                          </Button>
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                </Box>
+                <Box sx={styles.vegetables}>
+                  <Lottie
+                    animationData={vegetables}
+                    loop={true}
+                    style={{ width: "100%", height: "100%" }}
+                  />
+                </Box>
+              </Grid2>
+            </Box>
 
-          <Container maxWidth="lg" sx={{ height: "100vh" }}>
-            {user.userType === "Vendor" ? (
-              <ProductCategories
-                setSelectedCategory={setSelectedCategory}
-                setSelectedSection={setSelectedSection}
-                setSelectedValue={setSelectedValue}
-              />
-            ) : (
-              <Categories
-                setSelectedCategory={setSelectedCategory}
-                setSelectedSection={setSelectedSection}
-                setSelectedValue={setSelectedValue}
-              />
-            )}
+            <Container maxWidth="lg" sx={{ height: "110vh" }}>
+              {user.userType === "Vendor" ? (
+                <ProductCategories
+                  setSelectedCategory={setSelectedCategory}
+                  setSelectedSection={setSelectedSection}
+                  setSelectedValue={setSelectedValue}
+                />
+              ) : (
+                <Categories
+                  setSelectedCategory={setSelectedCategory}
+                  setSelectedSection={setSelectedSection}
+                  setSelectedValue={setSelectedValue}
+                />
+              )}
 
-            {selectedCategory ? (
-              <>
-                <Grid2
-                  container
+              {selectedCategory ? (
+                <>
+                  <Grid2
+                    container
+                    sx={{
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      mt: 5,
+                    }}
+                  >
+                    <Typography
+                      sx={{
+                        color: COLORS.black,
+                        fontSize: 24,
+                        fontFamily: "bold",
+                      }}
+                    >
+                      {user.userType === "Vendor"
+                        ? `Product(s) in ${selectedValue}`
+                        : `Food(s) in ${selectedValue}`}
+                    </Typography>
+                    <FastfoodIcon
+                      sx={{ fontSize: 24, color: COLORS.secondary }}
+                    />
+                  </Grid2>
+                  {user.userType === "Vendor" ? (
+                    <CategoryProducts products={filteredProducts} />
+                  ) : (
+                    <CategoryFoods foods={filteredFoods} />
+                  )}
+                </>
+              ) : (
+                <>
+                  {user.userType === "Vendor" ? (
+                    <>
+                      <Suppliers suppliers={suppliers} />
+                      <Divider sx={{ mt: 5 }} />
+                      <Products products={products} />
+                    </>
+                  ) : (
+                    <>
+                      <Restaurants restaurants={restaurants} />
+                      <Divider sx={{ mt: 5 }} />
+                      <Foods foods={foods} />
+                    </>
+                  )}
+                </>
+              )}
+
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  mt: 5,
+                  gap: 5,
+                }}
+              >
+                <Box
                   sx={{
-                    justifyContent: "space-between",
+                    display: "flex",
+                    justifyContent: "center",
+                    p: 3,
+                    borderRadius: 2,
+                  }}
+                >
+                  <Box
+                    component="img"
+                    src={mockup}
+                    sx={{ width: "500px", zIndex: 1 }}
+                  />
+                  <Box
+                    sx={{
+                      position: "absolute",
+                      height: 450,
+                      width: 450,
+                      backgroundColor: COLORS.primary,
+                      borderRadius: 999,
+                      mt: 5,
+                    }}
+                  />
+                </Box>
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
                     alignItems: "center",
-                    mt: 5,
                   }}
                 >
                   <Typography
                     sx={{
-                      color: COLORS.black,
-                      fontSize: 24,
+                      mt: 2,
                       fontFamily: "bold",
+                      color: COLORS.black,
+                      fontSize: 44,
+                      lineHeight: 1.2,
                     }}
                   >
-                    {user.userType === "Vendor"
-                      ? `Product(s) in ${selectedValue}`
-                      : `Food(s) in ${selectedValue}`}
+                    Experience HalalExpress on your mobile device.
                   </Typography>
-                  <FastfoodIcon
-                    sx={{ fontSize: 24, color: COLORS.secondary }}
-                  />
-                </Grid2>
-                {user.userType === "Vendor" ? (
-                  <CategoryProducts products={filteredProducts} />
-                ) : (
-                  <CategoryFoods foods={filteredFoods} />
-                )}
-              </>
-            ) : (
-              <>
-                {user.userType === "Vendor" ? (
-                  <>
-                    <Suppliers suppliers={suppliers} />
-                    <Divider sx={{ mt: 5 }} />
-                    <Products products={products} />
-                  </>
-                ) : (
-                  <>
-                    <Restaurants restaurants={restaurants} />
-                    <Divider sx={{ mt: 5 }} />
-                    <Foods foods={foods} />
-                  </>
-                )}
-              </>
-            )}
-          </Container>
+                  <Typography
+                    sx={{
+                      mt: 2,
+                      fontFamily: "regular",
+                      color: COLORS.gray,
+                      fontSize: 18,
+                    }}
+                  >
+                    Discover a wide variety of halal food options at your
+                    fingertips. Order online and enjoy fast, reliable delivery
+                    straight to your door. HalalExpress is your go-to platform
+                    for all things halal.
+                  </Typography>
+                </Box>
+              </Box>
+            </Container>
+          </>
+          <Box
+            sx={{
+              bgcolor: COLORS.primary,
+              height: 100,
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Typography
+              sx={{
+                color: COLORS.white,
+                fontFamily: "bold",
+                fontSize: 20,
+              }}
+            >
+              © 2025 HalalExpress. All rights reserved.
+            </Typography>
+          </Box>
         </>
       )}
     </>
