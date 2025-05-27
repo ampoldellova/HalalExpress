@@ -72,7 +72,7 @@ const RestaurantPage = () => {
         component="img"
         src={restaurant?.imageUrl?.url}
         sx={{
-          height: "40%",
+          height: "30%",
           width: "100%",
           objectFit: "cover",
           borderBottomLeftRadius: 15,
