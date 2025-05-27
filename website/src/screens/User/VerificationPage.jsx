@@ -35,9 +35,7 @@ const VerificationPage = () => {
 
       if (response.status === 201) {
         setLoading(false);
-        toast.success(
-          "Verification Successful ✅ Your account has been verified successfully."
-        );
+        toast.success("Verification Successful ✅");
         navigation("/");
       } else {
         setLoading(false);
@@ -66,7 +64,7 @@ const VerificationPage = () => {
         <Lottie
           animationData={mail}
           loop={true}
-          style={{ width: 300, height: 300, marginTop: 200 }}
+          style={{ width: 300, height: 300, marginTop: 20 }}
         />
 
         <Typography

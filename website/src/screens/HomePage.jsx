@@ -212,7 +212,7 @@ const HomePage = () => {
               </Grid2>
             </Box>
 
-            <Container maxWidth="lg" sx={{ height: "110vh" }}>
+            <Container maxWidth="lg">
               {user.userType === "Vendor" ? (
                 <ProductCategories
                   setSelectedCategory={setSelectedCategory}
@@ -342,26 +342,27 @@ const HomePage = () => {
                 </>
               )}
             </Container>
-          </>
-          <Box
-            sx={{
-              bgcolor: COLORS.primary,
-              height: 100,
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <Typography
+            <Box
               sx={{
-                color: COLORS.white,
-                fontFamily: "bold",
-                fontSize: 20,
+                bgcolor: COLORS.primary,
+                height: 100,
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                mt: 5,
               }}
             >
-              © 2025 HalalExpress. All rights reserved.
-            </Typography>
-          </Box>
+              <Typography
+                sx={{
+                  color: COLORS.white,
+                  fontFamily: "bold",
+                  fontSize: 20,
+                }}
+              >
+                © 2025 HalalExpress. All rights reserved.
+              </Typography>
+            </Box>
+          </>
         </>
       )}
     </>
