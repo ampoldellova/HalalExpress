@@ -1,17 +1,17 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import HomePage from './screens/HomePage';
-import NavigationBar from './components/NavigationBar';
-import './App.css';
-import { ToastContainer } from 'react-toastify';
-import Dashboard from './screens/Admin/Dashboard';
-import { getUser } from './utils/helpers';
-import RestaurantPage from './screens/Vendors/RestaurantPage';
-import SupplierPage from './screens/Suppliers/SupplierPage';
-import Profile from './screens/User/Profile';
-import CheckOutPage from './screens/CheckOutPage';
-import OrderPage from './screens/Order/OrderPage';
-import OrderDetails from './screens/Order/OrderDetails';
-import PaymentConfirmation from './screens/PaymentConfirmation';
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import HomePage from "./screens/HomePage";
+import NavigationBar from "./components/NavigationBar";
+import "./App.css";
+import { ToastContainer } from "react-toastify";
+import Dashboard from "./screens/Admin/Dashboard";
+import { getUser } from "./utils/helpers";
+import RestaurantPage from "./screens/Vendors/RestaurantPage";
+import SupplierPage from "./screens/Suppliers/SupplierPage";
+import Profile from "./screens/User/Profile";
+import CheckOutPage from "./screens/CheckOutPage";
+import OrderPage from "./screens/Order/OrderPage";
+import OrderDetails from "./screens/Order/OrderDetails";
+import PaymentConfirmation from "./screens/PaymentConfirmation";
 
 function App() {
   const user = getUser();
@@ -29,10 +29,13 @@ function App() {
           <Route path="/checkout/:id" element={<CheckOutPage />} />
           <Route path="/order-page/:id" element={<OrderPage />} />
           <Route path="/order-detail/:id" element={<OrderDetails />} />
-          <Route path="/payment-confirmation" element={<PaymentConfirmation />} />
+          <Route
+            path="/payment-confirmation"
+            element={<PaymentConfirmation />}
+          />
         </Routes>
       </Router>
-      <ToastContainer position='bottom-right' stacked limit={5} />
+      <ToastContainer position="bottom-right" stacked limit={5} />
     </div>
   );
 }
