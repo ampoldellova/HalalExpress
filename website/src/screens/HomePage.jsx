@@ -273,75 +273,74 @@ const HomePage = () => {
                       <Foods foods={foods} />
                     </>
                   )}
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "center",
+                      mt: 5,
+                      gap: 5,
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "center",
+                        p: 3,
+                        borderRadius: 2,
+                      }}
+                    >
+                      <Box
+                        component="img"
+                        src={mockup}
+                        sx={{ width: "500px", zIndex: 1 }}
+                      />
+                      <Box
+                        sx={{
+                          position: "absolute",
+                          height: 450,
+                          width: 450,
+                          backgroundColor: COLORS.primary,
+                          borderRadius: 999,
+                          mt: 5,
+                        }}
+                      />
+                    </Box>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                        justifyContent: "center",
+                        alignItems: "center",
+                      }}
+                    >
+                      <Typography
+                        sx={{
+                          mt: 2,
+                          fontFamily: "bold",
+                          color: COLORS.black,
+                          fontSize: 44,
+                          lineHeight: 1.2,
+                        }}
+                      >
+                        Experience HalalExpress on your mobile device.
+                      </Typography>
+                      <Typography
+                        sx={{
+                          mt: 2,
+                          fontFamily: "regular",
+                          color: COLORS.gray,
+                          fontSize: 18,
+                        }}
+                      >
+                        Discover a wide variety of halal food options at your
+                        fingertips. Order online and enjoy fast, reliable
+                        delivery straight to your door. HalalExpress is your
+                        go-to platform for all things halal.
+                      </Typography>
+                    </Box>
+                  </Box>
                 </>
               )}
-
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "center",
-                  mt: 5,
-                  gap: 5,
-                }}
-              >
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "center",
-                    p: 3,
-                    borderRadius: 2,
-                  }}
-                >
-                  <Box
-                    component="img"
-                    src={mockup}
-                    sx={{ width: "500px", zIndex: 1 }}
-                  />
-                  <Box
-                    sx={{
-                      position: "absolute",
-                      height: 450,
-                      width: 450,
-                      backgroundColor: COLORS.primary,
-                      borderRadius: 999,
-                      mt: 5,
-                    }}
-                  />
-                </Box>
-                <Box
-                  sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                >
-                  <Typography
-                    sx={{
-                      mt: 2,
-                      fontFamily: "bold",
-                      color: COLORS.black,
-                      fontSize: 44,
-                      lineHeight: 1.2,
-                    }}
-                  >
-                    Experience HalalExpress on your mobile device.
-                  </Typography>
-                  <Typography
-                    sx={{
-                      mt: 2,
-                      fontFamily: "regular",
-                      color: COLORS.gray,
-                      fontSize: 18,
-                    }}
-                  >
-                    Discover a wide variety of halal food options at your
-                    fingertips. Order online and enjoy fast, reliable delivery
-                    straight to your door. HalalExpress is your go-to platform
-                    for all things halal.
-                  </Typography>
-                </Box>
-              </Box>
             </Container>
           </>
           <Box

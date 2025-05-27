@@ -35,7 +35,7 @@ function App() {
           />
         </Routes>
       </Router>
-      <ToastContainer position="bottom-right" stacked limit={5} />
+      <ToastContainer position="top-center" stacked limit={5} />
     </div>
   );
 }
