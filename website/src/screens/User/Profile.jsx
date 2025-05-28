@@ -266,7 +266,7 @@ const Profile = () => {
               }}
             />
 
-            <Typography
+            {/* <Typography
               sx={{
                 fontFamily: "regular",
                 textAlign: "right",
@@ -276,8 +276,9 @@ const Profile = () => {
               }}
             >
               Email
-            </Typography>
-            <TextField
+            </Typography> */}
+
+            {/* <TextField
               placeholder="Enter Email"
               variant="outlined"
               name="email"
@@ -323,7 +324,7 @@ const Profile = () => {
                   fontSize: 16,
                 },
               }}
-            />
+            /> */}
 
             <Typography
               sx={{
