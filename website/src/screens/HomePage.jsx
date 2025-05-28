@@ -131,7 +131,9 @@ const HomePage = () => {
 
   useEffect(() => {
     if (restaurantsLoaded && foodsLoaded && productsLoaded && suppliersLoaded) {
-      setLoader(false);
+      setTimeout(() => {
+        setLoader(false);
+      }, 1000);
     }
   }, [restaurantsLoaded, foodsLoaded, productsLoaded, suppliersLoaded]);
 
