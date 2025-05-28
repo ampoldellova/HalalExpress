@@ -38,8 +38,6 @@ const CartDrawer = ({ onClick }) => {
   const navigate = useNavigate();
   const [cart, setCart] = useState([]);
   const [cartItems, setCartItems] = useState([]);
-  const [vendorCart, setVendorCart] = useState([]);
-  const [vendorCartItems, setVendorCartItems] = useState([]);
   const token = getToken();
   const user = getUser();
 
@@ -145,7 +143,7 @@ const CartDrawer = ({ onClick }) => {
 
   useEffect(() => {
     getCartItems();
-  }, [cartItems, vendorCartItems]);
+  }, [cartItems]);
 
   return (
     <Box sx={{ width: 500 }}>
@@ -187,8 +185,8 @@ const CartDrawer = ({ onClick }) => {
                       component="img"
                       src={
                         item?.foodId
-                          ? item?.foodId?.imageUrl.url
-                          : item?.productId?.imageUrl.url
+                          ? item?.foodId?.imageUrl?.url
+                          : item?.productId?.imageUrl?.url
                       }
                       sx={{
                         height: 100,
@@ -261,7 +259,7 @@ const CartDrawer = ({ onClick }) => {
                               onClick={() =>
                                 removeItem(
                                   item?.foodId
-                                    ? item?.foodId._id
+                                    ? item?.foodId?._id
                                     : item?.productId?._id
                                 )
                               }
@@ -274,7 +272,7 @@ const CartDrawer = ({ onClick }) => {
                               onClick={() =>
                                 decrement(
                                   item?.foodId
-                                    ? item?.foodId._id
+                                    ? item?.foodId?._id
                                     : item?.productId?._id
                                 )
                               }
@@ -296,7 +294,7 @@ const CartDrawer = ({ onClick }) => {
                             onClick={() =>
                               increment(
                                 item?.foodId
-                                  ? item?.foodId._id
+                                  ? item?.foodId?._id
                                   : item?.productId?._id
                               )
                             }
@@ -332,7 +330,7 @@ const CartDrawer = ({ onClick }) => {
                 </Box>
                 <Button
                   onClick={() => {
-                    navigate(`/checkout/${cart._id}`, { state: { cart } });
+                    navigate(`/checkout/${cart?._id}`, { state: { cart } });
                     onClick();
                   }}
                   variant="contained"
