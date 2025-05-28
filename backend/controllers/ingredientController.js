@@ -40,6 +40,26 @@ module.exports = {
     }
   },
 
+  getProductById: async (req, res) => {
+    const productId = req.params.id;
+
+    try {
+      const product = await Ingredient.findById(productId)
+        .populate("category")
+        .populate("supplier");
+
+      if (!product) {
+        return res
+          .status(404)
+          .json({ status: false, message: "Product not found" });
+      }
+
+      res.status(200).json(product);
+    } catch (error) {
+      res.status(500).json({ status: false, message: error.message });
+    }
+  },
+
   getIngredientBySupplier: async (req, res) => {
     const supplierId = req.params.supplierId;
 

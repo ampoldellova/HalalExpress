@@ -54,7 +54,9 @@ module.exports = {
     const foodId = req.params.id;
 
     try {
-      const food = await Food.findById(foodId);
+      const food = await Food.findById(foodId)
+        .populate("category")
+        .populate("restaurant");
 
       if (!food) {
         return res

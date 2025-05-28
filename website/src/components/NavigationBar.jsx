@@ -46,7 +46,6 @@ export default function NavigationBar() {
   const [openSignUp, setOpenSignUp] = React.useState(false);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
   const [cart, setCart] = React.useState([]);
-  const [vendorCartItems, setVendorCartItems] = React.useState([]);
 
   const toggleCart = (newOpen) => () => {
     setOpenCart(newOpen);
@@ -62,7 +61,7 @@ export default function NavigationBar() {
 
   const getCartItems = async () => {
     try {
-      const token = await sessionStorage.getItem("token");
+      const token = sessionStorage.getItem("token");
       if (token) {
         const config = {
           headers: {
@@ -82,29 +81,7 @@ export default function NavigationBar() {
       console.log(error.message);
     }
   };
-
-  const getVendorCartItems = async () => {
-    try {
-      const token = await sessionStorage.getItem("token");
-      if (token) {
-        const config = {
-          headers: {
-            Authorization: `Bearer ${JSON.parse(token)}`,
-          },
-        };
-
-        const response = await axios.get(
-          `http://localhost:6002/api/cart/vendor/`,
-          config
-        );
-        setVendorCartItems(response.data.cartItems);
-      } else {
-        console.log("No token found");
-      }
-    } catch (error) {
-      console.log(error.message);
-    }
-  };
+  console.log("cart", cart);
 
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
@@ -123,10 +100,8 @@ export default function NavigationBar() {
   const cartDrawerElement = <CartDrawer onClick={toggleCart(false)} />;
 
   useEffect(() => {
-    {
-      user.userType === "Vendor" ? getVendorCartItems() : getCartItems();
-    }
-  }, [cart, vendorCartItems]);
+    getCartItems();
+  }, [cart]);
 
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -174,32 +149,15 @@ export default function NavigationBar() {
                     )}
                   </Button>
                   <IconButton color="inherit" onClick={toggleCart(true)}>
-                    {user.userType === "Vendor" ? (
-                      <>
-                        {vendorCartItems?.length > 0 ? (
-                          <Badge
-                            badgeContent={vendorCartItems?.length}
-                            color="primary"
-                          >
-                            <LocalMallOutlinedIcon sx={styles.cartIcon} />
-                          </Badge>
-                        ) : (
-                          <LocalMallOutlinedIcon sx={styles.cartIcon} />
-                        )}
-                      </>
+                    {cart?.cartItems?.length > 0 ? (
+                      <Badge
+                        badgeContent={cart?.cartItems?.length}
+                        color="primary"
+                      >
+                        <LocalMallOutlinedIcon sx={styles.cartIcon} />
+                      </Badge>
                     ) : (
-                      <>
-                        {cart?.cartItems?.length > 0 ? (
-                          <Badge
-                            badgeContent={cart?.cartItems?.length}
-                            color="primary"
-                          >
-                            <LocalMallOutlinedIcon sx={styles.cartIcon} />
-                          </Badge>
-                        ) : (
-                          <LocalMallOutlinedIcon sx={styles.cartIcon} />
-                        )}
-                      </>
+                      <LocalMallOutlinedIcon sx={styles.cartIcon} />
                     )}
                   </IconButton>
                 </Grid2>
