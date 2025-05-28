@@ -31,12 +31,14 @@ import EditAddressModal from "../components/Users/EditAddressModal";
 import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
 import CircularProgress from "@mui/material/CircularProgress";
 import { toast } from "react-toastify";
+import PlaceOutlinedIcon from "@mui/icons-material/PlaceOutlined";
 import GoogleApiServices from "../hook/GoogleApiServices";
 import {
   attachPaymentMethod,
   createPaymentIntent,
   createPaymentMethod,
 } from "../hook/paymongoService";
+import TextsmsOutlinedIcon from "@mui/icons-material/TextsmsOutlined";
 
 const COLORS = {
   primary: "#30b9b2",
@@ -496,43 +498,62 @@ const CheckOutPage = () => {
                   </Typography>
                 </Box>
               </Box>
-
-              <TextField
-                multiline
-                fullWidth
-                rows={4}
-                placeholder="Add your note here..."
-                value={orderNote}
-                onChange={(e) => setOrderNote(e.target.value)}
-                InputProps={{
-                  sx: {
-                    fontFamily: "regular",
-                    fontSize: 16,
-                  },
-                }}
-                sx={{
-                  "& .MuiOutlinedInput-root": {
-                    bgcolor: COLORS.offwhite,
-                    borderRadius: 3,
-                    "& fieldset": {
-                      borderColor: COLORS.gray2,
-                    },
-                    "&:hover fieldset": {
-                      borderColor: COLORS.secondary,
-                    },
-                    "&.Mui-focused fieldset": {
-                      borderColor: COLORS.secondary,
-                    },
-                  },
-                  "& .MuiInputLabel-root": {
-                    fontFamily: "regular",
-                    fontSize: 16,
-                  },
-                }}
-              />
             </Box>
           ) : (
-            <></>
+            <Box
+              sx={{
+                borderRadius: 3,
+                p: 2,
+                bgcolor: COLORS.offwhite,
+                width: { xs: 435, md: 650 },
+                mb: 5,
+              }}
+            >
+              <Typography sx={{ fontFamily: "bold", fontSize: 24, mb: 2 }}>
+                Pickup location at:
+              </Typography>
+              <Box sx={{ display: "flex", alignItems: "flex-start" }}>
+                <Box
+                  component="img"
+                  src={
+                    restaurant
+                      ? restaurant?.logoUrl?.url
+                      : supplier?.logoUrl?.url
+                  }
+                  sx={{
+                    width: 150,
+                    height: 150,
+                    objectFit: "cover",
+                    borderRadius: 3,
+                    mb: 2,
+                    border: `1px solid ${COLORS.gray2}`,
+                  }}
+                />
+                <Box sx={{ ml: 2, display: "flex", flexDirection: "column" }}>
+                  <Typography sx={{ fontFamily: "bold", fontSize: 20, mb: 1 }}>
+                    {restaurant ? restaurant?.title : supplier?.title}
+                  </Typography>
+                  <Box sx={{ display: "flex", alignItems: "flex-start" }}>
+                    <PlaceOutlinedIcon
+                      sx={{ color: COLORS.gray, mb: 1, fontSize: 34 }}
+                    />
+                    <Typography
+                      sx={{
+                        fontFamily: "regular",
+                        fontSize: 16,
+                        color: COLORS.gray,
+                        width: { xs: 250, md: 400 },
+                        ml: 1,
+                      }}
+                    >
+                      {restaurant
+                        ? restaurant?.coords?.address
+                        : supplier?.coords?.address}
+                    </Typography>
+                  </Box>
+                </Box>
+              </Box>
+            </Box>
           )}
 
           <Box
@@ -545,114 +566,140 @@ const CheckOutPage = () => {
             }}
           >
             <Typography sx={{ fontFamily: "bold", fontSize: 24, mb: 2 }}>
-              Delivery Options
+              Special Remarks
             </Typography>
-            {restaurant?.delivery || supplier?.delivery ? (
-              <>
-                <Box
-                  sx={{
-                    mb: 2,
-                    border: 1,
-                    borderRadius: 3,
-                    p: 2,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    flexDirection: "row",
-                    borderColor: COLORS.gray2,
-                    "&:hover": { borderColor: COLORS.black },
-                  }}
-                >
-                  <Box sx={{ display: "flex", alignItems: "center" }}>
-                    <Radio
-                      sx={{
-                        p: 0,
-                        mr: 2,
-                        "&.Mui-checked": { color: COLORS.primary },
-                      }}
-                      checked={selectedDeliveryOption === "standard"}
-                      onChange={() => handleDeliveryOptionChange("standard")}
+            <TextField
+              multiline
+              fullWidth
+              rows={3}
+              placeholder="Let us know if you have any special requests."
+              value={orderNote}
+              onChange={(e) => setOrderNote(e.target.value)}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment
+                    position="start"
+                    sx={{ alignItems: "center" }}
+                  >
+                    <TextsmsOutlinedIcon
+                      style={{ color: COLORS.gray, fontSize: 20 }}
                     />
-                    <Box
-                      sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "space-between",
-                        width: { xs: 365, md: 575 },
-                      }}
-                    >
-                      <Box sx={{ display: "flex", alignItems: "center" }}>
-                        <Typography
-                          sx={{ fontFamily: "medium", fontSize: 16, mr: 1 }}
-                        >
-                          Standard Delivery
-                        </Typography>
-                        {selectedDeliveryOption === "standard" && (
-                          <Typography
-                            sx={{
-                              fontFamily: "regular",
-                              color: COLORS.gray,
-                              fontSize: 16,
-                            }}
-                          >
-                            ({totalTime.toFixed(0)} mins)
-                          </Typography>
-                        )}
-                      </Box>
+                  </InputAdornment>
+                ),
+                sx: {
+                  fontFamily: "regular",
+                  fontSize: 16,
+                  alignItems: "center",
+                },
+              }}
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  bgcolor: COLORS.offwhite,
+                  borderRadius: 3,
+                  "& fieldset": {
+                    borderColor: COLORS.gray2,
+                  },
+                  "&:hover fieldset": {
+                    borderColor: COLORS.secondary,
+                  },
+                  "&.Mui-focused fieldset": {
+                    borderColor: COLORS.secondary,
+                  },
+                },
+                "& .MuiInputLabel-root": {
+                  fontFamily: "regular",
+                  fontSize: 16,
+                },
+              }}
+            />
+          </Box>
+
+          {(restaurant?.delivery || supplier?.delivery) && (
+            <Box
+              sx={{
+                borderRadius: 3,
+                p: 2,
+                bgcolor: COLORS.offwhite,
+                width: { xs: 435, md: 650 },
+                mb: 5,
+              }}
+            >
+              <Typography sx={{ fontFamily: "bold", fontSize: 24, mb: 2 }}>
+                Delivery Options
+              </Typography>
+              <Box
+                sx={{
+                  mb: 2,
+                  border: 1,
+                  borderRadius: 3,
+                  p: 2,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  flexDirection: "row",
+                  borderColor: COLORS.gray2,
+                  "&:hover": { borderColor: COLORS.black },
+                }}
+              >
+                <Box sx={{ display: "flex", alignItems: "center" }}>
+                  <Radio
+                    sx={{
+                      p: 0,
+                      mr: 2,
+                      "&.Mui-checked": { color: COLORS.primary },
+                    }}
+                    checked={selectedDeliveryOption === "standard"}
+                    onChange={() => handleDeliveryOptionChange("standard")}
+                  />
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      width: { xs: 365, md: 575 },
+                    }}
+                  >
+                    <Box sx={{ display: "flex", alignItems: "center" }}>
+                      <Typography
+                        sx={{ fontFamily: "medium", fontSize: 16, mr: 1 }}
+                      >
+                        Standard Delivery
+                      </Typography>
                       {selectedDeliveryOption === "standard" && (
-                        <Box
+                        <Typography
                           sx={{
-                            borderRadius: 8,
-                            bgcolor: COLORS.secondary,
-                            px: 1,
+                            fontFamily: "regular",
+                            color: COLORS.gray,
+                            fontSize: 16,
                           }}
                         >
-                          <Typography
-                            sx={{
-                              fontFamily: "regular",
-                              color: COLORS.white,
-                              fontSize: 16,
-                            }}
-                          >
-                            {" "}
-                            + ₱ {standardFee}
-                          </Typography>
-                        </Box>
+                          ({totalTime.toFixed(0)} mins)
+                        </Typography>
                       )}
                     </Box>
+                    {selectedDeliveryOption === "standard" && (
+                      <Box
+                        sx={{
+                          borderRadius: 8,
+                          bgcolor: COLORS.secondary,
+                          px: 1,
+                        }}
+                      >
+                        <Typography
+                          sx={{
+                            fontFamily: "regular",
+                            color: COLORS.white,
+                            fontSize: 16,
+                          }}
+                        >
+                          {" "}
+                          + ₱ {standardFee}
+                        </Typography>
+                      </Box>
+                    )}
                   </Box>
                 </Box>
-                <Box
-                  sx={{
-                    mb: 2,
-                    border: 1,
-                    borderRadius: 3,
-                    p: 2,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    flexDirection: "row",
-                    borderColor: COLORS.gray2,
-                    "&:hover": { borderColor: COLORS.black },
-                  }}
-                >
-                  <Box sx={{ display: "flex", alignItems: "center" }}>
-                    <Radio
-                      sx={{
-                        p: 0,
-                        mr: 2,
-                        "&.Mui-checked": { color: COLORS.primary },
-                      }}
-                      checked={selectedDeliveryOption === "pickup"}
-                      onChange={() => handleDeliveryOptionChange("pickup")}
-                    />
-                    <Typography sx={{ fontFamily: "medium", fontSize: 16 }}>
-                      Pickup
-                    </Typography>
-                  </Box>
-                </Box>
-              </>
-            ) : (
+              </Box>
               <Box
                 sx={{
                   mb: 2,
@@ -682,8 +729,8 @@ const CheckOutPage = () => {
                   </Typography>
                 </Box>
               </Box>
-            )}
-          </Box>
+            </Box>
+          )}
 
           <Box
             sx={{
