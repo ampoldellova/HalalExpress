@@ -87,6 +87,12 @@ const RestaurantFoodModal = ({ open, onClose, foodId }) => {
 
     try {
       const token = sessionStorage.getItem("token");
+
+      if (!token) {
+        toast.error("You must be logged in to add items to the cart.");
+        return;
+      }
+
       const config = {
         headers: {
           "Content-Type": "application/json",

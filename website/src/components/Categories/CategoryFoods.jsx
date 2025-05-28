@@ -5,10 +5,15 @@ import {
   CardContent,
   CardMedia,
   Grid2,
+  IconButton,
   Rating,
   Typography,
 } from "@mui/material";
-import React from "react";
+import React, { useState } from "react";
+import RestaurantFoodModal from "../Foods/RestaurantFoodModal";
+import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const COLORS = {
   primary: "#30b9b2",
@@ -27,116 +32,174 @@ const COLORS = {
 };
 
 const CategoryFoods = ({ foods }) => {
+  const [openFoodModal, setOpenFoodModal] = useState(false);
+  const [foodId, setFoodId] = useState(null);
+
+  const handleConfirmClearCart = async (cartItem, config) => {
+    try {
+      await axios.delete(`http://localhost:6002/api/cart/clear-cart`, config);
+      await axios.post(`http://localhost:6002/api/cart/`, cartItem, config);
+      toast.success("Item added to cart ");
+    } catch (error) {
+      console.error("Error clearing cart or adding food:", error);
+      toast.error("Failed to clear cart or add food");
+    }
+  };
+
+  const addItemToCart = async (food) => {
+    const cartItem = {
+      foodId: food?._id,
+      restaurantId: food?.restaurant?._id,
+      additives: [],
+      instructions: "",
+      quantity: 1,
+      totalPrice: food?.price,
+    };
+
+    try {
+      const token = sessionStorage.getItem("token");
+
+      if (!token) {
+        toast.error("You must be logged in to add items to the cart.");
+        return;
+      }
+
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${JSON.parse(token)}`,
+        },
+      };
+
+      const response = await axios.post(
+        `http://localhost:6002/api/cart/`,
+        cartItem,
+        config
+      );
+
+      if (response.data.cartConflict) {
+        const confirmed = window.confirm(
+          "Food from different restaurants cannot exist in the same cart. Do you want to clear your cart to add this food?"
+        );
+        if (confirmed) {
+          handleConfirmClearCart(cartItem, config);
+        }
+      } else {
+        toast.success("Item added to cart");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
-    <Grid2
-      container
-      spacing={3}
-      sx={{ flexDirection: "row", justifyContent: "center", mt: 2 }}
-    >
-      {foods.map((food) => (
-        <Card
-          sx={{
-            boxShadow: "none",
-            cursor: "pointer",
-            mb: 2,
-            borderRadius: 5,
-            width: 563,
-            bgcolor: COLORS.offwhite,
-          }}
-        >
-          <Grid2
-            container
-            sx={{ flexDirection: "row", alignItems: "center", borderRadius: 5 }}
+    <>
+      <Grid2
+        container
+        spacing={3}
+        sx={{ flexDirection: "row", justifyContent: "center", mt: 2 }}
+      >
+        {foods.map((food) => (
+          <Card
+            sx={{
+              boxShadow: "none",
+              cursor: "pointer",
+              mb: 2,
+              borderRadius: 5,
+              width: 500,
+              borderColor: COLORS.gray2,
+              borderWidth: 1,
+              borderStyle: "solid",
+              padding: 2,
+            }}
           >
-            <CardMedia
-              component="img"
-              image={food.imageUrl.url}
+            <Grid2
+              container
               sx={{
-                height: 140,
-                width: 140,
+                flexDirection: "row",
+                alignItems: "center",
                 borderRadius: 5,
-                objectFit: "cover",
               }}
-            />
-            <Grid2 sx={{ flexDirection: "column", ml: 2, width: 380 }}>
-              <Typography
+              onClick={() => {
+                setOpenFoodModal(true);
+                setFoodId(food?._id);
+              }}
+            >
+              <CardMedia
+                component="img"
+                image={food?.imageUrl?.url}
                 sx={{
-                  fontFamily: "medium",
-                  fontSize: 18,
-                  overflow: "hidden",
-                  display: "-webkit-box",
-                  WebkitLineClamp: 2,
-                  WebkitBoxOrient: "vertical",
+                  height: 140,
+                  width: 150,
+                  borderRadius: 3,
+                  objectFit: "cover",
                 }}
-              >
-                {food.title}
-              </Typography>
-              {food.foodTags.slice(0, 3).map((tag) => (
-                <Box
+              />
+              <Grid2 sx={{ flexDirection: "column", ml: 2, width: 300 }}>
+                <Typography
                   sx={{
-                    display: "inline-block",
-                    bgcolor: COLORS.gray2,
-                    px: 1,
-                    borderRadius: 2,
-                    mt: 1,
-                    mr: 1,
+                    fontFamily: "bold",
+                    fontSize: 18,
                   }}
                 >
-                  <Typography
-                    sx={{
-                      fontFamily: "regular",
-                      color: COLORS.white,
-                      fontSize: 14,
-                    }}
-                  >
-                    {tag}
-                  </Typography>
-                </Box>
-              ))}
-              <Typography
-                sx={{
-                  fontFamily: "regular",
-                  color: COLORS.gray,
-                  fontSize: 14,
-                  mt: 1,
-                }}
-              >
-                {food.ratingCount} Reviews
-              </Typography>
-              <Grid2
-                container
-                sx={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  mt: 1,
-                }}
-              >
-                <Rating
-                  name="simple-controlled"
-                  value={food.rating}
-                  precision={0.2}
-                  readOnly
-                  size="medium"
-                  sx={{ color: COLORS.secondary }}
-                />
-                <Box sx={{ bgcolor: COLORS.secondary, px: 1, borderRadius: 2 }}>
-                  <Typography
-                    sx={{
-                      fontFamily: "regular",
-                      color: COLORS.white,
-                      fontSize: 14,
-                    }}
-                  >
-                    ₱ {food.price}
-                  </Typography>
-                </Box>
+                  {food?.title}
+                </Typography>
+                <Typography
+                  sx={{
+                    fontFamily: "regular",
+                    fontSize: 18,
+                    my: 1,
+                  }}
+                >
+                  ₱ {food?.price}
+                </Typography>
+                <Typography
+                  sx={{
+                    fontFamily: "regular",
+                    fontSize: 14,
+                    display: "-webkit-box",
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: "vertical",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    color: COLORS.gray,
+                  }}
+                >
+                  {food?.description}
+                </Typography>
               </Grid2>
             </Grid2>
-          </Grid2>
-        </Card>
-      ))}
-    </Grid2>
+
+            <IconButton
+              size="medium"
+              sx={{
+                zIndex: 1,
+                position: "absolute",
+                backgroundColor: "white",
+                mt: -6,
+                ml: 1,
+                "&:hover": {
+                  backgroundColor: COLORS.primary,
+                  color: "white",
+                },
+              }}
+              onClick={() => {
+                console.log(food);
+                addItemToCart(food);
+              }}
+            >
+              <AddOutlinedIcon fontSize="inherit" />
+            </IconButton>
+          </Card>
+        ))}
+      </Grid2>
+
+      <RestaurantFoodModal
+        open={openFoodModal}
+        onClose={() => setOpenFoodModal(false)}
+        foodId={foodId}
+      />
+    </>
   );
 };
 

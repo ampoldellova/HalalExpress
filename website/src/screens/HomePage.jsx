@@ -214,7 +214,7 @@ const HomePage = () => {
               </Grid2>
             </Box>
 
-            <Container maxWidth="lg">
+            <Container maxWidth="lg" sx={{ height: "100vh" }}>
               {user.userType === "Vendor" ? (
                 <ProductCategories
                   setSelectedCategory={setSelectedCategory}
