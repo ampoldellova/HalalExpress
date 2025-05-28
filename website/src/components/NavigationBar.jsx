@@ -81,7 +81,6 @@ export default function NavigationBar() {
       console.log(error.message);
     }
   };
-  console.log("cart", cart);
 
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);

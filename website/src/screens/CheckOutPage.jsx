@@ -67,21 +67,28 @@ const CheckOutPage = () => {
   const [addresses, setAddresses] = useState([]);
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [distanceTime, setDistanceTime] = useState({});
-  const [selectedDeliveryOption, setSelectedDeliveryOption] =
-    useState("pickup");
+  const [selectedDeliveryOption, setSelectedDeliveryOption] = useState(null);
   const [editUserDetails, setEditUserDetails] = useState(false);
   const [openAddAddressModal, setOpenAddAddressModal] = useState(false);
   const [deliveryFee, setDeliveryFee] = useState(0);
   const [standardFee, setStandardFee] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState(
-    selectedDeliveryOption === "pickup" ? "Pay at the counter" : "cod"
-  );
+  const [paymentMethod, setPaymentMethod] = useState(null);
   const [orderNote, setOrderNote] = useState("");
 
   const navigate = useNavigate();
   const handleOpenAddAddressModal = () => setOpenAddAddressModal(true);
   const handleCloseAddAddressModal = () => setOpenAddAddressModal(false);
+
+  useEffect(() => {
+    if (restaurant?.delivery === true || supplier?.delivery === true) {
+      setSelectedDeliveryOption("standard");
+      setPaymentMethod("cod");
+    } else {
+      setSelectedDeliveryOption("pickup");
+      setPaymentMethod("gcash");
+    }
+  }, [restaurant, supplier]);
 
   const fetchRestaurant = async () => {
     if (cart?.cartItems.length > 0) {
@@ -113,7 +120,7 @@ const CheckOutPage = () => {
 
   const fetchUserAddresses = async () => {
     try {
-      const token = await sessionStorage.getItem("token");
+      const token = sessionStorage.getItem("token");
       if (token) {
         const config = {
           headers: {
@@ -194,7 +201,7 @@ const CheckOutPage = () => {
     setSelectedDeliveryOption(option);
     if (option === "pickup") {
       setDeliveryFee(0);
-      setPaymentMethod("Pay at the counter");
+      setPaymentMethod("gcash");
     } else {
       setDeliveryFee(distanceTime.finalPrice);
       setPaymentMethod("cod");
@@ -208,7 +215,6 @@ const CheckOutPage = () => {
         const amount = Math.round(
           parseFloat(cart?.totalAmount.toFixed(2)) + parseFloat(deliveryFee)
         );
-        console.log(amount);
         const paymentIntent = await createPaymentIntent(amount);
         const paymentMethodResponse = await createPaymentMethod(
           phone,
@@ -216,14 +222,26 @@ const CheckOutPage = () => {
           username
         );
         const data = {
-          restaurant:
-            user?.userType === "Vendor" ? supplier?._id : restaurant?._id,
+          restaurant: restaurant?._id,
+          supplier: supplier?._id,
           orderItems: cart?.cartItems,
           deliveryOption: selectedDeliveryOption,
           deliveryAddress:
             selectedDeliveryOption === "standard"
-              ? selectedAddress?.address
-              : "",
+              ? {
+                  address: selectedAddress?.address,
+                  coordinates: {
+                    latitude: selectedAddress?.latitude,
+                    longitude: selectedAddress?.longitude,
+                  },
+                }
+              : {
+                  address: "",
+                  coordinates: {
+                    latitude: "",
+                    longitude: "",
+                  },
+                },
           subTotal: cart?.totalAmount.toFixed(2),
           deliveryFee,
           totalAmount:
@@ -233,11 +251,13 @@ const CheckOutPage = () => {
           orderStatus: "Pending",
           orderNote,
         };
+
         const response = await attachPaymentMethod(
-          paymentIntent.data.id,
-          paymentMethodResponse.data.id,
+          paymentIntent?.data?.id,
+          paymentMethodResponse?.data?.id,
           data
         );
+
         window.location.href =
           response.data.attributes.next_action.redirect.url;
       } catch (error) {
@@ -257,14 +277,26 @@ const CheckOutPage = () => {
 
           const data = {
             paymentId: "No online payment",
-            restaurant:
-              user?.userType === "Vendor" ? supplier?._id : restaurant?._id,
+            restaurant: restaurant?._id,
+            supplier: supplier?._id,
             orderItems: cart?.cartItems,
             deliveryOption: selectedDeliveryOption,
             deliveryAddress:
               selectedDeliveryOption === "standard"
-                ? selectedAddress?.address
-                : "",
+                ? {
+                    address: selectedAddress?.address,
+                    coordinates: {
+                      latitude: selectedAddress?.latitude,
+                      longitude: selectedAddress?.longitude,
+                    },
+                  }
+                : {
+                    address: "",
+                    coordinates: {
+                      latitude: "",
+                      longitude: "",
+                    },
+                  },
             subTotal: cart?.totalAmount.toFixed(2),
             deliveryFee,
             totalAmount:
@@ -276,34 +308,19 @@ const CheckOutPage = () => {
             orderNote,
           };
 
-          if (user.userType === "Vendor") {
-            const response = await axios.post(
-              `http://localhost:6002/api/vendor/orders/check-out`,
-              data,
-              config
-            );
-            if (response.status === 200) {
-              toast.success("Order placed successfully");
-              navigate(`/order-page/${user._id}`);
-              setLoading(false);
-            } else {
-              toast.error("Failed to place order");
-              setLoading(false);
-            }
+          const response = await axios.post(
+            `http://localhost:6002/api/orders/check-out`,
+            data,
+            config
+          );
+
+          if (response.status === 200) {
+            toast.success("Order placed successfully");
+            navigate(`/order-page/${user._id}`);
+            setLoading(false);
           } else {
-            const response = await axios.post(
-              `http://localhost:6002/api/orders/check-out`,
-              data,
-              config
-            );
-            if (response.status === 200) {
-              toast.success("Order placed successfully");
-              navigate(`/order-page/${user._id}`);
-              setLoading(false);
-            } else {
-              toast.error("Failed to place order");
-              setLoading(false);
-            }
+            toast.error("Failed to place order");
+            setLoading(false);
           }
         }
       } catch (error) {
@@ -326,8 +343,7 @@ const CheckOutPage = () => {
       (user?.userType === "Vendor" && supplier && selectedAddress) ||
       (restaurant && selectedAddress)
     ) {
-      const origin =
-        user?.userType === "Vendor" ? supplier.coords : restaurant.coords;
+      const origin = supplier ? supplier.coords : restaurant.coords;
       GoogleApiServices.calculateDistanceAndTime(
         origin.latitude,
         origin.longitude,
@@ -411,8 +427,10 @@ const CheckOutPage = () => {
                   <Box sx={{ display: "flex", alignItems: "center" }}>
                     <Radio
                       sx={{ p: 0, "&.Mui-checked": { color: COLORS.primary } }}
-                      checked={selectedAddress?._id === address._id}
-                      onChange={() => setSelectedAddress(address)}
+                      checked={selectedAddress?._id === address?._id}
+                      onChange={() => {
+                        setSelectedAddress(address);
+                      }}
                     />
                     <Box
                       component="img"
@@ -934,7 +952,8 @@ const CheckOutPage = () => {
             <Typography sx={{ fontFamily: "bold", fontSize: 24, mb: 2 }}>
               Payment Options
             </Typography>
-            {selectedDeliveryOption === "standard" ? (
+
+            {selectedDeliveryOption === "standard" && (
               <Box
                 sx={{
                   mb: 2,
@@ -977,51 +996,8 @@ const CheckOutPage = () => {
                   <></>
                 )}
               </Box>
-            ) : (
-              <Box
-                sx={{
-                  mb: 2,
-                  border: 1,
-                  borderRadius: 3,
-                  p: 2,
-                  flexDirection: "row",
-                  borderColor: COLORS.gray2,
-                  "&:hover": { borderColor: COLORS.black },
-                }}
-              >
-                <Box sx={{ display: "flex", alignItems: "center" }}>
-                  <Radio
-                    sx={{ p: 0, "&.Mui-checked": { color: COLORS.primary } }}
-                    checked={paymentMethod === "Pay at the counter"}
-                    onChange={() => setPaymentMethod("Pay at the counter")}
-                  />
-                  <Box
-                    component="img"
-                    src={cash}
-                    sx={{ width: 30, height: 30, mx: 1 }}
-                  />
-                  <Typography sx={{ fontFamily: "regular", fontSize: 14 }}>
-                    Pay at the counter
-                  </Typography>
-                </Box>
-                {paymentMethod === "Pay at the counter" ? (
-                  <Typography
-                    sx={{
-                      fontFamily: "regular",
-                      fontSize: 14,
-                      color: COLORS.gray,
-                      mt: 2,
-                    }}
-                  >
-                    You can place your order online and make the payment when
-                    you pick up your order at the restaurant. This allows you to
-                    conveniently reserve your items and pay in person.
-                  </Typography>
-                ) : (
-                  <></>
-                )}
-              </Box>
             )}
+
             <Box
               sx={{
                 mb: 2,
@@ -1188,7 +1164,6 @@ const CheckOutPage = () => {
                           )}
                         </>
                       )}
-                      
                     </Box>
                     <Box sx={{ ml: "auto" }}>
                       <Typography

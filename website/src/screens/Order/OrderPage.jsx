@@ -23,13 +23,11 @@ const COLORS = {
 
 const OrderPage = () => {
   const navigate = useNavigate();
-  const user = getUser();
   const [orders, setOrders] = React.useState([]);
-  const [vendorOrders, setVendorOrders] = React.useState([]);
 
-  const fetchUserOrders = async () => {
+  const fetchOrders = async () => {
     try {
-      const token = await sessionStorage.getItem("token");
+      const token = sessionStorage.getItem("token");
       if (token) {
         const config = {
           headers: {
@@ -50,37 +48,12 @@ const OrderPage = () => {
     }
   };
 
-  const fetchVendorOrders = async () => {
-    try {
-      const token = await sessionStorage.getItem("token");
-      if (token) {
-        const config = {
-          headers: {
-            Authorization: `Bearer ${JSON.parse(token)}`,
-          },
-        };
-
-        const response = await axios.get(
-          "http://localhost:6002/api/vendor/orders/",
-          config
-        );
-        setVendorOrders(response.data.vendorOrders);
-      } else {
-        toast.error("You must be logged in to view your orders");
-      }
-    } catch (error) {
-      toast.error(error.response.data.message);
-    }
-  };
-
   useEffect(() => {
-    {
-      user.userType === "Vendor" ? fetchVendorOrders() : fetchUserOrders();
-    }
+    fetchOrders();
   }, []);
 
   const pendingOrders =
-    (user.userType === "Vendor" ? vendorOrders : orders)?.filter(
+    orders?.filter(
       (order) =>
         order.orderStatus === "Pending" ||
         order.orderStatus === "Preparing" ||
@@ -88,31 +61,176 @@ const OrderPage = () => {
         order.orderStatus === "Out for delivery"
     ) || [];
   const pastOrders =
-    (user.userType === "Vendor" ? vendorOrders : orders)?.filter(
-      (order) => order.orderStatus === "Delivered"
+    orders?.filter(
+      (order) =>
+        order.orderStatus === "Delivered" || order.orderStatus === "Completed"
     ) || [];
   const cancelledOrders =
-    (user.userType === "Vendor" ? vendorOrders : orders)?.filter(
-      (order) => order.orderStatus === "cancelled by customer"
-    ) || [];
+    orders?.filter((order) => order.orderStatus === "Cancelled by customer") ||
+    [];
 
+  console.log("Pending Orders:", pendingOrders);
   return (
-    <Container maxWidth="sm">
-      <Typography sx={{ fontFamily: "bold", fontSize: 24, my: 3 }}>
-        Active Orders
-      </Typography>
-      {pendingOrders.length === 0 ? (
-        <Typography sx={{ fontFamily: "regular", fontSize: 16, my: 3 }}>
-          You have no active orders.
+    <Box sx={{ height: "100vh" }}>
+      <Container maxWidth="sm">
+        <Typography sx={{ fontFamily: "bold", fontSize: 24, my: 3 }}>
+          Active Orders
         </Typography>
-      ) : (
-        <>
-          {pendingOrders.map((order) => (
-            <>
+        {pendingOrders.length === 0 ? (
+          <Typography sx={{ fontFamily: "regular", fontSize: 16, my: 3 }}>
+            You have no active orders.
+          </Typography>
+        ) : (
+          <>
+            {pendingOrders.map((order) => (
+              <>
+                <Box
+                  key={order?._id}
+                  onClick={() => {
+                    navigate(`/order-detail/${order?._id}`, {
+                      state: { order },
+                    });
+                  }}
+                  sx={{
+                    mb: 3,
+                    p: 2,
+                    borderRadius: 5,
+                    bgcolor: COLORS.offwhite,
+                    cursor: "pointer",
+                  }}
+                >
+                  <Box sx={{ display: "flex" }}>
+                    <Box
+                      component="img"
+                      src={
+                        order?.supplier
+                          ? order?.supplier?.logoUrl?.url
+                          : order?.restaurant?.logoUrl?.url
+                      }
+                      sx={{
+                        height: 80,
+                        width: 80,
+                        objectFit: "cover",
+                        borderRadius: 3,
+                      }}
+                    />
+                    <Box sx={{ ml: 2, width: 800 }}>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                        }}
+                      >
+                        <Typography
+                          sx={{ fontFamily: "bold", fontSize: 20, mb: 1 }}
+                        >
+                          {order?.supplier
+                            ? order?.supplier?.title
+                            : order?.restaurant?.title}
+                        </Typography>
+                        <Typography
+                          sx={{ fontFamily: "bold", fontSize: 20, mb: 1 }}
+                        >
+                          ₱ {order?.totalAmount.toFixed(2)}
+                        </Typography>
+                      </Box>
+                      <Typography
+                        sx={{
+                          fontFamily: "regular",
+                          color: COLORS.gray,
+                          fontSize: 14,
+                        }}
+                      >
+                        Ordered #: {order._id}
+                      </Typography>
+                      <Box
+                        sx={{ display: "flex", alignItems: "center", mb: 1 }}
+                      >
+                        <Typography
+                          sx={{
+                            fontFamily: "regular",
+                            color: COLORS.gray,
+                            fontSize: 14,
+                            mr: 1,
+                          }}
+                        >
+                          Ordered Status:
+                        </Typography>
+                        <Box sx={{ display: "flex", alignItems: "center" }}>
+                          <Box
+                            sx={{
+                              bgcolor:
+                                order?.orderStatus === "Pending"
+                                  ? COLORS.gray2
+                                  : order?.orderStatus === "Preparing"
+                                  ? COLORS.secondary
+                                  : order?.orderStatus === "Ready for pickup"
+                                  ? COLORS.tertiary
+                                  : COLORS.primary,
+                              width: 14,
+                              height: 14,
+                              borderRadius: 99,
+                            }}
+                          />
+                          <Typography
+                            sx={{
+                              fontFamily: "bold",
+                              color: COLORS.black,
+                              fontSize: 14,
+                              ml: 0.5,
+                            }}
+                          >
+                            {order?.orderStatus}
+                          </Typography>
+                        </Box>
+                      </Box>
+                      {order?.orderItems.map((item) => (
+                        <Typography
+                          key={item?._id}
+                          sx={{ fontFamily: "regular", fontSize: 16, ml: 1 }}
+                        >
+                          {item?.quantity}x{" "}
+                          {item?.productId
+                            ? item?.productId?.title
+                            : item?.foodId?.title}
+                        </Typography>
+                      ))}
+                    </Box>
+                  </Box>
+                </Box>
+              </>
+            ))}
+          </>
+        )}
+
+        <Typography sx={{ fontFamily: "bold", fontSize: 24, my: 3 }}>
+          Past Orders
+        </Typography>
+
+        {pastOrders.length === 0 ? (
+          <Typography sx={{ fontFamily: "regular", fontSize: 16, my: 3 }}>
+            You have no past orders.
+          </Typography>
+        ) : (
+          <></>
+        )}
+
+        <Typography sx={{ fontFamily: "bold", fontSize: 24, my: 3 }}>
+          Cancelled Orders
+        </Typography>
+
+        {cancelledOrders.length === 0 ? (
+          <Typography sx={{ fontFamily: "regular", fontSize: 16, my: 3 }}>
+            You have no cancelled orders.
+          </Typography>
+        ) : (
+          <>
+            {cancelledOrders.map((order) => (
               <Box
-                key={order._id}
+                key={order?._id}
                 onClick={() => {
-                  navigate(`/order-detail/${order._id}`, { state: { order } });
+                  navigate(`/order-detail/${order?._id}`, { state: { order } });
                 }}
                 sx={{
                   mb: 3,
@@ -126,9 +244,9 @@ const OrderPage = () => {
                   <Box
                     component="img"
                     src={
-                      user.userType === "Vendor"
-                        ? order.supplier.logoUrl.url
-                        : order.restaurant.logoUrl.url
+                      order?.supplier
+                        ? order?.supplier?.logoUrl?.url
+                        : order?.restaurant?.logoUrl?.url
                     }
                     sx={{
                       height: 80,
@@ -148,14 +266,14 @@ const OrderPage = () => {
                       <Typography
                         sx={{ fontFamily: "bold", fontSize: 20, mb: 1 }}
                       >
-                        {user.userType === "Vendor"
-                          ? order.supplier.title
-                          : order.restaurant.title}
+                        {order?.supplier
+                          ? order?.supplier?.title
+                          : order?.restaurant?.title}
                       </Typography>
                       <Typography
                         sx={{ fontFamily: "bold", fontSize: 20, mb: 1 }}
                       >
-                        ₱ {order.totalAmount.toFixed(2)}
+                        ₱ {order?.totalAmount?.toFixed(2)}
                       </Typography>
                     </Box>
                     <Typography
@@ -165,181 +283,44 @@ const OrderPage = () => {
                         fontSize: 14,
                       }}
                     >
-                      Ordered #: {order._id}
+                      Ordered #: {order?._id}
                     </Typography>
-                    <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
+                    <Typography
+                      sx={{
+                        fontFamily: "regular",
+                        color: COLORS.gray,
+                        fontSize: 14,
+                        mb: 1,
+                      }}
+                    >
+                      Ordered At:{" "}
+                      {new Date(order.createdAt).toLocaleDateString("en-US", {
+                        weekday: "long",
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      })}
+                      , {new Date(order.createdAt).toLocaleTimeString()}
+                    </Typography>
+                    {order?.orderItems?.map((item) => (
                       <Typography
-                        sx={{
-                          fontFamily: "regular",
-                          color: COLORS.gray,
-                          fontSize: 14,
-                          mr: 1,
-                        }}
-                      >
-                        Ordered Status:
-                      </Typography>
-                      <Box sx={{ display: "flex", alignItems: "center" }}>
-                        <Box
-                          sx={{
-                            bgcolor:
-                              order?.orderStatus === "Pending"
-                                ? COLORS.gray2
-                                : order?.orderStatus === "Preparing"
-                                ? COLORS.secondary
-                                : order?.orderStatus === "Ready for pickup"
-                                ? COLORS.tertiary
-                                : COLORS.primary,
-                            width: 14,
-                            height: 14,
-                            borderRadius: 99,
-                          }}
-                        />
-                        <Typography
-                          sx={{
-                            fontFamily: "bold",
-                            color: COLORS.black,
-                            fontSize: 14,
-                            ml: 0.5,
-                          }}
-                        >
-                          {order.orderStatus}
-                        </Typography>
-                      </Box>
-                    </Box>
-                    {order.orderItems.map((item) => (
-                      <Typography
-                        key={item._id}
+                        key={item?._id}
                         sx={{ fontFamily: "regular", fontSize: 16, ml: 1 }}
                       >
                         {item.quantity}x{" "}
-                        {user.userType === "Vendor"
-                          ? item.productId.title
-                          : item.foodId.title}
+                        {item?.productId
+                          ? item?.productId?.title
+                          : item?.foodId?.title}
                       </Typography>
                     ))}
                   </Box>
                 </Box>
               </Box>
-            </>
-          ))}
-        </>
-      )}
-
-      <Typography sx={{ fontFamily: "bold", fontSize: 24, my: 3 }}>
-        Past Orders
-      </Typography>
-
-      {pastOrders.length === 0 ? (
-        <Typography sx={{ fontFamily: "regular", fontSize: 16, my: 3 }}>
-          You have no past orders.
-        </Typography>
-      ) : (
-        <></>
-      )}
-
-      <Typography sx={{ fontFamily: "bold", fontSize: 24, my: 3 }}>
-        Cancelled Orders
-      </Typography>
-      {cancelledOrders.length === 0 ? (
-        <Typography sx={{ fontFamily: "regular", fontSize: 16, my: 3 }}>
-          You have no cancelled orders.
-        </Typography>
-      ) : (
-        <>
-          {cancelledOrders.map((order) => (
-            <Box
-              key={order._id}
-              onClick={() => {
-                navigate(`/order-detail/${order._id}`, { state: { order } });
-              }}
-              sx={{
-                mb: 3,
-                p: 2,
-                borderRadius: 5,
-                bgcolor: COLORS.offwhite,
-                cursor: "pointer",
-              }}
-            >
-              <Box sx={{ display: "flex" }}>
-                <Box
-                  component="img"
-                  src={
-                    user.userType === "Vendor"
-                      ? order.supplier.logoUrl.url
-                      : order.restaurant.logoUrl.url
-                  }
-                  sx={{
-                    height: 80,
-                    width: 80,
-                    objectFit: "cover",
-                    borderRadius: 3,
-                  }}
-                />
-                <Box sx={{ ml: 2, width: 800 }}>
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                    }}
-                  >
-                    <Typography
-                      sx={{ fontFamily: "bold", fontSize: 20, mb: 1 }}
-                    >
-                      {user.userType === "Vendor"
-                        ? order.supplier.title
-                        : order.restaurant.title}
-                    </Typography>
-                    <Typography
-                      sx={{ fontFamily: "bold", fontSize: 20, mb: 1 }}
-                    >
-                      ₱ {order.totalAmount.toFixed(2)}
-                    </Typography>
-                  </Box>
-                  <Typography
-                    sx={{
-                      fontFamily: "regular",
-                      color: COLORS.gray,
-                      fontSize: 14,
-                    }}
-                  >
-                    Ordered #: {order._id}
-                  </Typography>
-                  <Typography
-                    sx={{
-                      fontFamily: "regular",
-                      color: COLORS.gray,
-                      fontSize: 14,
-                      mb: 1,
-                    }}
-                  >
-                    Ordered At:{" "}
-                    {new Date(order.createdAt).toLocaleDateString("en-US", {
-                      weekday: "long",
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    })}
-                    , {new Date(order.createdAt).toLocaleTimeString()}
-                  </Typography>
-                  {order.orderItems.map((item) => (
-                    <Typography
-                      key={item._id}
-                      sx={{ fontFamily: "regular", fontSize: 16, ml: 1 }}
-                    >
-                      {item.quantity}x{" "}
-                      {user.userType === "Vendor"
-                        ? item.productId.title
-                        : item.foodId.title}
-                    </Typography>
-                  ))}
-                </Box>
-              </Box>
-            </Box>
-          ))}
-        </>
-      )}
-    </Container>
+            ))}
+          </>
+        )}
+      </Container>
+    </Box>
   );
 };
 
