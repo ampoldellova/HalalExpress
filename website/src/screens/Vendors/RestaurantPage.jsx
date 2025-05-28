@@ -2,6 +2,7 @@ import {
   Box,
   Button,
   Container,
+  Divider,
   Grid2,
   Rating,
   Typography,
@@ -59,7 +60,7 @@ const RestaurantPage = () => {
 
   return (
     <Container
-      maxWidth="lg"
+      maxWidth="xl"
       sx={{
         height: "100vh",
         bgColor: COLORS.offwhite,
@@ -68,7 +69,7 @@ const RestaurantPage = () => {
         flexDirection: "column",
       }}
     >
-      <Box
+      {/* <Box
         component="img"
         src={restaurant?.imageUrl?.url}
         sx={{
@@ -78,27 +79,13 @@ const RestaurantPage = () => {
           borderBottomLeftRadius: 15,
           borderBottomRightRadius: 15,
         }}
-      />
+      /> */}
       <Box
         sx={{
           height: "100%",
-          width: "90%",
-          mt: -15,
-          bgcolor: COLORS.offwhite,
-          borderTopLeftRadius: 15,
-          borderTopRightRadius: 15,
-          boxShadow: 10,
         }}
       >
-        <Box
-          sx={{
-            bgcolor: COLORS.primary,
-            borderTopLeftRadius: 15,
-            borderTopRightRadius: 15,
-            height: "2.5%",
-          }}
-        />
-        <Grid2 container sx={{ alignItems: "center", mt: 2, mx: 2 }}>
+        <Grid2 container sx={{ alignItems: "center", mt: 5, mb: 5 }}>
           <Box
             component="img"
             src={restaurant?.logoUrl?.url}
@@ -237,6 +224,8 @@ const RestaurantPage = () => {
             </Box>
           </Box>
         </Grid2>
+
+        <Divider />
 
         <Box sx={{ px: 2, mb: 5 }}>
           <Typography

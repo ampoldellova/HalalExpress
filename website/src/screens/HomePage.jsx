@@ -342,7 +342,7 @@ const HomePage = () => {
                 </>
               )}
             </Container>
-            <Box
+            {/* <Box
               sx={{
                 bgcolor: COLORS.primary,
                 height: 100,
@@ -361,7 +361,7 @@ const HomePage = () => {
               >
                 © 2025 HalalExpress. All rights reserved.
               </Typography>
-            </Box>
+            </Box> */}
           </>
         </>
       )}

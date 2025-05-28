@@ -13,6 +13,9 @@ import OrderPage from "./screens/Order/OrderPage";
 import OrderDetails from "./screens/Order/OrderDetails";
 import PaymentConfirmation from "./screens/PaymentConfirmation";
 import VerificationPage from "./screens/User/VerificationPage";
+import { Box, Typography } from "@mui/material";
+import { COLORS } from "./styles/theme";
+import Footer from "./components/Footer";
 
 function App() {
   const user = getUser();
@@ -36,6 +39,7 @@ function App() {
             element={<PaymentConfirmation />}
           />
         </Routes>
+        <Footer />
       </Router>
       <ToastContainer position="top-center" stacked limit={5} />
     </div>
