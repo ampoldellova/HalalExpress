@@ -693,7 +693,53 @@ const OrderDetails = () => {
 
                 {order?.orderStatus === "Completed" &&
                 order?.rating?.status === "submitted" ? (
-                  <></>
+                  <>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        textAlign: "center",
+                        mt: 2,
+                      }}
+                    >
+                      <Typography
+                        sx={{
+                          fontFamily: "regular",
+                          fontSize: 14,
+                          color: COLORS.gray,
+                        }}
+                      >
+                        You rated this order {order?.rating?.stars} stars.
+                      </Typography>
+
+                      <Rating
+                        value={order?.rating?.stars}
+                        readOnly
+                        precision={0.5}
+                        sx={{
+                          "& .MuiRating-iconFilled": {
+                            color: COLORS.primary,
+                          },
+                          "& .MuiRating-iconEmpty": {
+                            color: COLORS.gray2,
+                          },
+                        }}
+                      />
+                    </Box>
+
+                    {order?.rating?.feedback && (
+                      <Typography
+                        sx={{
+                          fontFamily: "regular",
+                          fontSize: 14,
+                          color: COLORS.gray,
+                          mt: 2,
+                        }}
+                      >
+                        You commented: {order?.rating?.feedback}
+                      </Typography>
+                    )}
+                  </>
                 ) : (
                   <Button
                     onClick={() => {

@@ -28,6 +28,8 @@ const RateOrderModal = ({ open, onClose, order }) => {
     if (rating === 0) {
       setLoading(false);
       setRatingError(true);
+      toast.error("Please provide a rating before submitting.");
+      return;
     } else {
       try {
         const token = sessionStorage.getItem("token");
@@ -84,7 +86,10 @@ const RateOrderModal = ({ open, onClose, order }) => {
 
           <Rating
             value={rating}
-            onChange={(e) => setRating(e.target.value)}
+            onChange={(e) => {
+              setRating(e.target.value);
+              if (e.target.value > 0) setRatingError(false);
+            }}
             sx={{
               "& .MuiRating-iconFilled": {
                 color: COLORS.primary,
@@ -145,6 +150,19 @@ const RateOrderModal = ({ open, onClose, order }) => {
             },
           }}
         />
+
+        {ratingError && (
+          <Typography
+            sx={{
+              color: "red",
+              fontFamily: "regular",
+              fontSize: 14,
+              mt: 1,
+            }}
+          >
+            *Please rate your order before submitting.
+          </Typography>
+        )}
 
         <Button
           fullWidth
