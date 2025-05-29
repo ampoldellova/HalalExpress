@@ -487,7 +487,7 @@ const OrderDetails = () => {
                   bgcolor:
                     order?.orderStatus === "Pending"
                       ? COLORS.gray2
-                      : order?.orderStatus === "cancelled by customer"
+                      : order?.orderStatus === "Cancelled by customer"
                       ? COLORS.gray2
                       : order?.orderStatus === "Preparing"
                       ? COLORS.secondary
@@ -504,7 +504,7 @@ const OrderDetails = () => {
                     color: COLORS.white,
                   }}
                 >
-                  {order.orderStatus === "cancelled by customer"
+                  {order.orderStatus === "Cancelled by customer"
                     ? "Cancelled"
                     : order.orderStatus}
                 </Typography>
@@ -547,7 +547,7 @@ const OrderDetails = () => {
                   fontFamily: "regular",
                   color: COLORS.gray,
                   fontSize: 14,
-                  mt: 2,
+                  marginTop: 15,
                 }}
               >
                 The restaurant is preparing your order. Please wait for the
@@ -561,7 +561,7 @@ const OrderDetails = () => {
                     fontFamily: "regular",
                     fontSize: 14,
                     color: COLORS.gray,
-                    mt: 2,
+                    marginTop: 15,
                   }}
                 >
                   Your order is prepared and ready for pickup! The restaurant's
@@ -576,7 +576,7 @@ const OrderDetails = () => {
                     fontFamily: "regular",
                     fontSize: 14,
                     color: COLORS.gray,
-                    mt: 2,
+                    marginTop: 15,
                   }}
                 >
                   Your order is prepared and ready for pickup! Please head to
@@ -590,20 +590,20 @@ const OrderDetails = () => {
                     fontFamily: "regular",
                     fontSize: 14,
                     color: COLORS.gray,
-                    mt: 2,
+                    marginTop: 15,
                   }}
                 >
                   Your order is out for delivery! The restaurant's in-house
                   delivery rider is on the way to deliver your order to you.
                 </Typography>
               )}
-            {order?.orderStatus === "cancelled by customer" &&
+            {order?.orderStatus === "Cancelled by customer" &&
               order?.paymentStatus === "Refunded" && (
                 <Typography
                   style={{
                     fontFamily: "regular",
                     fontSize: 14,
-                    mt: 2,
+                    marginTop: 15,
                     color: COLORS.gray,
                   }}
                 >
@@ -612,14 +612,14 @@ const OrderDetails = () => {
                   processed within 3-5 business days.
                 </Typography>
               )}
-            {order?.orderStatus === "cancelled by customer" &&
+            {order?.orderStatus === "Cancelled by customer" &&
               order?.paymentStatus === "Cancelled" && (
                 <Typography
                   style={{
                     fontFamily: "regular",
                     fontSize: 14,
                     color: COLORS.gray,
-                    mt: 2,
+                    marginTop: 15,
                   }}
                 >
                   This order has been cancelled by you. If you have any
@@ -633,7 +633,7 @@ const OrderDetails = () => {
                     fontFamily: "regular",
                     fontSize: 14,
                     color: COLORS.gray,
-                    mt: 2,
+                    marginTop: 15,
                   }}
                 >
                   This order has been rejected by the restaurant. If you have
@@ -648,7 +648,7 @@ const OrderDetails = () => {
                     fontFamily: "regular",
                     fontSize: 14,
                     color: COLORS.gray,
-                    mt: 2,
+                    marginTop: 15,
                   }}
                 >
                   Your order has been delivered! Did you receive your order? If

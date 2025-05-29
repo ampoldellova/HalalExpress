@@ -84,467 +84,8 @@ const OrderPage = () => {
       {loading ? (
         <Loader />
       ) : (
-        <Box sx={{ height: "100vh" }}>
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              my: 3,
-            }}
-          >
-            <Typography
-              sx={{
-                fontFamily: "regular",
-                fontSize: 24,
-                color: orderType === "Active" ? COLORS.primary : COLORS.black,
-                cursor: "pointer",
-              }}
-              onClick={() => setOrderType("Active")}
-            >
-              Active Orders
-            </Typography>
-
-            <Typography
-              sx={{
-                fontFamily: "regular",
-                fontSize: 24,
-                mx: 3,
-              }}
-            >
-              |
-            </Typography>
-
-            <Typography
-              sx={{
-                fontFamily: "regular",
-                fontSize: 24,
-                my: 3,
-                color: orderType === "Previous" ? COLORS.primary : COLORS.black,
-                cursor: "pointer",
-              }}
-              onClick={() => setOrderType("Previous")}
-            >
-              Past Orders
-            </Typography>
-
-            <Typography
-              sx={{
-                fontFamily: "regular",
-                fontSize: 24,
-                mx: 3,
-                color: COLORS.black,
-              }}
-            >
-              |
-            </Typography>
-
-            <Typography
-              onClick={() => setOrderType("Cancelled")}
-              sx={{
-                fontFamily: "regular",
-                fontSize: 24,
-                color:
-                  orderType === "Cancelled" ? COLORS.primary : COLORS.black,
-                cursor: "pointer",
-              }}
-            >
-              Cancelled Orders
-            </Typography>
-          </Box>
-
-          {orderType === "Active" && (
-            <>
-              {pendingOrders.length === 0 ? (
-                <Container
-                  maxWidth="sm"
-                  sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    height: "100vh",
-                  }}
-                >
-                  <Box
-                    component="img"
-                    src={emptyOrder}
-                    sx={{ width: 500, height: "auto" }}
-                  />
-                  <Typography
-                    sx={{
-                      fontFamily: "regular",
-                      fontSize: 16,
-                      my: 3,
-                      textAlign: "center",
-                      color: COLORS.gray,
-                      width: 400,
-                    }}
-                  >
-                    You have no active orders at the moment. Please check back
-                    later or browse items to place a new order.
-                  </Typography>
-                </Container>
-              ) : (
-                <Box
-                  sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  {pendingOrders.map((order) => (
-                    <Box
-                      key={order?._id}
-                      onClick={() => {
-                        navigate(`/order-detail/${order?._id}`, {
-                          state: { order },
-                        });
-                      }}
-                      sx={{
-                        mb: 3,
-                        p: 2,
-                        borderRadius: 5,
-                        bgcolor: COLORS.offwhite,
-                        cursor: "pointer",
-                        width: "500px",
-                      }}
-                    >
-                      <Box sx={{ display: "flex" }}>
-                        <Box
-                          component="img"
-                          src={
-                            order?.supplier
-                              ? order?.supplier?.logoUrl?.url
-                              : order?.restaurant?.logoUrl?.url
-                          }
-                          sx={{
-                            height: 80,
-                            width: 80,
-                            objectFit: "cover",
-                            borderRadius: 3,
-                          }}
-                        />
-                        <Box sx={{ ml: 2, width: 800 }}>
-                          <Box
-                            sx={{
-                              display: "flex",
-                              justifyContent: "space-between",
-                              alignItems: "center",
-                            }}
-                          >
-                            <Typography
-                              sx={{ fontFamily: "bold", fontSize: 20, mb: 1 }}
-                            >
-                              {order?.supplier
-                                ? order?.supplier?.title
-                                : order?.restaurant?.title}
-                            </Typography>
-                            <Typography
-                              sx={{ fontFamily: "bold", fontSize: 20, mb: 1 }}
-                            >
-                              ₱ {order?.totalAmount.toFixed(2)}
-                            </Typography>
-                          </Box>
-                          <Typography
-                            sx={{
-                              fontFamily: "regular",
-                              color: COLORS.gray,
-                              fontSize: 14,
-                            }}
-                          >
-                            Ordered #: {order._id}
-                          </Typography>
-                          <Box
-                            sx={{
-                              display: "flex",
-                              alignItems: "center",
-                              mb: 1,
-                            }}
-                          >
-                            <Typography
-                              sx={{
-                                fontFamily: "regular",
-                                color: COLORS.gray,
-                                fontSize: 14,
-                                mr: 1,
-                              }}
-                            >
-                              Ordered Status:
-                            </Typography>
-                            <Box sx={{ display: "flex", alignItems: "center" }}>
-                              <Box
-                                sx={{
-                                  bgcolor:
-                                    order?.orderStatus === "Pending"
-                                      ? COLORS.gray2
-                                      : order?.orderStatus === "Preparing"
-                                      ? COLORS.secondary
-                                      : order?.orderStatus ===
-                                        "Ready for pickup"
-                                      ? COLORS.tertiary
-                                      : COLORS.primary,
-                                  width: 14,
-                                  height: 14,
-                                  borderRadius: 99,
-                                }}
-                              />
-                              <Typography
-                                sx={{
-                                  fontFamily: "bold",
-                                  color: COLORS.black,
-                                  fontSize: 14,
-                                  ml: 0.5,
-                                }}
-                              >
-                                {order?.orderStatus}
-                              </Typography>
-                            </Box>
-                          </Box>
-                          {order?.orderItems.map((item) => (
-                            <Typography
-                              key={item?._id}
-                              sx={{
-                                fontFamily: "regular",
-                                fontSize: 16,
-                                ml: 1,
-                              }}
-                            >
-                              {item?.quantity}x{" "}
-                              {item?.productId
-                                ? item?.productId?.title
-                                : item?.foodId?.title}
-                            </Typography>
-                          ))}
-                        </Box>
-                      </Box>
-                    </Box>
-                  ))}
-                </Box>
-              )}
-            </>
-          )}
-
-          {orderType === "Previous" && (
-            <>
-              {pastOrders.length === 0 ? (
-                <Container
-                  maxWidth="sm"
-                  sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    height: "80vh",
-                  }}
-                >
-                  <Box
-                    component="img"
-                    src={emptyOrder}
-                    sx={{ width: 500, height: "auto" }}
-                  />
-                  <Typography
-                    sx={{
-                      fontFamily: "regular",
-                      fontSize: 16,
-                      my: 3,
-                      textAlign: "center",
-                      color: COLORS.gray,
-                      width: 400,
-                    }}
-                  >
-                    You have no past orders. Please check back later or browse
-                    items to place a new order.
-                  </Typography>
-                </Container>
-              ) : (
-                <Box
-                  sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  {pastOrders.map((order) => (
-                    <Box
-                      key={order?._id}
-                      onClick={() => {
-                        navigate(`/order-detail/${order?._id}`, {
-                          state: { order },
-                        });
-                      }}
-                      sx={{
-                        mb: 3,
-                        p: 2,
-                        borderRadius: 5,
-                        bgcolor: COLORS.offwhite,
-                        cursor: "pointer",
-                        width: "500px",
-                      }}
-                    >
-                      <Box sx={{ display: "flex" }}>
-                        <Box
-                          component="img"
-                          src={
-                            order?.supplier
-                              ? order?.supplier?.logoUrl?.url
-                              : order?.restaurant?.logoUrl?.url
-                          }
-                          sx={{
-                            height: 80,
-                            width: 80,
-                            objectFit: "cover",
-                            borderRadius: 3,
-                          }}
-                        />
-                        <Box sx={{ ml: 2, width: 800 }}>
-                          <Box
-                            sx={{
-                              display: "flex",
-                              justifyContent: "space-between",
-                              alignItems: "center",
-                            }}
-                          >
-                            <Typography
-                              sx={{ fontFamily: "bold", fontSize: 20, mb: 1 }}
-                            >
-                              {order?.supplier
-                                ? order?.supplier?.title
-                                : order?.restaurant?.title}
-                            </Typography>
-                            <Typography
-                              sx={{ fontFamily: "bold", fontSize: 20, mb: 1 }}
-                            >
-                              ₱ {order?.totalAmount.toFixed(2)}
-                            </Typography>
-                          </Box>
-                          <Typography
-                            sx={{
-                              fontFamily: "regular",
-                              color: COLORS.gray,
-                              fontSize: 14,
-                            }}
-                          >
-                            Ordered #: {order._id}
-                          </Typography>
-                          <Box
-                            sx={{
-                              display: "flex",
-                              alignItems: "center",
-                            }}
-                          >
-                            <Typography
-                              sx={{
-                                fontFamily: "regular",
-                                color: COLORS.gray,
-                                fontSize: 14,
-                                mr: 1,
-                              }}
-                            >
-                              Ordered Status:
-                            </Typography>
-                            <Box sx={{ display: "flex", alignItems: "center" }}>
-                              <Box
-                                sx={{
-                                  bgcolor:
-                                    order?.orderStatus === "Pending"
-                                      ? COLORS.gray2
-                                      : order?.orderStatus === "Preparing"
-                                      ? COLORS.secondary
-                                      : order?.orderStatus ===
-                                        "Ready for pickup"
-                                      ? COLORS.tertiary
-                                      : COLORS.primary,
-                                  width: 14,
-                                  height: 14,
-                                  borderRadius: 99,
-                                }}
-                              />
-                              <Typography
-                                sx={{
-                                  fontFamily: "bold",
-                                  color: COLORS.black,
-                                  fontSize: 14,
-                                  ml: 0.5,
-                                }}
-                              >
-                                {order?.orderStatus}
-                              </Typography>
-                            </Box>
-                          </Box>
-
-                          <Box
-                            sx={{
-                              display: "flex",
-                              alignItems: "center",
-                              mb: 1,
-                            }}
-                          >
-                            <Typography
-                              sx={{
-                                fontFamily: "regular",
-                                color: COLORS.gray,
-                                fontSize: 14,
-                                mr: 0.5,
-                              }}
-                            >
-                              Rating:
-                            </Typography>
-
-                            {order?.rating?.stars ? (
-                              <Rating
-                                readOnly
-                                value={order?.rating.stars}
-                                sx={{
-                                  fontSize: 16,
-                                  "& .MuiRating-iconFilled": {
-                                    color: COLORS.primary,
-                                  },
-                                  "& .MuiRating-iconEmpty": {
-                                    color: COLORS.gray2,
-                                  },
-                                }}
-                              />
-                            ) : (
-                              <Typography
-                                sx={{
-                                  fontFamily: "bold",
-                                  color: COLORS.black,
-                                  fontSize: 14,
-                                }}
-                              >
-                                🟡 Pending
-                              </Typography>
-                            )}
-                          </Box>
-
-                          {order?.orderItems.map((item) => (
-                            <Typography
-                              key={item?._id}
-                              sx={{
-                                fontFamily: "regular",
-                                fontSize: 16,
-                                ml: 1,
-                              }}
-                            >
-                              {item?.quantity}x{" "}
-                              {item?.productId
-                                ? item?.productId?.title
-                                : item?.foodId?.title}
-                            </Typography>
-                          ))}
-                        </Box>
-                      </Box>
-                    </Box>
-                  ))}
-                </Box>
-              )}
-            </>
-          )}
-
-          {/* {orders.length === 0 ? (
+        <>
+          {orders.length === 0 ? (
             <Container
               maxWidth="sm"
               sx={{
@@ -594,276 +135,676 @@ const OrderPage = () => {
               </Button>
             </Container>
           ) : (
-            <Container maxWidth="sm">
-              <Typography sx={{ fontFamily: "bold", fontSize: 24, my: 3 }}>
-                Active Orders
-              </Typography>
-              {pendingOrders.length === 0 ? (
-                <Typography sx={{ fontFamily: "regular", fontSize: 16, my: 3 }}>
-                  You have no active orders.
+            <Box sx={{ height: "100vh" }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  my: 3,
+                }}
+              >
+                <Typography
+                  sx={{
+                    fontFamily: "regular",
+                    fontSize: 24,
+                    color:
+                      orderType === "Active" ? COLORS.primary : COLORS.black,
+                    cursor: "pointer",
+                  }}
+                  onClick={() => setOrderType("Active")}
+                >
+                  Active Orders
                 </Typography>
-              ) : (
+
+                <Typography
+                  sx={{
+                    fontFamily: "regular",
+                    fontSize: 24,
+                    mx: 3,
+                  }}
+                >
+                  |
+                </Typography>
+
+                <Typography
+                  sx={{
+                    fontFamily: "regular",
+                    fontSize: 24,
+                    my: 3,
+                    color:
+                      orderType === "Previous" ? COLORS.primary : COLORS.black,
+                    cursor: "pointer",
+                  }}
+                  onClick={() => setOrderType("Previous")}
+                >
+                  Past Orders
+                </Typography>
+
+                <Typography
+                  sx={{
+                    fontFamily: "regular",
+                    fontSize: 24,
+                    mx: 3,
+                    color: COLORS.black,
+                  }}
+                >
+                  |
+                </Typography>
+
+                <Typography
+                  onClick={() => setOrderType("Cancelled")}
+                  sx={{
+                    fontFamily: "regular",
+                    fontSize: 24,
+                    color:
+                      orderType === "Cancelled" ? COLORS.primary : COLORS.black,
+                    cursor: "pointer",
+                  }}
+                >
+                  Cancelled Orders
+                </Typography>
+              </Box>
+
+              {orderType === "Active" && (
                 <>
-                  {pendingOrders.map((order) => (
-                    <>
+                  {pendingOrders.length === 0 ? (
+                    <Container
+                      maxWidth="sm"
+                      sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        height: "100vh",
+                      }}
+                    >
                       <Box
-                        key={order?._id}
-                        onClick={() => {
-                          navigate(`/order-detail/${order?._id}`, {
-                            state: { order },
-                          });
-                        }}
+                        component="img"
+                        src={emptyOrder}
+                        sx={{ width: 500, height: "auto" }}
+                      />
+                      <Typography
                         sx={{
-                          mb: 3,
-                          p: 2,
-                          borderRadius: 5,
-                          bgcolor: COLORS.offwhite,
-                          cursor: "pointer",
+                          fontFamily: "regular",
+                          fontSize: 16,
+                          my: 3,
+                          textAlign: "center",
+                          color: COLORS.gray,
+                          width: 400,
                         }}
                       >
-                        <Box sx={{ display: "flex" }}>
-                          <Box
-                            component="img"
-                            src={
-                              order?.supplier
-                                ? order?.supplier?.logoUrl?.url
-                                : order?.restaurant?.logoUrl?.url
-                            }
-                            sx={{
-                              height: 80,
-                              width: 80,
-                              objectFit: "cover",
-                              borderRadius: 3,
-                            }}
-                          />
-                          <Box sx={{ ml: 2, width: 800 }}>
+                        You have no active orders at the moment. Please check
+                        back later or browse items to place a new order.
+                      </Typography>
+                    </Container>
+                  ) : (
+                    <Box
+                      sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      {pendingOrders.map((order) => (
+                        <Box
+                          key={order?._id}
+                          onClick={() => {
+                            navigate(`/order-detail/${order?._id}`, {
+                              state: { order },
+                            });
+                          }}
+                          sx={{
+                            mb: 3,
+                            p: 2,
+                            borderRadius: 5,
+                            bgcolor: COLORS.offwhite,
+                            cursor: "pointer",
+                            width: "500px",
+                          }}
+                        >
+                          <Box sx={{ display: "flex" }}>
                             <Box
+                              component="img"
+                              src={
+                                order?.supplier
+                                  ? order?.supplier?.logoUrl?.url
+                                  : order?.restaurant?.logoUrl?.url
+                              }
                               sx={{
-                                display: "flex",
-                                justifyContent: "space-between",
-                                alignItems: "center",
+                                height: 80,
+                                width: 80,
+                                objectFit: "cover",
+                                borderRadius: 3,
                               }}
-                            >
-                              <Typography
-                                sx={{ fontFamily: "bold", fontSize: 20, mb: 1 }}
+                            />
+                            <Box sx={{ ml: 2, width: 800 }}>
+                              <Box
+                                sx={{
+                                  display: "flex",
+                                  justifyContent: "space-between",
+                                  alignItems: "center",
+                                }}
                               >
-                                {order?.supplier
-                                  ? order?.supplier?.title
-                                  : order?.restaurant?.title}
-                              </Typography>
-                              <Typography
-                                sx={{ fontFamily: "bold", fontSize: 20, mb: 1 }}
-                              >
-                                ₱ {order?.totalAmount.toFixed(2)}
-                              </Typography>
-                            </Box>
-                            <Typography
-                              sx={{
-                                fontFamily: "regular",
-                                color: COLORS.gray,
-                                fontSize: 14,
-                              }}
-                            >
-                              Ordered #: {order._id}
-                            </Typography>
-                            <Box
-                              sx={{
-                                display: "flex",
-                                alignItems: "center",
-                                mb: 1,
-                              }}
-                            >
+                                <Typography
+                                  sx={{
+                                    fontFamily: "bold",
+                                    fontSize: 20,
+                                    mb: 1,
+                                  }}
+                                >
+                                  {order?.supplier
+                                    ? order?.supplier?.title
+                                    : order?.restaurant?.title}
+                                </Typography>
+                                <Typography
+                                  sx={{
+                                    fontFamily: "bold",
+                                    fontSize: 20,
+                                    mb: 1,
+                                  }}
+                                >
+                                  ₱ {order?.totalAmount.toFixed(2)}
+                                </Typography>
+                              </Box>
                               <Typography
                                 sx={{
                                   fontFamily: "regular",
                                   color: COLORS.gray,
                                   fontSize: 14,
-                                  mr: 1,
                                 }}
                               >
-                                Ordered Status:
+                                Ordered #: {order._id}
                               </Typography>
                               <Box
-                                sx={{ display: "flex", alignItems: "center" }}
+                                sx={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  mb: 1,
+                                }}
                               >
-                                <Box
+                                <Typography
                                   sx={{
-                                    bgcolor:
-                                      order?.orderStatus === "Pending"
-                                        ? COLORS.gray2
-                                        : order?.orderStatus === "Preparing"
-                                        ? COLORS.secondary
-                                        : order?.orderStatus ===
-                                          "Ready for pickup"
-                                        ? COLORS.tertiary
-                                        : COLORS.primary,
-                                    width: 14,
-                                    height: 14,
-                                    borderRadius: 99,
+                                    fontFamily: "regular",
+                                    color: COLORS.gray,
+                                    fontSize: 14,
+                                    mr: 1,
                                   }}
-                                />
+                                >
+                                  Ordered Status:
+                                </Typography>
+                                <Box
+                                  sx={{ display: "flex", alignItems: "center" }}
+                                >
+                                  <Box
+                                    sx={{
+                                      bgcolor:
+                                        order?.orderStatus === "Pending"
+                                          ? COLORS.gray2
+                                          : order?.orderStatus === "Preparing"
+                                          ? COLORS.secondary
+                                          : order?.orderStatus ===
+                                            "Ready for pickup"
+                                          ? COLORS.tertiary
+                                          : COLORS.primary,
+                                      width: 14,
+                                      height: 14,
+                                      borderRadius: 99,
+                                    }}
+                                  />
+                                  <Typography
+                                    sx={{
+                                      fontFamily: "bold",
+                                      color: COLORS.black,
+                                      fontSize: 14,
+                                      ml: 0.5,
+                                    }}
+                                  >
+                                    {order?.orderStatus}
+                                  </Typography>
+                                </Box>
+                              </Box>
+                              {order?.orderItems.map((item) => (
+                                <Typography
+                                  key={item?._id}
+                                  sx={{
+                                    fontFamily: "regular",
+                                    fontSize: 16,
+                                    ml: 1,
+                                  }}
+                                >
+                                  {item?.quantity}x{" "}
+                                  {item?.productId
+                                    ? item?.productId?.title
+                                    : item?.foodId?.title}
+                                </Typography>
+                              ))}
+                            </Box>
+                          </Box>
+                        </Box>
+                      ))}
+                    </Box>
+                  )}
+                </>
+              )}
+
+              {orderType === "Previous" && (
+                <>
+                  {pastOrders.length === 0 ? (
+                    <Container
+                      maxWidth="sm"
+                      sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        height: "80vh",
+                      }}
+                    >
+                      <Box
+                        component="img"
+                        src={emptyOrder}
+                        sx={{ width: 500, height: "auto" }}
+                      />
+                      <Typography
+                        sx={{
+                          fontFamily: "regular",
+                          fontSize: 16,
+                          my: 3,
+                          textAlign: "center",
+                          color: COLORS.gray,
+                          width: 400,
+                        }}
+                      >
+                        You have no past orders. Please check back later or
+                        browse items to place a new order.
+                      </Typography>
+                    </Container>
+                  ) : (
+                    <Box
+                      sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      {pastOrders.map((order) => (
+                        <Box
+                          key={order?._id}
+                          onClick={() => {
+                            navigate(`/order-detail/${order?._id}`, {
+                              state: { order },
+                            });
+                          }}
+                          sx={{
+                            mb: 3,
+                            p: 2,
+                            borderRadius: 5,
+                            bgcolor: COLORS.offwhite,
+                            cursor: "pointer",
+                            width: "500px",
+                          }}
+                        >
+                          <Box sx={{ display: "flex" }}>
+                            <Box
+                              component="img"
+                              src={
+                                order?.supplier
+                                  ? order?.supplier?.logoUrl?.url
+                                  : order?.restaurant?.logoUrl?.url
+                              }
+                              sx={{
+                                height: 80,
+                                width: 80,
+                                objectFit: "cover",
+                                borderRadius: 3,
+                              }}
+                            />
+                            <Box sx={{ ml: 2, width: 800 }}>
+                              <Box
+                                sx={{
+                                  display: "flex",
+                                  justifyContent: "space-between",
+                                  alignItems: "center",
+                                }}
+                              >
                                 <Typography
                                   sx={{
                                     fontFamily: "bold",
-                                    color: COLORS.black,
-                                    fontSize: 14,
-                                    ml: 0.5,
+                                    fontSize: 20,
+                                    mb: 1,
                                   }}
                                 >
-                                  {order?.orderStatus}
+                                  {order?.supplier
+                                    ? order?.supplier?.title
+                                    : order?.restaurant?.title}
+                                </Typography>
+                                <Typography
+                                  sx={{
+                                    fontFamily: "bold",
+                                    fontSize: 20,
+                                    mb: 1,
+                                  }}
+                                >
+                                  ₱ {order?.totalAmount.toFixed(2)}
                                 </Typography>
                               </Box>
-                            </Box>
-                            {order?.orderItems.map((item) => (
                               <Typography
-                                key={item?._id}
                                 sx={{
                                   fontFamily: "regular",
-                                  fontSize: 16,
-                                  ml: 1,
+                                  color: COLORS.gray,
+                                  fontSize: 14,
                                 }}
                               >
-                                {item?.quantity}x{" "}
-                                {item?.productId
-                                  ? item?.productId?.title
-                                  : item?.foodId?.title}
+                                Ordered #: {order._id}
                               </Typography>
-                            ))}
+                              <Box
+                                sx={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                }}
+                              >
+                                <Typography
+                                  sx={{
+                                    fontFamily: "regular",
+                                    color: COLORS.gray,
+                                    fontSize: 14,
+                                    mr: 1,
+                                  }}
+                                >
+                                  Ordered Status:
+                                </Typography>
+                                <Box
+                                  sx={{ display: "flex", alignItems: "center" }}
+                                >
+                                  <Box
+                                    sx={{
+                                      bgcolor:
+                                        order?.orderStatus === "Pending"
+                                          ? COLORS.gray2
+                                          : order?.orderStatus === "Preparing"
+                                          ? COLORS.secondary
+                                          : order?.orderStatus ===
+                                            "Ready for pickup"
+                                          ? COLORS.tertiary
+                                          : COLORS.primary,
+                                      width: 14,
+                                      height: 14,
+                                      borderRadius: 99,
+                                    }}
+                                  />
+                                  <Typography
+                                    sx={{
+                                      fontFamily: "bold",
+                                      color: COLORS.black,
+                                      fontSize: 14,
+                                      ml: 0.5,
+                                    }}
+                                  >
+                                    {order?.orderStatus}
+                                  </Typography>
+                                </Box>
+                              </Box>
+
+                              <Box
+                                sx={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  mb: 1,
+                                }}
+                              >
+                                <Typography
+                                  sx={{
+                                    fontFamily: "regular",
+                                    color: COLORS.gray,
+                                    fontSize: 14,
+                                    mr: 0.5,
+                                  }}
+                                >
+                                  Rating:
+                                </Typography>
+
+                                {order?.rating?.stars ? (
+                                  <Rating
+                                    readOnly
+                                    value={order?.rating.stars}
+                                    sx={{
+                                      fontSize: 16,
+                                      "& .MuiRating-iconFilled": {
+                                        color: COLORS.primary,
+                                      },
+                                      "& .MuiRating-iconEmpty": {
+                                        color: COLORS.gray2,
+                                      },
+                                    }}
+                                  />
+                                ) : (
+                                  <Typography
+                                    sx={{
+                                      fontFamily: "bold",
+                                      color: COLORS.black,
+                                      fontSize: 14,
+                                    }}
+                                  >
+                                    🟡 Pending
+                                  </Typography>
+                                )}
+                              </Box>
+
+                              {order?.orderItems.map((item) => (
+                                <Typography
+                                  key={item?._id}
+                                  sx={{
+                                    fontFamily: "regular",
+                                    fontSize: 16,
+                                    ml: 1,
+                                  }}
+                                >
+                                  {item?.quantity}x{" "}
+                                  {item?.productId
+                                    ? item?.productId?.title
+                                    : item?.foodId?.title}
+                                </Typography>
+                              ))}
+                            </Box>
                           </Box>
                         </Box>
-                      </Box>
-                    </>
-                  ))}
+                      ))}
+                    </Box>
+                  )}
                 </>
               )}
 
-              <Typography sx={{ fontFamily: "bold", fontSize: 24, my: 3 }}>
-                Past Orders
-              </Typography>
-
-              {pastOrders.length === 0 ? (
-                <Typography sx={{ fontFamily: "regular", fontSize: 16, my: 3 }}>
-                  You have no past orders.
-                </Typography>
-              ) : (
-                <></>
-              )}
-
-              <Typography sx={{ fontFamily: "bold", fontSize: 24, my: 3 }}>
-                Cancelled Orders
-              </Typography>
-
-              {cancelledOrders.length === 0 ? (
-                <Typography sx={{ fontFamily: "regular", fontSize: 16, my: 3 }}>
-                  You have no cancelled orders.
-                </Typography>
-              ) : (
+              {orderType === "Cancelled" && (
                 <>
-                  {cancelledOrders.map((order) => (
-                    <Box
-                      key={order?._id}
-                      onClick={() => {
-                        navigate(`/order-detail/${order?._id}`, {
-                          state: { order },
-                        });
-                      }}
+                  {cancelledOrders.length === 0 ? (
+                    <Container
+                      maxWidth="sm"
                       sx={{
-                        mb: 3,
-                        p: 2,
-                        borderRadius: 5,
-                        bgcolor: COLORS.offwhite,
-                        cursor: "pointer",
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        height: "80vh",
                       }}
                     >
-                      <Box sx={{ display: "flex" }}>
+                      <Box
+                        component="img"
+                        src={emptyOrder}
+                        sx={{ width: 500, height: "auto" }}
+                      />
+                      <Typography
+                        sx={{
+                          fontFamily: "regular",
+                          fontSize: 16,
+                          my: 3,
+                          textAlign: "center",
+                          color: COLORS.gray,
+                          width: 400,
+                        }}
+                      >
+                        You have no cancelled orders. Please check back later or
+                        browse items to place a new order.
+                      </Typography>
+                    </Container>
+                  ) : (
+                    <Box
+                      sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      {cancelledOrders.map((order) => (
                         <Box
-                          component="img"
-                          src={
-                            order?.supplier
-                              ? order?.supplier?.logoUrl?.url
-                              : order?.restaurant?.logoUrl?.url
-                          }
-                          sx={{
-                            height: 80,
-                            width: 80,
-                            objectFit: "cover",
-                            borderRadius: 3,
+                          key={order?._id}
+                          onClick={() => {
+                            navigate(`/order-detail/${order?._id}`, {
+                              state: { order },
+                            });
                           }}
-                        />
-                        <Box sx={{ ml: 2, width: 800 }}>
-                          <Box
-                            sx={{
-                              display: "flex",
-                              justifyContent: "space-between",
-                              alignItems: "center",
-                            }}
-                          >
-                            <Typography
-                              sx={{ fontFamily: "bold", fontSize: 20, mb: 1 }}
-                            >
-                              {order?.supplier
-                                ? order?.supplier?.title
-                                : order?.restaurant?.title}
-                            </Typography>
-                            <Typography
-                              sx={{ fontFamily: "bold", fontSize: 20, mb: 1 }}
-                            >
-                              ₱ {order?.totalAmount?.toFixed(2)}
-                            </Typography>
-                          </Box>
-                          <Typography
-                            sx={{
-                              fontFamily: "regular",
-                              color: COLORS.gray,
-                              fontSize: 14,
-                            }}
-                          >
-                            Ordered #: {order?._id}
-                          </Typography>
-                          <Typography
-                            sx={{
-                              fontFamily: "regular",
-                              color: COLORS.gray,
-                              fontSize: 14,
-                              mb: 1,
-                            }}
-                          >
-                            Ordered At:{" "}
-                            {new Date(order.createdAt).toLocaleDateString(
-                              "en-US",
-                              {
-                                weekday: "long",
-                                year: "numeric",
-                                month: "long",
-                                day: "numeric",
+                          sx={{
+                            mb: 3,
+                            p: 2,
+                            borderRadius: 5,
+                            bgcolor: COLORS.offwhite,
+                            cursor: "pointer",
+                            width: "500px",
+                          }}
+                        >
+                          <Box sx={{ display: "flex" }}>
+                            <Box
+                              component="img"
+                              src={
+                                order?.supplier
+                                  ? order?.supplier?.logoUrl?.url
+                                  : order?.restaurant?.logoUrl?.url
                               }
-                            )}
-                            , {new Date(order.createdAt).toLocaleTimeString()}
-                          </Typography>
-                          {order?.orderItems?.map((item) => (
-                            <Typography
-                              key={item?._id}
                               sx={{
-                                fontFamily: "regular",
-                                fontSize: 16,
-                                ml: 1,
+                                height: 80,
+                                width: 80,
+                                objectFit: "cover",
+                                borderRadius: 3,
                               }}
-                            >
-                              {item.quantity}x{" "}
-                              {item?.productId
-                                ? item?.productId?.title
-                                : item?.foodId?.title}
-                            </Typography>
-                          ))}
+                            />
+                            <Box sx={{ ml: 2, width: 800 }}>
+                              <Box
+                                sx={{
+                                  display: "flex",
+                                  justifyContent: "space-between",
+                                  alignItems: "center",
+                                }}
+                              >
+                                <Typography
+                                  sx={{
+                                    fontFamily: "bold",
+                                    fontSize: 20,
+                                    mb: 1,
+                                  }}
+                                >
+                                  {order?.supplier
+                                    ? order?.supplier?.title
+                                    : order?.restaurant?.title}
+                                </Typography>
+                                <Typography
+                                  sx={{
+                                    fontFamily: "bold",
+                                    fontSize: 20,
+                                    mb: 1,
+                                  }}
+                                >
+                                  ₱ {order?.totalAmount.toFixed(2)}
+                                </Typography>
+                              </Box>
+                              <Typography
+                                sx={{
+                                  fontFamily: "regular",
+                                  color: COLORS.gray,
+                                  fontSize: 14,
+                                }}
+                              >
+                                Ordered #: {order._id}
+                              </Typography>
+                              <Box
+                                sx={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  mb: 1,
+                                }}
+                              >
+                                <Typography
+                                  sx={{
+                                    fontFamily: "regular",
+                                    color: COLORS.gray,
+                                    fontSize: 14,
+                                    mr: 1,
+                                  }}
+                                >
+                                  Ordered Status:
+                                </Typography>
+                                <Box
+                                  sx={{ display: "flex", alignItems: "center" }}
+                                >
+                                  <Box
+                                    sx={{
+                                      bgcolor:
+                                        order?.orderStatus === "Pending"
+                                          ? COLORS.gray2
+                                          : order?.orderStatus === "Preparing"
+                                          ? COLORS.secondary
+                                          : order?.orderStatus ===
+                                            "Ready for pickup"
+                                          ? COLORS.tertiary
+                                          : order?.orderStatus ===
+                                            "Cancelled by customer"
+                                          ? COLORS.gray2
+                                          : COLORS.primary,
+                                      width: 14,
+                                      height: 14,
+                                      borderRadius: 99,
+                                    }}
+                                  />
+                                  <Typography
+                                    sx={{
+                                      fontFamily: "bold",
+                                      color: COLORS.black,
+                                      fontSize: 14,
+                                      ml: 0.5,
+                                    }}
+                                  >
+                                    {order?.orderStatus}
+                                  </Typography>
+                                </Box>
+                              </Box>
+                              {order?.orderItems.map((item) => (
+                                <Typography
+                                  key={item?._id}
+                                  sx={{
+                                    fontFamily: "regular",
+                                    fontSize: 16,
+                                    ml: 1,
+                                  }}
+                                >
+                                  {item?.quantity}x{" "}
+                                  {item?.productId
+                                    ? item?.productId?.title
+                                    : item?.foodId?.title}
+                                </Typography>
+                              ))}
+                            </Box>
+                          </Box>
                         </Box>
-                      </Box>
+                      ))}
                     </Box>
-                  ))}
+                  )}
                 </>
               )}
-            </Container>
-          )} */}
-        </Box>
+            </Box>
+          )}
+        </>
       )}
     </>
   );
