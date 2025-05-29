@@ -184,7 +184,6 @@ const CategoryFoods = ({ foods }) => {
                 },
               }}
               onClick={() => {
-                console.log(food);
                 addItemToCart(food);
               }}
             >

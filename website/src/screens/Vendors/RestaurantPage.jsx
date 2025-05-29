@@ -60,7 +60,7 @@ const RestaurantPage = () => {
 
   return (
     <Container
-      maxWidth="xl"
+      maxWidth="lg"
       sx={{
         height: "100vh",
         bgColor: COLORS.offwhite,
@@ -69,17 +69,6 @@ const RestaurantPage = () => {
         flexDirection: "column",
       }}
     >
-      {/* <Box
-        component="img"
-        src={restaurant?.imageUrl?.url}
-        sx={{
-          height: "30%",
-          width: "100%",
-          objectFit: "cover",
-          borderBottomLeftRadius: 15,
-          borderBottomRightRadius: 15,
-        }}
-      /> */}
       <Box
         sx={{
           height: "100%",
