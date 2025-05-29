@@ -76,8 +76,11 @@ const OrderPage = () => {
         order.orderStatus === "Delivered" || order.orderStatus === "Completed"
     ) || [];
   const cancelledOrders =
-    orders?.filter((order) => order.orderStatus === "Cancelled by customer") ||
-    [];
+    orders?.filter(
+      (order) =>
+        order.orderStatus === "Cancelled by customer" ||
+        order.orderStatus === "Rejected"
+    ) || [];
 
   return (
     <>

@@ -547,7 +547,7 @@ const OrderDetails = () => {
                   fontFamily: "regular",
                   color: COLORS.gray,
                   fontSize: 14,
-                  marginTop: 15,
+                  marginTop: 2,
                 }}
               >
                 The restaurant is preparing your order. Please wait for the
@@ -648,7 +648,7 @@ const OrderDetails = () => {
                     fontFamily: "regular",
                     fontSize: 14,
                     color: COLORS.gray,
-                    marginTop: 15,
+                    marginTop: 2,
                   }}
                 >
                   Your order has been delivered! Did you receive your order? If

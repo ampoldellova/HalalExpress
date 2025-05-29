@@ -24,11 +24,9 @@ const RateOrderModal = ({ open, onClose, order }) => {
 
   const submitRating = async () => {
     setLoading(true);
-
     if (rating === 0) {
       setLoading(false);
       setRatingError(true);
-      toast.error("Please provide a rating before submitting.");
       return;
     } else {
       try {
@@ -49,19 +47,21 @@ const RateOrderModal = ({ open, onClose, order }) => {
           toast.success(
             "Thank you for your feedback! Your rating has been submitted."
           );
-          setRating(0);
-          setFeedback("");
           setLoading(false);
-          onClose();
           navigation(`/order-page/${user?._id}`);
         } else {
           toast.error("You need to be logged in to rate an order.");
+          setLoading(false);
         }
       } catch (error) {
-        toast.error(error.message);
+        navigation(`/order-page/${user?._id}`);
+        // toast.error(error.message);
+        setLoading(false);
       }
     }
   };
+
+  console.log(rating);
 
   return (
     <Modal
@@ -69,6 +69,7 @@ const RateOrderModal = ({ open, onClose, order }) => {
       onClose={() => {
         onClose();
         setRating(0);
+        setRatingError(false);
         setFeedback("");
       }}
     >
@@ -86,9 +87,9 @@ const RateOrderModal = ({ open, onClose, order }) => {
 
           <Rating
             value={rating}
-            onChange={(e) => {
-              setRating(e.target.value);
-              if (e.target.value > 0) setRatingError(false);
+            onChange={(_, value) => {
+              setRating(value);
+              if (value > 0) setRatingError(false);
             }}
             sx={{
               "& .MuiRating-iconFilled": {
