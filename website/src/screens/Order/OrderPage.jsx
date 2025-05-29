@@ -1,4 +1,4 @@
-import { Box, Button, Container, Typography } from "@mui/material";
+import { Box, Button, Container, Rating, Typography } from "@mui/material";
 import axios from "axios";
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -433,7 +433,6 @@ const OrderPage = () => {
                             sx={{
                               display: "flex",
                               alignItems: "center",
-                              mb: 1,
                             }}
                           >
                             <Typography
@@ -475,6 +474,52 @@ const OrderPage = () => {
                               </Typography>
                             </Box>
                           </Box>
+
+                          <Box
+                            sx={{
+                              display: "flex",
+                              alignItems: "center",
+                              mb: 1,
+                            }}
+                          >
+                            <Typography
+                              sx={{
+                                fontFamily: "regular",
+                                color: COLORS.gray,
+                                fontSize: 14,
+                                mr: 0.5,
+                              }}
+                            >
+                              Rating:
+                            </Typography>
+
+                            {order?.rating?.stars ? (
+                              <Rating
+                                readOnly
+                                value={order?.rating.stars}
+                                sx={{
+                                  fontSize: 16,
+                                  "& .MuiRating-iconFilled": {
+                                    color: COLORS.primary,
+                                  },
+                                  "& .MuiRating-iconEmpty": {
+                                    color: COLORS.gray2,
+                                  },
+                                }}
+                              />
+                            ) : (
+                              <Typography
+                                sx={{
+                                  fontFamily: "bold",
+                                  color: COLORS.black,
+                                  fontSize: 14,
+                                }}
+                              >
+                                🟡 Pending
+                              </Typography>
+                            )}
+                          </Box>
+
                           {order?.orderItems.map((item) => (
                             <Typography
                               key={item?._id}
