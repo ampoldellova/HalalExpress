@@ -13,6 +13,7 @@ import React, { useState } from "react";
 import RestaurantFoodModal from "../Foods/RestaurantFoodModal";
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 import axios from "axios";
+import empty from "../../assets/images/empty.png";
 import { toast } from "react-toastify";
 
 const COLORS = {
@@ -99,98 +100,123 @@ const CategoryFoods = ({ foods }) => {
         spacing={3}
         sx={{ flexDirection: "row", justifyContent: "center", mt: 2 }}
       >
-        {foods.map((food) => (
-          <Card
+        {foods.length === 0 ? (
+          <Box
             sx={{
-              boxShadow: "none",
-              cursor: "pointer",
-              mb: 2,
-              borderRadius: 5,
-              width: 500,
-              borderColor: COLORS.gray2,
-              borderWidth: 1,
-              borderStyle: "solid",
-              padding: 2,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
             }}
           >
-            <Grid2
-              container
+            <Box component="img" src={empty} sx={{ height: 200, width: 200 }} />
+            <Typography
               sx={{
-                flexDirection: "row",
-                alignItems: "center",
-                borderRadius: 5,
-              }}
-              onClick={() => {
-                setOpenFoodModal(true);
-                setFoodId(food?._id);
+                fontFamily: "regular",
+                color: COLORS.gray,
+                fontSize: 18,
+                mt: 2,
               }}
             >
-              <CardMedia
-                component="img"
-                image={food?.imageUrl?.url}
+              No products found.
+            </Typography>
+          </Box>
+        ) : (
+          <>
+            {foods.map((food) => (
+              <Card
                 sx={{
-                  height: 140,
-                  width: 150,
-                  borderRadius: 3,
-                  objectFit: "cover",
+                  boxShadow: "none",
+                  cursor: "pointer",
+                  mb: 2,
+                  borderRadius: 5,
+                  width: 500,
+                  borderColor: COLORS.gray2,
+                  borderWidth: 1,
+                  borderStyle: "solid",
+                  padding: 2,
                 }}
-              />
-              <Grid2 sx={{ flexDirection: "column", ml: 2, width: 300 }}>
-                <Typography
+              >
+                <Grid2
+                  container
                   sx={{
-                    fontFamily: "bold",
-                    fontSize: 18,
+                    flexDirection: "row",
+                    alignItems: "center",
+                    borderRadius: 5,
+                  }}
+                  onClick={() => {
+                    setOpenFoodModal(true);
+                    setFoodId(food?._id);
                   }}
                 >
-                  {food?.title}
-                </Typography>
-                <Typography
-                  sx={{
-                    fontFamily: "regular",
-                    fontSize: 18,
-                    my: 1,
-                  }}
-                >
-                  ₱ {food?.price}
-                </Typography>
-                <Typography
-                  sx={{
-                    fontFamily: "regular",
-                    fontSize: 14,
-                    display: "-webkit-box",
-                    WebkitLineClamp: 2,
-                    WebkitBoxOrient: "vertical",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                    color: COLORS.gray,
-                  }}
-                >
-                  {food?.description}
-                </Typography>
-              </Grid2>
-            </Grid2>
+                  <CardMedia
+                    component="img"
+                    image={food?.imageUrl?.url}
+                    sx={{
+                      height: 140,
+                      width: 150,
+                      borderRadius: 3,
+                      objectFit: "cover",
+                    }}
+                  />
+                  <Grid2 sx={{ flexDirection: "column", ml: 2, width: 300 }}>
+                    <Typography
+                      sx={{
+                        fontFamily: "bold",
+                        fontSize: 18,
+                      }}
+                    >
+                      {food?.title}
+                    </Typography>
+                    <Typography
+                      sx={{
+                        fontFamily: "regular",
+                        fontSize: 18,
+                        my: 1,
+                      }}
+                    >
+                      ₱ {food?.price}
+                    </Typography>
+                    <Typography
+                      sx={{
+                        fontFamily: "regular",
+                        fontSize: 14,
+                        display: "-webkit-box",
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: "vertical",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        color: COLORS.gray,
+                      }}
+                    >
+                      {food?.description}
+                    </Typography>
+                  </Grid2>
+                </Grid2>
 
-            <IconButton
-              size="medium"
-              sx={{
-                zIndex: 1,
-                position: "absolute",
-                backgroundColor: "white",
-                mt: -6,
-                ml: 1,
-                "&:hover": {
-                  backgroundColor: COLORS.primary,
-                  color: "white",
-                },
-              }}
-              onClick={() => {
-                addItemToCart(food);
-              }}
-            >
-              <AddOutlinedIcon fontSize="inherit" />
-            </IconButton>
-          </Card>
-        ))}
+                <IconButton
+                  size="medium"
+                  sx={{
+                    zIndex: 1,
+                    position: "absolute",
+                    backgroundColor: "white",
+                    mt: -6,
+                    ml: 1,
+                    "&:hover": {
+                      backgroundColor: COLORS.primary,
+                      color: "white",
+                    },
+                  }}
+                  onClick={() => {
+                    addItemToCart(food);
+                  }}
+                >
+                  <AddOutlinedIcon fontSize="inherit" />
+                </IconButton>
+              </Card>
+            ))}
+          </>
+        )}
       </Grid2>
 
       <RestaurantFoodModal
