@@ -403,8 +403,8 @@ const OrderDetails = () => {
                   }}
                 >
                   Your order has been delivered! Did you receive your order? If
-                  not, please contact the restaurant. If you did, please click
-                  the received button below.
+                  not, please contact the delivery rider. If you did, please
+                  click the received button below.
                 </Text>
 
                 <TouchableOpacity

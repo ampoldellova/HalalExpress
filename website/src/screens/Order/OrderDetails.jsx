@@ -1,9 +1,11 @@
 import {
   Box,
   Button,
+  CircularProgress,
   Container,
   Divider,
   Grid2,
+  Rating,
   Typography,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
@@ -15,6 +17,7 @@ import { toast } from "react-toastify";
 import { getUser } from "../../utils/helpers";
 import axios from "axios";
 import CancelOrderModal from "../../components/Order/CancelOrderModal";
+import RateOrderModal from "../../components/Order/RateOrderModal";
 
 const COLORS = {
   primary: "#30b9b2",
@@ -33,16 +36,47 @@ const COLORS = {
 };
 
 const OrderDetails = () => {
-  const user = getUser();
-  const navigate = useNavigate();
   const location = useLocation();
-  const { order } = location.state;
+  const [order, setOrder] = useState(location.state.order);
   const [openCancelOrderModal, setOpenCancelOrderModal] = useState(false);
+  const [ratingModal, setRatingModal] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleOpenCancelOrderModal = () => setOpenCancelOrderModal(true);
   const handleCloseCancelOrderModal = () => setOpenCancelOrderModal(false);
 
-  console.log("Order Details:", order);
+  const receiveOrder = async () => {
+    setLoading(true);
+    try {
+      const token = sessionStorage.getItem("token");
+      if (token) {
+        const config = {
+          headers: {
+            Authorization: `Bearer ${JSON.parse(token)}`,
+          },
+        };
+
+        await axios.post(
+          `http://localhost:6002/api/orders/receive`,
+          { orderId: order?._id },
+          config
+        );
+
+        setOrder((prevOrder) => ({
+          ...prevOrder,
+          orderStatus: "Completed",
+        }));
+
+        toast.success("Order received successfully!");
+        setLoading(false);
+      } else {
+        toast.error("You need to be logged in to receive an order.");
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
+
   return (
     <Container maxWidth="lg" sx={{ height: "100vh" }}>
       <Typography variant="h4" sx={{ mt: 3, fontFamily: "bold" }}>
@@ -451,10 +485,14 @@ const OrderDetails = () => {
                 sx={{
                   px: 2,
                   bgcolor:
-                    order.orderStatus === "Pending" ||
-                    "cancelled by customer" ||
-                    "cancelled by restaurant"
+                    order?.orderStatus === "Pending"
+                      ? COLORS.gray2
+                      : order?.orderStatus === "cancelled by customer"
+                      ? COLORS.gray2
+                      : order?.orderStatus === "Preparing"
                       ? COLORS.secondary
+                      : order?.orderStatus === "Ready for pickup"
+                      ? COLORS.tertiary
                       : COLORS.primary,
                   borderRadius: 3,
                 }}
@@ -503,8 +541,7 @@ const OrderDetails = () => {
                 </Button>
               </>
             )}
-
-            {order.orderStatus === "cancelled by customer" && (
+            {order.orderStatus === "Preparing" && (
               <Typography
                 sx={{
                   fontFamily: "regular",
@@ -513,11 +550,182 @@ const OrderDetails = () => {
                   mt: 2,
                 }}
               >
-                Your have cancelled your order.{" "}
-                {order.paymentStatus === "Paid"
-                  ? "Please wait for the refund to be processed."
-                  : "No payment has been made."}
+                The restaurant is preparing your order. Please wait for the
+                restaurant to finish your order.
               </Typography>
+            )}
+            {order?.deliveryOption === "standard" &&
+              order?.orderStatus === "Ready for pickup" && (
+                <Typography
+                  sx={{
+                    fontFamily: "regular",
+                    fontSize: 14,
+                    color: COLORS.gray,
+                    mt: 2,
+                  }}
+                >
+                  Your order is prepared and ready for pickup! The restaurant's
+                  in-house delivery rider will be arriving shortly to collect
+                  and deliver it to you.
+                </Typography>
+              )}
+            {order?.deliveryOption === "pickup" &&
+              order?.orderStatus === "Ready for pickup" && (
+                <Typography
+                  style={{
+                    fontFamily: "regular",
+                    fontSize: 14,
+                    color: COLORS.gray,
+                    mt: 2,
+                  }}
+                >
+                  Your order is prepared and ready for pickup! Please head to
+                  the restaurant to collect your order.
+                </Typography>
+              )}
+            {order?.deliveryOption === "standard" &&
+              order?.orderStatus === "Out for delivery" && (
+                <Typography
+                  style={{
+                    fontFamily: "regular",
+                    fontSize: 14,
+                    color: COLORS.gray,
+                    mt: 2,
+                  }}
+                >
+                  Your order is out for delivery! The restaurant's in-house
+                  delivery rider is on the way to deliver your order to you.
+                </Typography>
+              )}
+            {order?.orderStatus === "cancelled by customer" &&
+              order?.paymentStatus === "Refunded" && (
+                <Typography
+                  style={{
+                    fontFamily: "regular",
+                    fontSize: 14,
+                    mt: 2,
+                    color: COLORS.gray,
+                  }}
+                >
+                  This order has been cancelled by you. If you have any
+                  questions, please contact the restaurant. Refund will be
+                  processed within 3-5 business days.
+                </Typography>
+              )}
+            {order?.orderStatus === "cancelled by customer" &&
+              order?.paymentStatus === "Cancelled" && (
+                <Typography
+                  style={{
+                    fontFamily: "regular",
+                    fontSize: 14,
+                    color: COLORS.gray,
+                    mt: 2,
+                  }}
+                >
+                  This order has been cancelled by you. If you have any
+                  questions, please contact the restaurant.
+                </Typography>
+              )}
+            {order?.orderStatus === "Rejected" &&
+              order?.paymentStatus === "Refunded" && (
+                <Typography
+                  style={{
+                    fontFamily: "regular",
+                    fontSize: 14,
+                    color: COLORS.gray,
+                    mt: 2,
+                  }}
+                >
+                  This order has been rejected by the restaurant. If you have
+                  any questions, please contact the restaurant. Refund will be
+                  processed within 3-5 business days.
+                </Typography>
+              )}
+            {order?.orderStatus === "Delivered" && (
+              <>
+                <Typography
+                  sx={{
+                    fontFamily: "regular",
+                    fontSize: 14,
+                    color: COLORS.gray,
+                    mt: 2,
+                  }}
+                >
+                  Your order has been delivered! Did you receive your order? If
+                  not, please contact the delivery rider. If you did, please
+                  click the received button below.
+                </Typography>
+
+                <Button
+                  onClick={() => receiveOrder()}
+                  fullWidth
+                  sx={{
+                    mt: 2,
+                    bgcolor: COLORS.primary,
+                    color: COLORS.white,
+                    textTransform: "none",
+                    fontFamily: "bold",
+                    borderRadius: 8,
+                  }}
+                >
+                  {loading ? (
+                    <CircularProgress size={24} color="white" />
+                  ) : (
+                    "R E C E I V E "
+                  )}
+                </Button>
+              </>
+            )}
+            {order?.orderStatus === "Completed" && (
+              <>
+                <Typography
+                  style={{
+                    fontFamily: "regular",
+                    fontSize: 14,
+                    color: COLORS.gray,
+                    marginTop: 15,
+                  }}
+                >
+                  Your order has been completed! Thank you for your order. We
+                  hope you enjoyed your meal. Please leave a rating and feedback
+                  about your order. Your feedback is important to us. Thank you!
+                </Typography>
+
+                {order?.orderStatus === "Completed" &&
+                order?.rating?.status === "submitted" ? (
+                  <></>
+                ) : (
+                  <Button
+                    onClick={() => {
+                      setRatingModal(true);
+                    }}
+                    fullWidth
+                    sx={{
+                      mt: 2,
+                      bgcolor: COLORS.primary,
+                      color: COLORS.white,
+                      textTransform: "none",
+                      fontFamily: "bold",
+                      borderRadius: 8,
+                    }}
+                  >
+                    <Typography
+                      sx={{
+                        color: COLORS.white,
+                        fontFamily: "bold",
+                        textAlign: "center",
+                        fontSize: 16,
+                      }}
+                    >
+                      {"R A T E   O R D E R".split("").map((char, idx) => (
+                        <span key={idx}>
+                          {char === " " ? "\u00A0\u00A0" : char}
+                        </span>
+                      ))}
+                    </Typography>
+                  </Button>
+                )}
+              </>
             )}
           </Box>
         </Grid2>
@@ -525,6 +733,11 @@ const OrderDetails = () => {
       <CancelOrderModal
         open={openCancelOrderModal}
         onClose={handleCloseCancelOrderModal}
+        order={order}
+      />
+      <RateOrderModal
+        open={ratingModal}
+        onClose={() => setRatingModal(false)}
         order={order}
       />
     </Container>

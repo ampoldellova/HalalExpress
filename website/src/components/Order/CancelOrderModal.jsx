@@ -3,7 +3,7 @@ import axios from "axios";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { getUser } from "../../utils/helpers";
+import { authenticate, getUser } from "../../utils/helpers";
 import { createRefund, retrieveRefund } from "../../hook/paymongoService";
 
 const COLORS = {
@@ -101,8 +101,6 @@ const CancelOrderModal = ({ open, onClose, order }) => {
         setNotes("");
         setNotesError(false);
       }}
-      aria-labelledby="modal-modal-title"
-      aria-describedby="modal-modal-description"
     >
       <Box sx={style}>
         <Typography sx={{ fontFamily: "bold", fontSize: 24 }}>
