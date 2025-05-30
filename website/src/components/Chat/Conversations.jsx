@@ -7,6 +7,7 @@ import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
 import { Box, Divider, IconButton, Typography } from "@mui/material";
 import { COLORS } from "../../styles/theme";
 import empty from "../../assets/images/emptyInbox.png";
+import { ChatItem } from "react-chat-elements";
 
 const Conversations = ({ onClose }) => {
   const user = getUser();
@@ -149,7 +150,7 @@ const Conversations = ({ onClose }) => {
             color: COLORS.white,
           }}
         >
-          Chats
+          Chats 💭
         </Typography>
 
         <IconButton onClick={() => onClose()}>
