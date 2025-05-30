@@ -161,13 +161,6 @@ export default function NavigationBar() {
                       <LocalMallOutlinedIcon sx={styles.cartIcon} />
                     )}
                   </IconButton>
-
-                  <IconButton
-                    color="inherit"
-                    onClick={() => navigate("/chats")}
-                  >
-                    <InsertCommentOutlinedIcon sx={styles.cartIcon} />
-                  </IconButton>
                 </Grid2>
                 <Menu
                   keepMounted
