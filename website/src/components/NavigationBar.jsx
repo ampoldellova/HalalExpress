@@ -93,7 +93,6 @@ export default function NavigationBar() {
 
   const handleLogout = async () => {
     navigate("/");
-    toast.success("Logged out successfully!");
     logout(() => {});
   };
 

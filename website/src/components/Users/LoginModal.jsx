@@ -45,7 +45,6 @@ const LoginModal = ({ open, onClose, signUp }) => {
 
       authenticate(data, () => {});
       onClose();
-      toast.success("Logged in successfully!");
       navigation("/");
     } catch (error) {
       toast.error("Login failed. Please check your credentials.");

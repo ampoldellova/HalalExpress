@@ -42,7 +42,7 @@ function App() {
           />
         </Routes>
 
-        {user && (
+        {user ? (
           <>
             {openChat ? (
               <Conversations onClose={() => setOpenChat(false)} />
@@ -50,7 +50,7 @@ function App() {
               <ChatButton onClick={() => setOpenChat(true)} />
             )}
           </>
-        )}
+        ) : null}
         <Footer />
       </Router>
       <ToastContainer position="top-center" stacked limit={5} />

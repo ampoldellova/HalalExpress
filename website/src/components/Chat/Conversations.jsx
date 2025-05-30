@@ -6,15 +6,16 @@ import { getUser } from "../../utils/helpers";
 import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
 import { Box, Divider, IconButton, Typography } from "@mui/material";
 import { COLORS } from "../../styles/theme";
+import empty from "../../assets/images/emptyInbox.png";
 
 const Conversations = ({ onClose }) => {
   const user = getUser();
   const [conversations, setConversations] = useState([]);
   const [latestMessage, setLatestMessage] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!user?._id) return;
-
     const fetchConversations = () => {
       const collectionRef = collection(database, "chats");
       const q = query(collectionRef, where("receiverId", "==", user?._id));
@@ -88,7 +89,6 @@ const Conversations = ({ onClose }) => {
 
     const unsubscribeConversations = fetchConversations();
     const unsubscribeLatestMessage = fetchLatestMessage();
-
     return () => {
       unsubscribeConversations && unsubscribeConversations();
       unsubscribeLatestMessage && unsubscribeLatestMessage();
@@ -157,112 +157,142 @@ const Conversations = ({ onClose }) => {
         </IconButton>
       </Box>
 
-      {combinedData.map((conversation) => (
-        <>
+      {combinedData.length === 0 ? (
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "80%",
+          }}
+        >
           <Box
+            component="img"
+            src={empty}
+            sx={{ width: 200, height: 200, objectFit: "cover" }}
+          />
+          <Typography
             sx={{
-              display: "flex",
-              justifyContent: "flex-start",
-              alignItems: "center",
-              p: 2,
-              cursor: "pointer",
-              "&:hover": {
-                backgroundColor: COLORS.offwhite,
-              },
+              fontFamily: "regular",
+              color: COLORS.gray,
+              textAlign: "center",
+              marginTop: 2,
             }}
           >
-            <Box
-              component="img"
-              src={conversation?.user?.avatar}
-              alt="Chat Image"
-              sx={{
-                height: 60,
-                width: 60,
-                borderRadius: 99,
-                border: `1px solid ${COLORS.gray2}`,
-              }}
-            />
-            <Box sx={{ display: "flex", flexDirection: "column", ml: 2 }}>
+            Your message box is empty.
+          </Typography>
+        </Box>
+      ) : (
+        <>
+          {combinedData.map((conversation) => (
+            <>
               <Box
                 sx={{
                   display: "flex",
+                  justifyContent: "flex-start",
                   alignItems: "center",
-                  justifyContent: "space-between",
-                  width: "100%",
+                  p: 2,
+                  cursor: "pointer",
+                  "&:hover": {
+                    backgroundColor: COLORS.offwhite,
+                  },
                 }}
               >
-                <Typography
+                <Box
+                  component="img"
+                  src={conversation?.user?.avatar}
+                  alt="Chat Image"
                   sx={{
-                    fontFamily: "bold",
-                    color: COLORS.black,
-                    fontSize: 18,
+                    height: 60,
+                    width: 60,
+                    borderRadius: 99,
+                    border: `1px solid ${COLORS.gray2}`,
                   }}
-                >
-                  {conversation?.user?.name}
-                </Typography>
+                />
+                <Box sx={{ display: "flex", flexDirection: "column", ml: 2 }}>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      width: "100%",
+                    }}
+                  >
+                    <Typography
+                      sx={{
+                        fontFamily: "bold",
+                        color: COLORS.black,
+                        fontSize: 18,
+                      }}
+                    >
+                      {conversation?.user?.name}
+                    </Typography>
 
-                <Typography
-                  sx={{
-                    fontFamily: "regular",
-                    color: COLORS.gray,
-                    fontSize: 14,
-                  }}
-                >
-                  {conversation?.latestMessage?.createdAt
-                    ? new Date(
-                        conversation.latestMessage.createdAt
-                      ).toLocaleDateString("en-US", {
-                        month: "short",
-                        day: "numeric",
-                      })
-                    : ""}
-                </Typography>
+                    <Typography
+                      sx={{
+                        fontFamily: "regular",
+                        color: COLORS.gray,
+                        fontSize: 14,
+                      }}
+                    >
+                      {conversation?.latestMessage?.createdAt
+                        ? new Date(
+                            conversation.latestMessage.createdAt
+                          ).toLocaleDateString("en-US", {
+                            month: "short",
+                            day: "numeric",
+                          })
+                        : ""}
+                    </Typography>
+                  </Box>
+
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      width: "100%",
+                      gap: 4,
+                    }}
+                  >
+                    <Typography
+                      sx={{
+                        fontFamily: "regular",
+                        color: COLORS.gray,
+                        fontSize: 14,
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        maxWidth: 200,
+                      }}
+                    >
+                      {conversation?.latestMessage?.user?._id === user?._id
+                        ? `You: ${conversation?.latestMessage?.text}`
+                        : `${conversation?.latestMessage?.user?.name}: ${conversation?.latestMessage?.text}`}
+                    </Typography>
+
+                    <Typography
+                      sx={{
+                        fontFamily: "regular",
+                        color: COLORS.gray,
+                        fontSize: 14,
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        maxWidth: 200,
+                      }}
+                    >
+                      {formatTime(conversation?.latestMessage?.createdAt)}
+                    </Typography>
+                  </Box>
+                </Box>
               </Box>
-
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  width: "100%",
-                  gap: 4,
-                }}
-              >
-                <Typography
-                  sx={{
-                    fontFamily: "regular",
-                    color: COLORS.gray,
-                    fontSize: 14,
-                    whiteSpace: "nowrap",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                    maxWidth: 200,
-                  }}
-                >
-                  {conversation?.latestMessage?.user?._id === user?._id
-                    ? `You: ${conversation?.latestMessage?.text}`
-                    : `${conversation?.latestMessage?.user?.name}: ${conversation?.latestMessage?.text}`}
-                </Typography>
-
-                <Typography
-                  sx={{
-                    fontFamily: "regular",
-                    color: COLORS.gray,
-                    fontSize: 14,
-                    whiteSpace: "nowrap",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                    maxWidth: 200,
-                  }}
-                >
-                  {formatTime(conversation?.latestMessage?.createdAt)}
-                </Typography>
-              </Box>
-            </Box>
-          </Box>
-          <Divider />
+              <Divider />
+            </>
+          ))}
         </>
-      ))}
+      )}
     </Box>
   );
 };
