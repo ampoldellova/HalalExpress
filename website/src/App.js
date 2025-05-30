@@ -16,6 +16,7 @@ import VerificationPage from "./screens/User/VerificationPage";
 import { Box, Typography } from "@mui/material";
 import { COLORS } from "./styles/theme";
 import Footer from "./components/Footer";
+import Chats from "./screens/User/Chats";
 
 function App() {
   const user = getUser();
@@ -34,6 +35,7 @@ function App() {
           <Route path="/checkout/:id" element={<CheckOutPage />} />
           <Route path="/order-page/:id" element={<OrderPage />} />
           <Route path="/order-detail/:id" element={<OrderDetails />} />
+          <Route path="/chats" element={<Chats />} />
           <Route
             path="/payment-confirmation"
             element={<PaymentConfirmation />}

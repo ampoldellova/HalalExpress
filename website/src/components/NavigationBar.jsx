@@ -22,6 +22,7 @@ import CartDrawer from "./Cart/CartDrawer";
 import axios from "axios";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
+import InsertCommentOutlinedIcon from "@mui/icons-material/InsertCommentOutlined";
 
 const COLORS = {
   primary: "#30b9b2",
@@ -131,7 +132,7 @@ export default function NavigationBar() {
             </Typography>
             {token && user ? (
               <>
-                <Grid2 container spacing={4}>
+                <Grid2 container spacing={4} sx={{ alignItems: "center" }}>
                   <Button
                     color="inherit"
                     onClick={handleOpenUserMenu}
@@ -147,6 +148,7 @@ export default function NavigationBar() {
                       <ArrowDropDownOutlinedIcon sx={{ color: COLORS.black }} />
                     )}
                   </Button>
+
                   <IconButton color="inherit" onClick={toggleCart(true)}>
                     {cart?.cartItems?.length > 0 ? (
                       <Badge
@@ -158,6 +160,13 @@ export default function NavigationBar() {
                     ) : (
                       <LocalMallOutlinedIcon sx={styles.cartIcon} />
                     )}
+                  </IconButton>
+
+                  <IconButton
+                    color="inherit"
+                    onClick={() => navigate("/chats")}
+                  >
+                    <InsertCommentOutlinedIcon sx={styles.cartIcon} />
                   </IconButton>
                 </Grid2>
                 <Menu
