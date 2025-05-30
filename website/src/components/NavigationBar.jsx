@@ -175,7 +175,8 @@ export default function NavigationBar() {
                     horizontal: "right",
                   }}
                 >
-                  {user.userType === "Admin" && (
+                  {(user.userType === "Vendor" ||
+                    user.userType === "Supplier") && (
                     <MenuItem
                       onClick={() => {
                         navigate("/admin/dashboard");
