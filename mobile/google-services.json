@@ -12,7 +12,20 @@
           "package_name": "com.ampol321.frontend"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "239431572065-nbrp1jj6oda1b4sv0442ejda374s5jp5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ampol321.frontend",
+            "certificate_hash": "21ecee9a3d7c5dc267790afb45491f06eb94323d"
+          }
+        },
+        {
+          "client_id": "239431572065-0537qto93eavqn9u515k11qaabll868e.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyA58yolMkTFBibl_1AW8GfpgBwQLg3PsJo"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "239431572065-0537qto93eavqn9u515k11qaabll868e.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     },
@@ -31,7 +49,12 @@
           "package_name": "halalexpress.com"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "239431572065-0537qto93eavqn9u515k11qaabll868e.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyA58yolMkTFBibl_1AW8GfpgBwQLg3PsJo"
@@ -39,7 +62,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "239431572065-0537qto93eavqn9u515k11qaabll868e.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
