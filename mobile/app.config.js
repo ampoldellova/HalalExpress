@@ -35,12 +35,12 @@ export default {
     },
     extra: {
       firebase: {
-        apiKey: "AIzaSyChi4RK2bphEVRwJ_Ma_GNmr2sljXEXeJM",
+        apiKey: "AIzaSyDzpO8QU2Zclz4EScAvfK6ESbeaW02qbE0",
         authDomain: "halalexpress-86dbb.firebaseapp.com",
         projectId: "halalexpress-86dbb",
         storageBucket: "halalexpress-86dbb.firebasestorage.app",
         messagingSenderId: "239431572065",
-        appId: "1:239431572065:web:d9ec84ad5922158044a820",
+        appId: "1:239431572065:web:5601e9c976e9fdb544a820",
       },
       eas: {
         projectId: "67884e58-e57c-4668-8358-1cb93cb57fbb",

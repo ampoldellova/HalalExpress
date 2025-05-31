@@ -41,35 +41,6 @@
           ]
         }
       }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:239431572065:android:5377deb92f7255ff44a820",
-        "android_client_info": {
-          "package_name": "halalexpress.com"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "239431572065-0537qto93eavqn9u515k11qaabll868e.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyA58yolMkTFBibl_1AW8GfpgBwQLg3PsJo"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "239431572065-0537qto93eavqn9u515k11qaabll868e.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
     }
   ],
   "configuration_version": "1"

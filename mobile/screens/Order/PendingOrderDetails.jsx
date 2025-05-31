@@ -136,7 +136,11 @@ const PendingOrderDetails = () => {
         receiverAvatar: order?.userId?.profile?.url,
       };
 
-      await addDoc(collection(database, "chats"), message);
+      try {
+        await addDoc(collection(database, "chats"), message);
+      } catch (error) {
+        console.error("Error adding document: ", error);
+      }
 
       navigation.goBack();
       setLoading(false);
