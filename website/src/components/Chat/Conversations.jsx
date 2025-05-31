@@ -158,44 +158,48 @@ const Conversations = ({ onClose }) => {
   }, [user, selectedConversation]);
 
   const onSend = useCallback(async () => {
-    if (
-      !inputMessage.trim() ||
-      !user ||
-      !user._id ||
-      !user.name ||
-      !user.avatar ||
-      !selectedConversation ||
-      !selectedConversation.user ||
-      !selectedConversation.user._id ||
-      !selectedConversation.user.name ||
-      !selectedConversation.user.avatar
-    ) {
-      return;
+    try {
+      if (
+        !inputMessage.trim() ||
+        !user ||
+        !user._id ||
+        !user.name ||
+        !user.avatar ||
+        !selectedConversation ||
+        !selectedConversation.user ||
+        !selectedConversation.user._id ||
+        !selectedConversation.user.name ||
+        !selectedConversation.user.avatar
+      ) {
+        return;
+      }
+
+      const newMessage = {
+        _id: Date.now().toString(),
+        createdAt: new Date(),
+        text: inputMessage,
+        user: {
+          _id: user._id,
+          name: user.name,
+          avatar: user.avatar,
+        },
+        receiverId: selectedConversation.user._id,
+        receiverName: selectedConversation.user.name,
+        receiverAvatar: selectedConversation.user.avatar,
+      };
+
+      setMessages((previousMessages) => [newMessage, ...previousMessages]);
+
+      await addDoc(collection(database, "chats"), {
+        ...newMessage,
+        createdAt: new Date(),
+      });
+
+      setInputMessage("");
+    } catch (error) {
+      console.error("Error sending message:", error);
     }
-
-    const newMessage = {
-      _id: Date.now().toString(),
-      createdAt: new Date(),
-      text: inputMessage,
-      user: {
-        _id: user._id,
-        name: user.name,
-        avatar: user.avatar,
-      },
-      receiverId: selectedConversation.user._id,
-      receiverName: selectedConversation.user.name,
-      receiverAvatar: selectedConversation.user.avatar,
-    };
-
-    setMessages((previousMessages) => [newMessage, ...previousMessages]);
-
-    await addDoc(collection(database, "chats"), {
-      ...newMessage,
-      createdAt: new Date(),
-    });
-
-    setInputMessage("");
-  }, [inputMessage, user, selectedConversation, database]);
+  }, []);
 
   return (
     <>

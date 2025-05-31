@@ -66,7 +66,7 @@ const Foods = ({ foods }) => {
         sx={{ mt: 2, justifyContent: "center", mb: 5 }}
       >
         {paginatedFoods.map((food) => (
-          <Grid2 xs={12} sm={6} md={4}>
+          <Grid2 xs={12} sm={6} md={4} key={food._id}>
             <Card sx={{ maxWidth: 170, boxShadow: "none", cursor: "pointer" }}>
               <CardActionArea
                 onClick={() => {

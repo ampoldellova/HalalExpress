@@ -13,6 +13,7 @@ import AddCircleOutlineOutlinedIcon from "@mui/icons-material/AddCircleOutlineOu
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import Loader from "../Loader";
 
 const COLORS = {
   primary: "#30b9b2",
@@ -36,6 +37,7 @@ const RestaurantFoodModal = ({ open, onClose, foodId }) => {
   const [totalPrice, setTotalPrice] = useState(0);
   const [count, setCount] = useState(1);
   const [preference, setPreference] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const getFood = async () => {
     try {
@@ -144,7 +146,9 @@ const RestaurantFoodModal = ({ open, onClose, foodId }) => {
   };
 
   useEffect(() => {
-    getFood();
+    if (foodId) {
+      getFood();
+    }
   }, [foodId]);
 
   useEffect(() => {
@@ -170,191 +174,199 @@ const RestaurantFoodModal = ({ open, onClose, foodId }) => {
         aria-describedby="modal-modal-description"
       >
         <Box sx={style}>
-          <Box
-            component="img"
-            src={food?.imageUrl?.url}
-            sx={{
-              height: 200,
-              width: "100%",
-              objectFit: "cover",
-              borderTopLeftRadius: 15,
-              borderTopRightRadius: 15,
-            }}
-          />
-          <Box sx={{ px: 3, py: 2 }}>
-            <Grid2
-              container
-              sx={{
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "space-between",
-              }}
-            >
-              <Typography sx={{ fontSize: 24, fontFamily: "bold" }}>
-                {food?.title}
-              </Typography>
-              <Typography sx={{ fontSize: 24, fontFamily: "bold" }}>
-                ₱ {((food?.price + totalPrice) * count).toFixed(2)}
-              </Typography>
-            </Grid2>
-            <Typography
-              sx={{
-                fontSize: 16,
-                fontFamily: "regular",
-                color: COLORS.gray,
-                mt: 2,
-              }}
-            >
-              {food?.description}
-            </Typography>
-            {food?.foodTags.map((tag) => (
+          {food && (
+            <>
               <Box
+                component="img"
+                src={food?.imageUrl?.url}
                 sx={{
-                  display: "inline-block",
-                  bgcolor: COLORS.primary,
-                  px: 1,
-                  borderRadius: 2,
-                  mt: 2,
-                  mr: 1,
+                  height: 200,
+                  width: "100%",
+                  objectFit: "cover",
+                  borderTopLeftRadius: 15,
+                  borderTopRightRadius: 15,
                 }}
-              >
-                <Typography
+              />
+              <Box sx={{ px: 3, py: 2 }}>
+                <Grid2
+                  container
                   sx={{
-                    fontFamily: "regular",
-                    color: COLORS.white,
-                    fontSize: 14,
-                  }}
-                >
-                  {tag}
-                </Typography>
-              </Box>
-            ))}
-            <Typography sx={{ fontSize: 24, fontFamily: "bold", mt: 4, mb: 1 }}>
-              Additives and Toppings
-            </Typography>
-            {food?.additives.map((additive) => (
-              <Box
-                sx={{
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Checkbox
-                  size="large"
-                  color={COLORS.primary}
-                  sx={{ color: COLORS.primary }}
-                  onClick={() => {
-                    handleAdditives(additive);
-                  }}
-                />
-                <Box
-                  sx={{
-                    display: "flex",
                     flexDirection: "row",
                     alignItems: "center",
                     justifyContent: "space-between",
-                    width: "100%",
                   }}
                 >
-                  <Typography
-                    sx={{
-                      fontSize: 16,
-                      fontFamily: "regular",
-                      color: COLORS.gray,
-                    }}
-                  >
-                    {additive.title}
+                  <Typography sx={{ fontSize: 24, fontFamily: "bold" }}>
+                    {food?.title}
                   </Typography>
-                  <Typography
-                    sx={{
-                      fontSize: 16,
-                      fontFamily: "regular",
-                      color: COLORS.gray,
-                    }}
-                  >
-                    ₱ {additive.price}
+                  <Typography sx={{ fontSize: 24, fontFamily: "bold" }}>
+                    ₱ {((food?.price + totalPrice) * count).toFixed(2)}
                   </Typography>
-                </Box>
-              </Box>
-            ))}
-            <Typography sx={{ fontSize: 24, fontFamily: "bold", mt: 4, mb: 1 }}>
-              Preferences
-            </Typography>
-            <TextField
-              multiline
-              fullWidth
-              rows={4}
-              placeholder="Add your preferences here..."
-              sx={{
-                bgcolor: COLORS.offwhite,
-                fontFamily: "regular",
-                fontSize: 16,
-                textTransform: "none",
-              }}
-              InputProps={{
-                sx: {
-                  fontFamily: "regular",
-                  fontSize: 16,
-                },
-              }}
-              value={preference}
-              onChange={(e) => setPreference(e.target.value)}
-            />
-            <Grid2
-              container
-              sx={{
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "space-between",
-                mt: 4,
-              }}
-            >
-              <Grid2
-                container
-                spacing={1}
-                sx={{ justifyContent: "space-between" }}
-              >
-                <Grid2 container sx={{ alignItems: "center" }}>
-                  <IconButton onClick={decrement}>
-                    <RemoveCircleOutlineOutlinedIcon
-                      sx={{ fontSize: 30, color: COLORS.primary }}
-                    />
-                  </IconButton>
-                  <Typography
-                    sx={{
-                      fontSize: 24,
-                      fontFamily: "medium",
-                      width: 50,
-                      textAlign: "center",
-                    }}
-                  >
-                    {count}
-                  </Typography>
-                  <IconButton onClick={increment}>
-                    <AddCircleOutlineOutlinedIcon
-                      sx={{ fontSize: 30, color: COLORS.primary }}
-                    />
-                  </IconButton>
                 </Grid2>
-              </Grid2>
-              <Button
-                onClick={addItemToCart}
-                sx={{
-                  width: "70%",
-                  textTransform: "none",
-                  fontFamily: "regular",
-                  fontSize: 16,
-                  backgroundColor: COLORS.primary,
-                  borderRadius: 3,
-                  color: COLORS.white,
-                }}
-              >
-                Add to Cart
-              </Button>
-            </Grid2>
-          </Box>
+                <Typography
+                  sx={{
+                    fontSize: 16,
+                    fontFamily: "regular",
+                    color: COLORS.gray,
+                    mt: 2,
+                  }}
+                >
+                  {food?.description}
+                </Typography>
+                {food?.foodTags.map((tag) => (
+                  <Box
+                    sx={{
+                      display: "inline-block",
+                      bgcolor: COLORS.primary,
+                      px: 1,
+                      borderRadius: 2,
+                      mt: 2,
+                      mr: 1,
+                    }}
+                  >
+                    <Typography
+                      sx={{
+                        fontFamily: "regular",
+                        color: COLORS.white,
+                        fontSize: 14,
+                      }}
+                    >
+                      {tag}
+                    </Typography>
+                  </Box>
+                ))}
+                <Typography
+                  sx={{ fontSize: 24, fontFamily: "bold", mt: 4, mb: 1 }}
+                >
+                  Additives and Toppings
+                </Typography>
+                {food?.additives.map((additive) => (
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: "row",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <Checkbox
+                      size="large"
+                      color={COLORS.primary}
+                      sx={{ color: COLORS.primary }}
+                      onClick={() => {
+                        handleAdditives(additive);
+                      }}
+                    />
+                    <Box
+                      sx={{
+                        display: "flex",
+                        flexDirection: "row",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        width: "100%",
+                      }}
+                    >
+                      <Typography
+                        sx={{
+                          fontSize: 16,
+                          fontFamily: "regular",
+                          color: COLORS.gray,
+                        }}
+                      >
+                        {additive.title}
+                      </Typography>
+                      <Typography
+                        sx={{
+                          fontSize: 16,
+                          fontFamily: "regular",
+                          color: COLORS.gray,
+                        }}
+                      >
+                        ₱ {additive.price}
+                      </Typography>
+                    </Box>
+                  </Box>
+                ))}
+                <Typography
+                  sx={{ fontSize: 24, fontFamily: "bold", mt: 4, mb: 1 }}
+                >
+                  Preferences
+                </Typography>
+                <TextField
+                  multiline
+                  fullWidth
+                  rows={4}
+                  placeholder="Add your preferences here..."
+                  sx={{
+                    bgcolor: COLORS.offwhite,
+                    fontFamily: "regular",
+                    fontSize: 16,
+                    textTransform: "none",
+                  }}
+                  InputProps={{
+                    sx: {
+                      fontFamily: "regular",
+                      fontSize: 16,
+                    },
+                  }}
+                  value={preference}
+                  onChange={(e) => setPreference(e.target.value)}
+                />
+                <Grid2
+                  container
+                  sx={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    mt: 4,
+                  }}
+                >
+                  <Grid2
+                    container
+                    spacing={1}
+                    sx={{ justifyContent: "space-between" }}
+                  >
+                    <Grid2 container sx={{ alignItems: "center" }}>
+                      <IconButton onClick={decrement}>
+                        <RemoveCircleOutlineOutlinedIcon
+                          sx={{ fontSize: 30, color: COLORS.primary }}
+                        />
+                      </IconButton>
+                      <Typography
+                        sx={{
+                          fontSize: 24,
+                          fontFamily: "medium",
+                          width: 50,
+                          textAlign: "center",
+                        }}
+                      >
+                        {count}
+                      </Typography>
+                      <IconButton onClick={increment}>
+                        <AddCircleOutlineOutlinedIcon
+                          sx={{ fontSize: 30, color: COLORS.primary }}
+                        />
+                      </IconButton>
+                    </Grid2>
+                  </Grid2>
+                  <Button
+                    onClick={addItemToCart}
+                    sx={{
+                      width: "70%",
+                      textTransform: "none",
+                      fontFamily: "regular",
+                      fontSize: 16,
+                      backgroundColor: COLORS.primary,
+                      borderRadius: 3,
+                      color: COLORS.white,
+                    }}
+                  >
+                    Add to Cart
+                  </Button>
+                </Grid2>
+              </Box>
+            </>
+          )}
         </Box>
       </Modal>
     </>
