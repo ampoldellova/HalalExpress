@@ -6,7 +6,7 @@ import {
   onSnapshot,
   orderBy,
   addDoc,
-  serverTimestamp, // Add serverTimestamp
+  serverTimestamp,
 } from "firebase/firestore";
 import { database } from "../../config/firebase";
 import { useEffect, useState } from "react";
@@ -23,7 +23,7 @@ const Conversations = ({ onClose }) => {
   const [conversations, setConversations] = useState([]);
   const [latestMessage, setLatestMessage] = useState(null);
   const [selectedConversation, setSelectedConversation] = useState(null);
-  const [newMessage, setNewMessage] = useState(""); // Add state for new message
+  const [newMessage, setNewMessage] = useState("");
 
   useEffect(() => {
     if (!user?._id) return;
@@ -199,6 +199,7 @@ const Conversations = ({ onClose }) => {
     }
   }, [newMessage, user, selectedConversation]);
 
+  console.log("Latest Messages:", combinedData);
   return (
     <Box
       sx={{
