@@ -97,9 +97,9 @@ const RestaurantChatRoom = ({ route }) => {
       createdAt,
       text,
       user,
-      receiverId: receiver?.user?._id,
-      receiverName: receiver?.user?.name,
-      receiverAvatar: receiver?.user?.avatar,
+      receiverId: receiver?.receiverId,
+      receiverName: receiver?.receiverName,
+      receiverAvatar: receiver?.receiverAvatar,
     });
   }, []);
 
