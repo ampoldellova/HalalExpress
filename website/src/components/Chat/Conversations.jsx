@@ -6,6 +6,7 @@ import {
   onSnapshot,
   orderBy,
   addDoc,
+  serverTimestamp, // Add serverTimestamp
 } from "firebase/firestore";
 import { database } from "../../config/firebase";
 import { useEffect, useState } from "react";
@@ -22,6 +23,7 @@ const Conversations = ({ onClose }) => {
   const [conversations, setConversations] = useState([]);
   const [latestMessage, setLatestMessage] = useState(null);
   const [selectedConversation, setSelectedConversation] = useState(null);
+  const [newMessage, setNewMessage] = useState(""); // Add state for new message
 
   useEffect(() => {
     if (!user?._id) return;
@@ -54,34 +56,54 @@ const Conversations = ({ onClose }) => {
 
     const fetchLatestMessage = () => {
       const collectionRef = collection(database, "chats");
-      const q = query(collectionRef, where("receiverId", "==", user?._id));
+      const q1 = query(collectionRef, where("receiverId", "==", user?._id));
+      const q2 = query(collectionRef, where("user._id", "==", user?._id));
 
-      const unsubscribe = onSnapshot(q, (snapshot) => {
-        const chats = snapshot.docs.map((doc) => {
+      const unsubscribe1 = onSnapshot(q1, (snapshot1) => {
+        const chats1 = snapshot1.docs.map((doc) => {
           const data = doc.data();
-          const createdAt = data.createdAt?.toDate?.() || new Date();
-          return { ...data, createdAt };
+          const createdAt = data.createdAt?.toDate() || new Date();
+
+          return {
+            ...data,
+            createdAt,
+          };
         });
 
-        const uniqueChats = Object.values(
-          chats.reduce((acc, chat) => {
-            const conversationId =
-              chat.receiverId === user._id ? chat.user._id : chat.receiverId;
+        const unsubscribe2 = onSnapshot(q2, (snapshot2) => {
+          const chats2 = snapshot2.docs.map((doc) => {
+            const data = doc.data();
+            const createdAt = data.createdAt?.toDate() || new Date();
+            return {
+              ...data,
+              createdAt,
+            };
+          });
 
-            if (
-              !acc[conversationId] ||
-              acc[conversationId].createdAt < chat.createdAt
-            ) {
-              acc[conversationId] = chat;
-            }
-            return acc;
-          }, {})
-        );
+          const allChats = [...chats1, ...chats2];
 
-        setLatestMessage(uniqueChats);
+          const uniqueChats = Object.values(
+            allChats.reduce((acc, chat) => {
+              const conversationId =
+                chat.receiverId === user?._id ? chat.user._id : chat.receiverId;
+
+              if (
+                !acc[conversationId] ||
+                acc[conversationId].createdAt < chat.createdAt
+              ) {
+                acc[conversationId] = chat;
+              }
+              return acc;
+            }, {})
+          );
+
+          setLatestMessage(uniqueChats);
+        });
+
+        return () => unsubscribe2();
       });
 
-      return unsubscribe;
+      return () => unsubscribe1();
     };
 
     const unsubscribeConversations = fetchConversations();
@@ -120,7 +142,7 @@ const Conversations = ({ onClose }) => {
     if (!user?._id || !selectedConversation?.user?._id) return;
 
     const collectionRef = collection(database, "chats");
-    const q = query(collectionRef, orderBy("createdAt", "desc"));
+    const q = query(collectionRef, orderBy("createdAt", "asc"));
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const filteredMessages = snapshot.docs
@@ -144,6 +166,38 @@ const Conversations = ({ onClose }) => {
 
     return () => unsubscribe();
   }, [user?._id, selectedConversation?.user?._id]);
+
+  const handleSendMessage = useCallback(async () => {
+    if (
+      newMessage.trim() === "" ||
+      !selectedConversation?.user?._id ||
+      !user?._id
+    ) {
+      return;
+    }
+
+    const senderInfo = {
+      _id: user?._id,
+      name: user?.username,
+      avatar: user?.profile?.url,
+    };
+
+    const messageData = {
+      text: newMessage.trim(),
+      createdAt: serverTimestamp(),
+      user: senderInfo,
+      receiverId: selectedConversation.user._id,
+      receiverName: selectedConversation.user.name,
+      receiverAvatar: selectedConversation.user.avatar,
+    };
+
+    try {
+      await addDoc(collection(database, "chats"), messageData);
+      setNewMessage("");
+    } catch (error) {
+      console.error("Error sending message: ", error);
+    }
+  }, [newMessage, user, selectedConversation]);
 
   return (
     <Box
@@ -409,12 +463,10 @@ const Conversations = ({ onClose }) => {
                       marginRight: message.user._id === user._id ? 1 : 0,
                     }}
                   />
+
                   <Box
                     sx={{
-                      backgroundColor:
-                        message.user._id === user._id
-                          ? COLORS.lightBlue
-                          : COLORS.offwhite,
+                      backgroundColor: COLORS.offwhite,
                       padding: 1.5,
                       borderRadius: 2,
                       maxWidth: "60%",
@@ -425,10 +477,8 @@ const Conversations = ({ onClose }) => {
                     <Typography
                       sx={{
                         fontFamily: "regular",
-                        color:
-                          message.user._id === user._id
-                            ? COLORS.white
-                            : COLORS.black,
+                        color: COLORS.black,
+                        fontSize: 12,
                       }}
                     >
                       {message.text}
@@ -465,9 +515,17 @@ const Conversations = ({ onClose }) => {
               fullWidth
               variant="outlined"
               placeholder="Type a message..."
+              value={newMessage}
+              onChange={(e) => setNewMessage(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  handleSendMessage();
+                }
+              }}
               InputProps={{
                 endAdornment: (
-                  <IconButton onClick={() => {}}>
+                  <IconButton onClick={handleSendMessage}>
                     <SendIcon />
                   </IconButton>
                 ),
