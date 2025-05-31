@@ -336,7 +336,7 @@ const CartDrawer = ({ onClick }) => {
                   variant="contained"
                   sx={{
                     width: "100%",
-                    mt: 2,
+                    my: 2,
                     backgroundColor: COLORS.primary,
                     color: COLORS.white,
                     fontFamily: "bold",
