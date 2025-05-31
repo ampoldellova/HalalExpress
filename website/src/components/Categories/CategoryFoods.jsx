@@ -128,7 +128,6 @@ const CategoryFoods = ({ foods }) => {
                 sx={{
                   boxShadow: "none",
                   cursor: "pointer",
-                  mb: 2,
                   borderRadius: 5,
                   width: 500,
                   borderColor: COLORS.gray2,

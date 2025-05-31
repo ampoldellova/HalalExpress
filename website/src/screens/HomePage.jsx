@@ -25,22 +25,7 @@ import CategoryProducts from "../components/Categories/CategoryProducts";
 import Products from "../components/Products/Products";
 import Suppliers from "../components/Suppliers/Suppliers";
 import mockup from "../assets/images/mockup.png";
-
-const COLORS = {
-  primary: "#30b9b2",
-  primary1: "#00fff53c",
-  secondary: "#ffa44f",
-  secondary1: "#ffe5db",
-  tertiary: "#0078a6",
-  gray: "#83829A",
-  gray2: "#C1C0C8",
-  offwhite: "#F3F4F8",
-  white: "#FFFFFF",
-  black: "#242424",
-  red: "#e81e4d",
-  green: " #00C135",
-  lightWhite: "#FAFAFC",
-};
+import { COLORS } from "../styles/theme";
 
 const HomePage = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
