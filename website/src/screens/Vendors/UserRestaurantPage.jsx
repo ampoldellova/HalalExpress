@@ -10,10 +10,44 @@ import FastfoodIcon from "@mui/icons-material/Fastfood";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import EditIcon from "@mui/icons-material/Edit";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const UserRestaurantPage = () => {
-  const loacation = useLocation();
-  const restaurant = loacation.state?.restaurant;
+  const location = useLocation();
+  const restaurant = location.state?.restaurant;
+  const [isAvailable, setIsAvailable] = React.useState(
+    restaurant?.isAvailable || false
+  );
+
+  const toggleAvailability = async () => {
+    try {
+      const token = sessionStorage.getItem("token");
+      if (token) {
+        const config = {
+          headers: {
+            Authorization: `Bearer ${JSON.parse(token)}`,
+          },
+        };
+        const response = await axios.patch(
+          `http://localhost:6002/api/restaurant/${restaurant?._id}`,
+          {},
+          config
+        );
+        setIsAvailable(response.data.isAvailable);
+        toast.success(
+          `Service availability has been ${
+            response.data.isAvailable ? "enabled" : "disabled"
+          }`
+        );
+      } else {
+        console.log("Authentication token not found");
+      }
+    } catch (error) {
+      console.log("Error toggling availability:", error);
+      toast.error("Failed to update service availability");
+    }
+  };
 
   return (
     <Box
@@ -98,7 +132,7 @@ const UserRestaurantPage = () => {
               <Typography sx={{ fontFamily: "regular", fontSize: 18 }}>
                 Service Availability
               </Typography>
-              <Switch defaultChecked />
+              <Switch checked={isAvailable} onChange={toggleAvailability} />
             </Box>
           </Box>
 
