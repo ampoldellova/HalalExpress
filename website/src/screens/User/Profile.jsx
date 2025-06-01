@@ -7,9 +7,8 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import React, { useState } from "react";
+import { useState } from "react";
 import { getUser } from "../../utils/helpers";
-import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
 import Person2OutlinedIcon from "@mui/icons-material/Person2Outlined";
 import LocalPhoneOutlinedIcon from "@mui/icons-material/LocalPhoneOutlined";
 import CameraAltIcon from "@mui/icons-material/CameraAlt";

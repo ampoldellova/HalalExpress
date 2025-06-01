@@ -97,6 +97,7 @@ module.exports = {
       res.status(200).json({
         status: true,
         message: "Product availability successfully toggled",
+        isAvailable: ingredient.isAvailable,
       });
     } catch (error) {
       res.status(500).json({
