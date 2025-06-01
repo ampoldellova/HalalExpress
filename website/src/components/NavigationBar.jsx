@@ -21,8 +21,7 @@ import { useNavigate } from "react-router-dom";
 import CartDrawer from "./Cart/CartDrawer";
 import axios from "axios";
 import { useEffect } from "react";
-import { toast } from "react-toastify";
-import InsertCommentOutlinedIcon from "@mui/icons-material/InsertCommentOutlined";
+import StoreOutlinedIcon from "@mui/icons-material/StoreOutlined";
 
 const COLORS = {
   primary: "#30b9b2",
@@ -176,22 +175,32 @@ export default function NavigationBar() {
                     horizontal: "right",
                   }}
                 >
-                  {(user.userType === "Vendor" ||
-                    user.userType === "Supplier") && (
+                  {user.userType === "Vendor" && (
                     <MenuItem
                       onClick={() => {
-                        navigate("/management");
+                        navigate(`/restaurants/${user._id}`);
                         handleCloseUserMenu();
                       }}
                     >
-                      <SupervisorAccountOutlinedIcon
-                        sx={{ color: COLORS.gray }}
-                      />
+                      <StoreOutlinedIcon sx={{ color: COLORS.gray }} />
                       <Typography sx={styles.menuItemText}>
-                        Management
+                        Restaurants
                       </Typography>
                     </MenuItem>
                   )}
+
+                  {user.userType === "Supplier" && (
+                    <MenuItem
+                      onClick={() => {
+                        navigate(`/stores/${user._id}`);
+                        handleCloseUserMenu();
+                      }}
+                    >
+                      <StoreOutlinedIcon sx={{ color: COLORS.gray }} />
+                      <Typography sx={styles.menuItemText}>Stores</Typography>
+                    </MenuItem>
+                  )}
+
                   <MenuItem
                     onClick={() => {
                       navigate(`/profile/${user._id}`);

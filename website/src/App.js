@@ -3,7 +3,6 @@ import HomePage from "./screens/HomePage";
 import NavigationBar from "./components/NavigationBar";
 import "./App.css";
 import { ToastContainer } from "react-toastify";
-import Dashboard from "./screens/Admin/Dashboard";
 import { getUser } from "./utils/helpers";
 import RestaurantPage from "./screens/Vendors/RestaurantPage";
 import SupplierPage from "./screens/Suppliers/SupplierPage";
@@ -17,6 +16,9 @@ import Footer from "./components/Footer";
 import { useState } from "react";
 import Conversations from "./components/Chat/Conversations";
 import ChatButton from "./components/Chat/ChatButton";
+import Stores from "./screens/Suppliers/Stores";
+import Restaurants from "./screens/Vendors/Restaurants";
+import UserRestaurantPage from "./screens/Vendors/UserRestaurantPage";
 
 function App() {
   const user = getUser();
@@ -29,8 +31,13 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/verification" element={<VerificationPage />} />
-          <Route path="/management" element={<Dashboard />} />
+          <Route path="/restaurants/:id" element={<Restaurants />} />
+          <Route
+            path="/restaurants/restaurant/:restaurantId"
+            element={<UserRestaurantPage />}
+          />
           <Route path="/restaurant/:id" element={<RestaurantPage />} />
+          <Route path="/stores/:id" element={<Stores />} />
           <Route path="/supplier/:id" element={<SupplierPage />} />
           <Route path="/profile/:id" element={<Profile />} />
           <Route path="/checkout/:id" element={<CheckOutPage />} />
