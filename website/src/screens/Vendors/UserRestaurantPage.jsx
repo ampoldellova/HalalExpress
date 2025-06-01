@@ -1,6 +1,6 @@
 import { Box, Container, Divider, Switch, Typography } from "@mui/material";
 import React from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { COLORS } from "../../styles/theme";
 import PlaceOutlinedIcon from "@mui/icons-material/PlaceOutlined";
 import RestaurantMenuOutlinedIcon from "@mui/icons-material/RestaurantMenuOutlined";
@@ -15,6 +15,7 @@ import { toast } from "react-toastify";
 
 const UserRestaurantPage = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const restaurant = location.state?.restaurant;
   const [isAvailable, setIsAvailable] = React.useState(
     restaurant?.isAvailable || false
@@ -178,7 +179,8 @@ const UserRestaurantPage = () => {
             sx={{
               display: "flex",
               alignItems: "center",
-              mb: 2,
+              padding: 1,
+              mb: 1,
             }}
           >
             <RestaurantMenuOutlinedIcon
@@ -204,7 +206,8 @@ const UserRestaurantPage = () => {
             sx={{
               display: "flex",
               alignItems: "center",
-              mb: 2,
+              padding: 1,
+              mb: 1,
             }}
           >
             <DeliveryDiningIcon
@@ -233,7 +236,8 @@ const UserRestaurantPage = () => {
             sx={{
               display: "flex",
               alignItems: "center",
-              mb: 2,
+              padding: 1,
+              mb: 1,
             }}
           >
             <ShoppingBagIcon sx={{ color: COLORS.gray, fontSize: 30, mr: 1 }} />
@@ -260,9 +264,17 @@ const UserRestaurantPage = () => {
 
           <Box
             sx={{
+              mb: 2,
               display: "flex",
               alignItems: "center",
-              mb: 3,
+              borderRadius: 2,
+              padding: 1,
+              "&:hover": {
+                backgroundColor: COLORS.offwhite,
+              },
+            }}
+            onClick={() => {
+              navigate(`/restaurant/manage-menu/${restaurant?._id}`);
             }}
           >
             <FastfoodIcon sx={{ color: COLORS.gray, fontSize: 30, mr: 1 }} />
@@ -273,6 +285,7 @@ const UserRestaurantPage = () => {
                 justifyContent: "space-between",
                 alignItems: "center",
                 width: "100%",
+                cursor: "pointer",
               }}
             >
               <Typography sx={{ fontFamily: "regular", fontSize: 18 }}>
@@ -286,9 +299,14 @@ const UserRestaurantPage = () => {
 
           <Box
             sx={{
+              mb: 2,
               display: "flex",
               alignItems: "center",
-              mb: 3,
+              padding: 1,
+              borderRadius: 2,
+              "&:hover": {
+                backgroundColor: COLORS.offwhite,
+              },
             }}
           >
             <AddCircleIcon sx={{ color: COLORS.gray, fontSize: 30, mr: 1 }} />
@@ -312,9 +330,14 @@ const UserRestaurantPage = () => {
 
           <Box
             sx={{
+              mb: 2,
               display: "flex",
               alignItems: "center",
-              mb: 3,
+              padding: 1,
+              borderRadius: 2,
+              "&:hover": {
+                backgroundColor: COLORS.offwhite,
+              },
             }}
           >
             <EditIcon sx={{ color: COLORS.gray, fontSize: 30, mr: 1 }} />
