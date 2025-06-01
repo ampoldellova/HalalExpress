@@ -1,12 +1,13 @@
 import { Box, Container, Grid2, Typography } from "@mui/material";
 import axios from "axios";
 import React from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import Loader from "../../components/Loader";
 import { COLORS } from "../../styles/theme";
 
 const ManageMenu = () => {
+  const navigate = useNavigate();
   const [foods, setFoods] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
   const restaurantId = useParams().restaurantId;
@@ -66,7 +67,17 @@ const ManageMenu = () => {
               sx={{ display: "flex", justifyContent: "center" }}
             >
               {foods.map((food) => (
-                <Grid2 item xs={12} key={food?._id} sx={{ cursor: "pointer" }}>
+                <Grid2
+                  item
+                  xs={12}
+                  key={food?._id}
+                  sx={{ cursor: "pointer" }}
+                  onClick={() => {
+                    navigate(`/restaurant/manage-food/${food?._id}`, {
+                      state: { food },
+                    });
+                  }}
+                >
                   <Box
                     sx={{
                       border: "1px solid",
