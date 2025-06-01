@@ -47,7 +47,7 @@ const ManageMenu = () => {
       {loading ? (
         <Loader />
       ) : (
-        <Box sx={{ height: "100vh" }}>
+        <Box sx={{ height: "100vh", overflowY: "auto" }}>
           <Container maxWidth="sm">
             <Typography
               sx={{
