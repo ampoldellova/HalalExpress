@@ -180,7 +180,7 @@ export default function NavigationBar() {
                     user.userType === "Supplier") && (
                     <MenuItem
                       onClick={() => {
-                        navigate("/admin/dashboard");
+                        navigate("/management");
                         handleCloseUserMenu();
                       }}
                     >
@@ -188,7 +188,7 @@ export default function NavigationBar() {
                         sx={{ color: COLORS.gray }}
                       />
                       <Typography sx={styles.menuItemText}>
-                        Dashboard
+                        Management
                       </Typography>
                     </MenuItem>
                   )}

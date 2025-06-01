@@ -58,9 +58,8 @@ const Categories = ({
       container
       spacing={3}
       sx={{
-        mt: 2,
-        justifyContent: "space-between",
         mt: 5,
+        justifyContent: "space-between",
         alignItems: "center",
       }}
     >
@@ -74,8 +73,11 @@ const Categories = ({
               width: 60,
               display: "flex",
               margin: "0 auto",
+              borderRadius: 99,
+              borderWidth: 1,
+              borderStyle: "solid",
               borderColor:
-                category.value == selected ? COLORS.secondary : "transparent",
+                category.value === selected ? COLORS.secondary : "transparent",
               cursor: "pointer",
             }}
             src={category.imageUrl.url}

@@ -297,7 +297,16 @@ const Conversations = ({ onClose }) => {
                     border: `1px solid ${COLORS.gray2}`,
                   }}
                 />
-                <Box sx={{ display: "flex", flexDirection: "column", ml: 2 }}>
+
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    flexDirection: "column",
+                    width: "100%",
+                    ml: 2,
+                  }}
+                >
                   <Box
                     sx={{
                       display: "flex",

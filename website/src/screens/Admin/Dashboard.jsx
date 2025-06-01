@@ -20,7 +20,6 @@ import Charts from "./Charts";
 import ManageUsers from "./ManageUsers";
 import ManageProducts from "./ManageProducts";
 import { getUser } from "../../utils/helpers";
-import { Grid2 } from "@mui/material";
 import { COLORS } from "../../styles/theme";
 
 const drawerWidth = 240;
@@ -81,7 +80,7 @@ const DrawerHeader = styled("div")(({ theme }) => ({
   justifyContent: "flex-end",
 }));
 
-export default function Dashboard() {
+export default function Management() {
   const navigate = useNavigate();
   const [open, setOpen] = React.useState("Charts");
   const user = getUser();
