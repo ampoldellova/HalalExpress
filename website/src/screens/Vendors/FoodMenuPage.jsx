@@ -41,6 +41,36 @@ const FoodMenuPage = () => {
     }
   };
 
+  const toggleAvailability = async () => {
+    try {
+      const token = sessionStorage.getItem("token");
+      if (token) {
+        const config = {
+          headers: {
+            Authorization: `Bearer ${JSON.parse(token)}`,
+          },
+        };
+        const response = await axios.patch(
+          `http://localhost:6002/api/foods/${food?._id}`,
+          {},
+          config
+        );
+
+        setIsAvailable(response.data.isAvailable);
+        toast.success(
+          `Food availability has been ${
+            response.data.isAvailable ? "enabled" : "disabled"
+          }`
+        );
+      } else {
+        console.log("Authentication token not found");
+      }
+    } catch (error) {
+      console.log("Error toggling availability:", error);
+      toast.error("Failed to update food availability", error);
+    }
+  };
+
   return (
     <Box
       sx={{
@@ -115,7 +145,7 @@ const FoodMenuPage = () => {
               <Typography sx={{ fontFamily: "regular", fontSize: 18 }}>
                 Food Availability
               </Typography>
-              <Switch checked={isAvailable} />
+              <Switch checked={isAvailable} onChange={toggleAvailability} />
             </Box>
           </Box>
         </Box>

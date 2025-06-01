@@ -128,6 +128,7 @@ module.exports = {
       res.status(200).json({
         status: true,
         message: "Food availability successfully toggled",
+        isAvailable: food.isAvailable,
       });
     } catch (error) {
       res.status(500).json({ status: false, message: error.message });
