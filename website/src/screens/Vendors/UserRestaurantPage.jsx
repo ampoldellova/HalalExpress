@@ -22,6 +22,9 @@ const UserRestaurantPage = () => {
   const [deliveryAvailability, setDeliveryAvailability] = React.useState(
     restaurant?.delivery || false
   );
+  const [pickupAvailability, setPickupAvailability] = React.useState(
+    restaurant?.pickup || false
+  );
 
   const toggleAvailability = async () => {
     try {
@@ -78,6 +81,35 @@ const UserRestaurantPage = () => {
     } catch (error) {
       console.log("Error toggling delivery availability:", error);
       toast.error("Failed to update delivery availability", error);
+    }
+  };
+
+  const togglePickupAvailability = async () => {
+    try {
+      const token = sessionStorage.getItem("token");
+      if (token) {
+        const config = {
+          headers: {
+            Authorization: `Bearer ${JSON.parse(token)}`,
+          },
+        };
+        const response = await axios.patch(
+          `http://localhost:6002/api/restaurant/pickup/${restaurant?._id}`,
+          {},
+          config
+        );
+        setPickupAvailability(response.data.pickup);
+        toast.success(
+          `Pick-up availability has been ${
+            response.data.pickup ? "enabled" : "disabled"
+          }`
+        );
+      } else {
+        console.log("Authentication token not found");
+      }
+    } catch (error) {
+      console.log("Error toggling pickup availability:", error);
+      toast.error("Failed to update pickup availability", error);
     }
   };
 
@@ -217,7 +249,10 @@ const UserRestaurantPage = () => {
               <Typography sx={{ fontFamily: "regular", fontSize: 18 }}>
                 Pick-Up Availability
               </Typography>
-              <Switch defaultChecked />
+              <Switch
+                checked={pickupAvailability}
+                onChange={togglePickupAvailability}
+              />
             </Box>
           </Box>
 
