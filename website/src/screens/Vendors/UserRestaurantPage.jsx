@@ -15,6 +15,7 @@ import { toast } from "react-toastify";
 import { GaugeContainer, useGaugeState } from "@mui/x-charts/Gauge";
 import { LineChart, PieChart } from "@mui/x-charts";
 import gauge from "../../assets/images/gaugeChart.png";
+import ManageOrders from "./ManageOrders";
 
 const UserRestaurantPage = () => {
   const location = useLocation();
@@ -678,13 +679,13 @@ const UserRestaurantPage = () => {
               sx={{
                 fontFamily: "bold",
                 fontSize: 24,
-                mb: 2,
                 textAlign: "center",
               }}
             >
               Manage Orders
             </Typography>
-            {/* Chat component can be added here */}
+
+            <ManageOrders restaurantId={restaurant?._id} />
           </Box>
         )}
 
