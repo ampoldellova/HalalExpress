@@ -195,6 +195,7 @@ module.exports = {
 
   submitRating: async (req, res) => {
     const { orderId, stars, feedback } = req.body;
+    const user = req.user;
 
     try {
       const order = await Order.findById(orderId);
@@ -220,29 +221,55 @@ module.exports = {
 
       await order.save();
 
-      const restaurant = order.restaurant;
-      if (!restaurant) {
-        return res
-          .status(404)
-          .json({ status: false, message: "Restaurant not found" });
+      if (user.userType === "Vendor") {
+        const supplier = order.supplier;
+        if (!supplier) {
+          return res
+            .status(404)
+            .json({ status: false, message: "Supplier not found" });
+        }
+
+        const currentRating = supplier.rating || 0;
+        const currentRatingCount = parseInt(supplier.ratingCount || 0);
+
+        const newRatingCount = currentRatingCount + 1;
+        const newRating =
+          (currentRating * currentRatingCount + stars) / newRatingCount;
+
+        supplier.rating = newRating;
+        supplier.ratingCount = newRatingCount.toString();
+        await supplier.save();
+
+        res.status(200).json({
+          status: true,
+          message: "Rating submitted successfully",
+          order,
+        });
+      } else {
+        const restaurant = order.restaurant;
+        if (!restaurant) {
+          return res
+            .status(404)
+            .json({ status: false, message: "Restaurant not found" });
+        }
+
+        const currentRating = restaurant.rating || 0;
+        const currentRatingCount = parseInt(restaurant.ratingCount || 0);
+
+        const newRatingCount = currentRatingCount + 1;
+        const newRating =
+          (currentRating * currentRatingCount + stars) / newRatingCount;
+
+        restaurant.rating = newRating;
+        restaurant.ratingCount = newRatingCount.toString();
+        await restaurant.save();
+
+        res.status(200).json({
+          status: true,
+          message: "Rating submitted successfully",
+          order,
+        });
       }
-
-      const currentRating = restaurant.rating || 0;
-      const currentRatingCount = parseInt(restaurant.ratingCount || 0);
-
-      const newRatingCount = currentRatingCount + 1;
-      const newRating =
-        (currentRating * currentRatingCount + stars) / newRatingCount;
-
-      restaurant.rating = newRating;
-      restaurant.ratingCount = newRatingCount.toString();
-      await restaurant.save();
-
-      res.status(200).json({
-        status: true,
-        message: "Rating submitted successfully",
-        order,
-      });
     } catch (error) {
       console.error(error);
       res.status(500).json({ status: false, message: error.message });
@@ -808,47 +835,47 @@ module.exports = {
     }
   },
 
-  // getTopOrderedFoods: async (req, res) => {
-  //   const { restaurantId } = req.params;
-  //   try {
-  //     const topFoods = await Order.aggregate([
-  //       {
-  //         $match: {
-  //           restaurant: new mongoose.Types.ObjectId(restaurantId),
-  //           orderStatus: "Completed",
-  //           paymentStatus: "Paid",
-  //         },
-  //       },
-  //       { $unwind: "$orderItems" },
-  //       {
-  //         $group: {
-  //           _id: "$orderItems.foodId",
-  //           totalOrdered: { $sum: "$orderItems.quantity" },
-  //         },
-  //       },
-  //       { $sort: { totalOrdered: -1 } },
-  //       { $limit: 3 },
-  //       {
-  //         $lookup: {
-  //           from: "foods",
-  //           localField: "_id",
-  //           foreignField: "_id",
-  //           as: "food",
-  //         },
-  //       },
-  //       { $unwind: "$food" },
-  //       {
-  //         $project: {
-  //           foodId: "$food._id",
-  //           title: "$food.title",
-  //           totalOrdered: 1,
-  //         },
-  //       },
-  //     ]);
-  //     res.status(200).json({ status: true, topFoods });
-  //   } catch (error) {
-  //     console.error(error);
-  //     res.status(500).json({ status: false, message: error.message });
-  //   }
-  // },
+  getTopOrderedItems: async (req, res) => {
+    const { storeId } = req.params;
+    try {
+      const topItems = await Order.aggregate([
+        {
+          $match: {
+            supplier: new mongoose.Types.ObjectId(storeId),
+            orderStatus: "Completed",
+            paymentStatus: "Paid",
+          },
+        },
+        { $unwind: "$orderItems" },
+        {
+          $group: {
+            _id: "$orderItems.productId",
+            totalOrdered: { $sum: "$orderItems.quantity" },
+          },
+        },
+        { $sort: { totalOrdered: -1 } },
+        { $limit: 3 },
+        {
+          $lookup: {
+            from: "ingredients",
+            localField: "_id",
+            foreignField: "_id",
+            as: "ingredient",
+          },
+        },
+        { $unwind: "$ingredient" },
+        {
+          $project: {
+            productId: "$ingredient._id",
+            title: "$ingredient.title",
+            totalOrdered: 1,
+          },
+        },
+      ]);
+      res.status(200).json({ status: true, topItems });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ status: false, message: error.message });
+    }
+  },
 };

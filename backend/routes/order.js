@@ -65,4 +65,10 @@ router.get(
   orderController.getStoreMonthlySales
 );
 
+router.get(
+  "/store/:storeId/top-items",
+  verifyAndAuthorization,
+  orderController.getTopOrderedItems
+);
+
 module.exports = router;

@@ -30,7 +30,7 @@ const UserStorePage = () => {
     store?.pickup || false
   );
   const [monthlySales, setMonthlySales] = React.useState([]);
-  const [topOrderedFoods, setTopOrderedFoods] = React.useState([]);
+  const [topOrderedItems, setTopOrderedItems] = React.useState([]);
 
   const toggleAvailability = async () => {
     try {
@@ -142,31 +142,32 @@ const UserStorePage = () => {
     }
   };
 
-  //   const fetchTopOrderedFoods = async () => {
-  //     try {
-  //       const token = sessionStorage.getItem("token");
-  //       if (token) {
-  //         const config = {
-  //           headers: {
-  //             Authorization: `Bearer ${JSON.parse(token)}`,
-  //           },
-  //         };
-  //         const response = await axios.get(
-  //           `http://localhost:6002/api/orders/restaurant/${restaurant?._id}/top-foods`,
-  //           config
-  //         );
-  //         setTopOrderedFoods(response.data.topFoods);
-  //       } else {
-  //         console.log("Authentication token not found");
-  //       }
-  //     } catch (error) {
-  //       console.log("Error fetching top ordered foods:", error);
-  //       toast.error("Failed to fetch top ordered foods", error);
-  //     }
-  //   };
+  const fetchTopOrderedItems = async () => {
+    try {
+      const token = sessionStorage.getItem("token");
+      if (token) {
+        const config = {
+          headers: {
+            Authorization: `Bearer ${JSON.parse(token)}`,
+          },
+        };
+        const response = await axios.get(
+          `http://localhost:6002/api/orders/store/${store?._id}/top-items`,
+          config
+        );
+        setTopOrderedItems(response.data.topItems);
+      } else {
+        console.log("Authentication token not found");
+      }
+    } catch (error) {
+      console.log("Error fetching top ordered items:", error);
+      toast.error("Failed to fetch top ordered items", error);
+    }
+  };
 
   React.useEffect(() => {
     fetchRestaurantMonthlySales();
+    fetchTopOrderedItems();
   }, [store?._id]);
 
   const lineChartData = monthlySales.map((item) => ({
@@ -175,34 +176,35 @@ const UserStorePage = () => {
     orderCount: item.orderCount,
   }));
 
-  //   const pieChartData = topOrderedFoods.map((food) => ({
-  //     label: food.title,
-  //     value: food.totalOrdered,
-  //   }));
+  const pieChartData = topOrderedItems.map((item) => ({
+    label: item.title,
+    value: item.totalOrdered,
+  }));
 
-  //   const customerSatisfaction = restaurant?.rating ? restaurant.rating * 20 : 0;
+  const customerSatisfaction = store?.rating ? store.rating * 20 : 0;
 
-  //   function GaugePointer() {
-  //     const { valueAngle, outerRadius, cx, cy } = useGaugeState();
-  //     if (valueAngle === null) {
-  //       return null;
-  //     }
+  function GaugePointer() {
+    const { valueAngle, outerRadius, cx, cy } = useGaugeState();
+    if (valueAngle === null) {
+      return null;
+    }
 
-  //     const target = {
-  //       x: cx + outerRadius * Math.sin(valueAngle),
-  //       y: cy - outerRadius * Math.cos(valueAngle),
-  //     };
-  //     return (
-  //       <g>
-  //         <circle cx={cx} cy={cy} r={5} fill="red" />
-  //         <path
-  //           d={`M ${cx} ${cy} L ${target.x} ${target.y}`}
-  //           stroke="red"
-  //           strokeWidth={3}
-  //         />
-  //       </g>
-  //     );
-  //   }
+    const target = {
+      x: cx + outerRadius * Math.sin(valueAngle),
+      y: cy - outerRadius * Math.cos(valueAngle),
+    };
+    return (
+      <g>
+        <circle cx={cx} cy={cy} r={5} fill="red" />
+        <path
+          d={`M ${cx} ${cy} L ${target.x} ${target.y}`}
+          stroke="red"
+          strokeWidth={3}
+        />
+      </g>
+    );
+  }
+
   return (
     <Box
       sx={{
@@ -525,7 +527,7 @@ const UserStorePage = () => {
               >
                 Monthly Sales
               </Typography>
-              
+
               <LineChart
                 dataset={lineChartData}
                 xAxis={[{ dataKey: "month", scaleType: "band" }]}
@@ -536,6 +538,128 @@ const UserStorePage = () => {
                   legend: { hidden: true },
                 }}
               />
+
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  gap: 2,
+                }}
+              >
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    mb: 2,
+                    border: "1px solid",
+                    borderColor: COLORS.gray2,
+                    borderRadius: "15px",
+                    p: 2,
+                    width: "48%",
+                  }}
+                >
+                  <Typography
+                    sx={{
+                      fontFamily: "bold",
+                      fontSize: 24,
+                      textAlign: "left",
+                    }}
+                  >
+                    Top Ordered Products
+                  </Typography>
+
+                  <PieChart
+                    series={[
+                      {
+                        data: pieChartData,
+                        innerRadius: 30,
+                        outerRadius: 80,
+                        paddingAngle: 5,
+                        cornerRadius: 10,
+                      },
+                    ]}
+                    height={300}
+                    slotProps={{
+                      legend: {
+                        labelStyle: {
+                          fontFamily: "regular",
+                          fontSize: 12,
+                          width: 100,
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          whiteSpace: "nowrap",
+                        },
+                      },
+                    }}
+                  />
+                </Box>
+
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    mb: 2,
+                    border: "1px solid",
+                    borderColor: COLORS.gray2,
+                    borderRadius: "15px",
+                    p: 2,
+                    width: "48%",
+                  }}
+                >
+                  <Typography
+                    sx={{
+                      fontFamily: "bold",
+                      fontSize: 24,
+                      textAlign: "left",
+                    }}
+                  >
+                    Customer Satisfaction: {customerSatisfaction.toFixed(2)}%{" "}
+                    {customerSatisfaction >= 80
+                      ? "😃"
+                      : customerSatisfaction >= 60
+                      ? "🙂"
+                      : customerSatisfaction >= 40
+                      ? "😐"
+                      : customerSatisfaction >= 20
+                      ? "🙁"
+                      : "😢"}
+                  </Typography>
+
+                  <Box
+                    sx={{
+                      position: "relative",
+                      width: "100%",
+                      height: 300,
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Box
+                      component="img"
+                      src={gauge}
+                      sx={{
+                        width: "100%",
+                        height: "100%",
+                        position: "absolute",
+                        objectFit: "cover",
+                        top: 0,
+                        left: 0,
+                        zIndex: -1,
+                      }}
+                    />
+                    <GaugeContainer
+                      height={300}
+                      startAngle={-90}
+                      endAngle={90}
+                      value={customerSatisfaction}
+                    >
+                      <GaugePointer />
+                    </GaugeContainer>
+                  </Box>
+                </Box>
+              </Box>
             </Box>
           </Box>
         )}
