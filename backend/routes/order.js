@@ -47,4 +47,10 @@ router.post(
 );
 router.post("/mark-as-completed", orderController.markOrderAsCompleted);
 
+router.get(
+  "/restaurant/:restaurantId/monthly-sales",
+  verifyAndAuthorization,
+  orderController.getRestaurantMonthlySales
+);
+
 module.exports = router;

@@ -4,6 +4,7 @@ const Supplier = require("../models/Supplier");
 const Order = require("../models/Order");
 const Cart = require("../models/Cart");
 const User = require("../models/User");
+const mongoose = require("mongoose");
 
 module.exports = {
   checkoutOrder: async (req, res) => {
@@ -651,6 +652,59 @@ module.exports = {
         message: "Order status updated successfully",
         order,
       });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ status: false, message: error.message });
+    }
+  },
+
+  getRestaurantMonthlySales: async (req, res) => {
+    const { restaurantId } = req.params;
+    try {
+      const sales = await Order.aggregate([
+        {
+          $match: {
+            restaurant: new mongoose.Types.ObjectId(restaurantId),
+            orderStatus: "Completed",
+            paymentStatus: "Paid",
+          },
+        },
+        {
+          $group: {
+            _id: {
+              year: { $year: "$createdAt" },
+              month: { $month: "$createdAt" },
+            },
+            totalSales: { $sum: "$totalAmount" },
+            orderCount: { $sum: 1 },
+          },
+        },
+        { $sort: { "_id.year": 1, "_id.month": 1 } },
+      ]);
+
+      const monthNames = [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec",
+      ];
+
+      const salesWithMonthName = sales.map((item) => ({
+        year: item._id.year,
+        month: monthNames[item._id.month - 1],
+        totalSales: item.totalSales,
+        orderCount: item.orderCount,
+      }));
+
+      res.status(200).json({ status: true, sales: salesWithMonthName });
     } catch (error) {
       console.error(error);
       res.status(500).json({ status: false, message: error.message });
