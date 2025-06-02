@@ -710,4 +710,48 @@ module.exports = {
       res.status(500).json({ status: false, message: error.message });
     }
   },
+
+  getTopOrderedFoods: async (req, res) => {
+    const { restaurantId } = req.params;
+    try {
+      const topFoods = await Order.aggregate([
+        {
+          $match: {
+            restaurant: new mongoose.Types.ObjectId(restaurantId),
+            orderStatus: "Completed",
+            paymentStatus: "Paid",
+          },
+        },
+        { $unwind: "$orderItems" },
+        {
+          $group: {
+            _id: "$orderItems.foodId",
+            totalOrdered: { $sum: "$orderItems.quantity" },
+          },
+        },
+        { $sort: { totalOrdered: -1 } },
+        { $limit: 3 },
+        {
+          $lookup: {
+            from: "foods",
+            localField: "_id",
+            foreignField: "_id",
+            as: "food",
+          },
+        },
+        { $unwind: "$food" },
+        {
+          $project: {
+            foodId: "$food._id",
+            title: "$food.title",
+            totalOrdered: 1,
+          },
+        },
+      ]);
+      res.status(200).json({ status: true, topFoods });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ status: false, message: error.message });
+    }
+  },
 };

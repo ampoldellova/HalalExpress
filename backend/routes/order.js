@@ -53,4 +53,10 @@ router.get(
   orderController.getRestaurantMonthlySales
 );
 
+router.get(
+  "/restaurant/:restaurantId/top-foods",
+  verifyAndAuthorization,
+  orderController.getTopOrderedFoods
+);
+
 module.exports = router;

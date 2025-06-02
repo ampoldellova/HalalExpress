@@ -12,8 +12,16 @@ import FastfoodIcon from "@mui/icons-material/Fastfood";
 import MessageIcon from "@mui/icons-material/Message";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { BarChart } from "@mui/x-charts/BarChart";
+import {
+  Gauge,
+  gaugeClasses,
+  GaugeContainer,
+  GaugeReferenceArc,
+  GaugeValueArc,
+  useGaugeState,
+} from "@mui/x-charts/Gauge";
 import { LineChart, PieChart } from "@mui/x-charts";
+import gauge from "../../assets/images/gaugeChart.png";
 
 const UserRestaurantPage = () => {
   const location = useLocation();
@@ -29,6 +37,7 @@ const UserRestaurantPage = () => {
     restaurant?.pickup || false
   );
   const [monthlySales, setMonthlySales] = React.useState([]);
+  const [topOrderedFoods, setTopOrderedFoods] = React.useState([]);
 
   const toggleAvailability = async () => {
     try {
@@ -140,15 +149,68 @@ const UserRestaurantPage = () => {
     }
   };
 
+  const fetchTopOrderedFoods = async () => {
+    try {
+      const token = sessionStorage.getItem("token");
+      if (token) {
+        const config = {
+          headers: {
+            Authorization: `Bearer ${JSON.parse(token)}`,
+          },
+        };
+        const response = await axios.get(
+          `http://localhost:6002/api/orders/restaurant/${restaurant?._id}/top-foods`,
+          config
+        );
+        setTopOrderedFoods(response.data.topFoods);
+      } else {
+        console.log("Authentication token not found");
+      }
+    } catch (error) {
+      console.log("Error fetching top ordered foods:", error);
+      toast.error("Failed to fetch top ordered foods", error);
+    }
+  };
+
   React.useEffect(() => {
     fetchRestaurantMonthlySales();
+    fetchTopOrderedFoods();
   }, [restaurant?._id]);
 
-  const chartData = monthlySales.map((item) => ({
+  const lineChartData = monthlySales.map((item) => ({
     month: `${item.month} ${item.year}`,
     totalSales: item.totalSales,
     orderCount: item.orderCount,
   }));
+
+  const pieChartData = topOrderedFoods.map((food) => ({
+    label: food.title,
+    value: food.totalOrdered,
+  }));
+
+  const customerSatisfaction = restaurant?.rating ? restaurant.rating * 20 : 0;
+
+  function GaugePointer() {
+    const { valueAngle, outerRadius, cx, cy } = useGaugeState();
+    if (valueAngle === null) {
+      return null;
+    }
+
+    const target = {
+      x: cx + outerRadius * Math.sin(valueAngle),
+      y: cy - outerRadius * Math.cos(valueAngle),
+    };
+    return (
+      <g>
+        <circle cx={cx} cy={cy} r={5} fill="red" />
+        <path
+          d={`M ${cx} ${cy} L ${target.x} ${target.y}`}
+          stroke="red"
+          strokeWidth={3}
+        />
+      </g>
+    );
+  }
 
   return (
     <Box
@@ -158,7 +220,7 @@ const UserRestaurantPage = () => {
     >
       <Container
         maxWidth="xl"
-        sx={{ display: "flex", flexDirection: "row", mt: 5, height: "100%" }}
+        sx={{ display: "flex", flexDirection: "row", mt: 5 }}
       >
         <Box
           sx={{
@@ -436,11 +498,7 @@ const UserRestaurantPage = () => {
         {options === "dashboard" && (
           <Box
             sx={{
-              display: "flex",
-              flexDirection: "column",
               width: "100%",
-              alignItems: "center",
-              justifyContent: "flex-start",
               mt: 2,
             }}
           >
@@ -452,52 +510,162 @@ const UserRestaurantPage = () => {
                 textAlign: "center",
               }}
             >
-              Dashboard
+              Restaurant Dashboard
             </Typography>
 
-            <LineChart
-              dataset={chartData}
-              xAxis={[{ dataKey: "month", scaleType: "band" }]}
-              series={[{ dataKey: "totalSales", label: "Total Sales:" }]}
-              height={300}
-              grid={{ vertical: true, horizontal: true }}
-            />
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                mb: 2,
+                border: "1px solid",
+                borderColor: COLORS.gray2,
+                borderRadius: "15px",
+                p: 2,
+              }}
+            >
+              <Typography
+                sx={{
+                  fontFamily: "bold",
+                  fontSize: 24,
+                  textAlign: "left",
+                }}
+              >
+                Monthly Sales
+              </Typography>
+              <LineChart
+                dataset={lineChartData}
+                xAxis={[{ dataKey: "month", scaleType: "band" }]}
+                series={[{ dataKey: "totalSales", label: "Total Sales:" }]}
+                height={300}
+                grid={{ vertical: true, horizontal: true }}
+                slotProps={{
+                  legend: { hidden: true },
+                }}
+              />
+            </Box>
 
-            <PieChart
-              series={[
-                {
-                  data: [
-                    { value: 10, label: "series A" },
-                    { value: 15, label: "series B" },
-                    { value: 20, label: "series C" },
-                  ],
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                gap: 2,
+              }}
+            >
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  mb: 2,
+                  border: "1px solid",
+                  borderColor: COLORS.gray2,
+                  borderRadius: "15px",
+                  p: 2,
+                  width: "48%",
+                }}
+              >
+                <Typography
+                  sx={{
+                    fontFamily: "bold",
+                    fontSize: 24,
+                    textAlign: "left",
+                  }}
+                >
+                  Top Ordered Foods
+                </Typography>
 
-                  innerRadius: 30,
-                  outerRadius: 100,
-                  paddingAngle: 5,
-                  cornerRadius: 5,
-                  startAngle: -45,
-                  endAngle: 225,
-                  cx: 150,
-                  cy: 150,
-                },
-              ]}
-              width={350}
-              height={350}
-              margin={{ left: -30 }}
-            />
+                <PieChart
+                  series={[
+                    {
+                      data: pieChartData,
+                      innerRadius: 30,
+                      outerRadius: 80,
+                      paddingAngle: 5,
+                      cornerRadius: 10,
+                    },
+                  ]}
+                  height={300}
+                  slotProps={{
+                    legend: {
+                      labelStyle: {
+                        fontFamily: "regular",
+                        fontSize: 12,
+                        width: 100,
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                      },
+                    },
+                  }}
+                />
+              </Box>
 
-            <BarChart
-              xAxis={[
-                { data: ["group A", "group B", "group C"], scaleType: "band" },
-              ]}
-              series={[
-                { data: [4, 3, 5] },
-                { data: [1, 6, 3] },
-                { data: [2, 5, 6] },
-              ]}
-              height={300}
-            />
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  mb: 2,
+                  border: "1px solid",
+                  borderColor: COLORS.gray2,
+                  borderRadius: "15px",
+                  p: 2,
+                  width: "48%",
+                }}
+              >
+                <Typography
+                  sx={{
+                    fontFamily: "bold",
+                    fontSize: 24,
+                    textAlign: "left",
+                  }}
+                >
+                  Customer Satisfaction: {customerSatisfaction}%{" "}
+                  {customerSatisfaction >= 80
+                    ? "😃"
+                    : customerSatisfaction >= 60
+                    ? "🙂"
+                    : customerSatisfaction >= 40
+                    ? "😐"
+                    : customerSatisfaction >= 20
+                    ? "🙁"
+                    : "😢"}
+                </Typography>
+
+                <Box
+                  sx={{
+                    position: "relative",
+                    width: "100%",
+                    height: 300,
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <Box
+                    component="img"
+                    src={gauge}
+                    sx={{
+                      width: "100%",
+                      height: "100%",
+                      position: "absolute",
+                      objectFit: "cover",
+                      top: 0,
+                      left: 0,
+                      zIndex: -1,
+                    }}
+                  />
+                  <GaugeContainer
+                    height={300}
+                    startAngle={-90}
+                    endAngle={90}
+                    value={customerSatisfaction}
+                  >
+                    <GaugePointer />
+                  </GaugeContainer>
+                </Box>
+              </Box>
+            </Box>
           </Box>
         )}
 
