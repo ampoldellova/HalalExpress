@@ -2,6 +2,8 @@ import { Box, Typography } from "@mui/material";
 import React from "react";
 import { COLORS } from "../../styles/theme";
 import PendingOrders from "./PendingOrders";
+import Loader from "../../components/Loader";
+import Lottie from "lottie-react";
 
 const ManageOrders = ({ restaurantId }) => {
   const [orderStatus, setOrderStatus] = React.useState("Pending");
@@ -228,8 +230,40 @@ const ManageOrders = ({ restaurantId }) => {
         </Typography>
       </Box>
 
-      {orderStatus === "Pending" && (
-        <PendingOrders pendingOrders={pendingOrders} />
+      {loading ? (
+        <Box
+          sx={{
+            width: "100%",
+            height: "80vh",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            flexDirection: "column",
+          }}
+        >
+          <Lottie
+            animationData={require("../../assets/anime/loading.json")}
+            style={{ width: "10%", height: "10%" }}
+          />
+          <Typography
+            sx={{
+              bottom: 20,
+              fontSize: 24,
+              color: COLORS.gray,
+              fontFamily: "regular",
+              mt: 5,
+              textAlign: "center",
+            }}
+          >
+            Loading...
+          </Typography>
+        </Box>
+      ) : (
+        <>
+          {orderStatus === "Pending" && (
+            <PendingOrders pendingOrders={pendingOrders} />
+          )}
+        </>
       )}
     </Box>
   );
