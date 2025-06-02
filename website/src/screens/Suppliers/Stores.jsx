@@ -1,4 +1,4 @@
-import { Box, Container, Rating, Typography } from "@mui/material";
+import { Box, Container, Rating, Tooltip, Typography } from "@mui/material";
 import axios from "axios";
 import React from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -153,7 +153,15 @@ const Stores = () => {
                             justifyContent: "space-between",
                           }}
                         >
-                          <Rating value={store?.rating} readOnly />
+                          <Tooltip title={`${store?.rating.toFixed(1)} ⭐`}>
+                            <span>
+                              <Rating
+                                value={store?.rating}
+                                precision={0.2}
+                                readOnly
+                              />
+                            </span>
+                          </Tooltip>
                           <Typography
                             sx={{
                               fontFamily: "regular",

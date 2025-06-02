@@ -129,7 +129,6 @@ const Restaurants = ({ restaurants }) => {
                   sx={{ justifyContent: "space-between", mt: 0.5 }}
                 >
                   <Rating
-                    name="simple-controlled"
                     value={restaurant.rating}
                     precision={0.2}
                     readOnly
