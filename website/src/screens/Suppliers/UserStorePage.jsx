@@ -1,4 +1,13 @@
-import { Box, Container, Divider, Switch, Typography } from "@mui/material";
+import {
+  Box,
+  Container,
+  Divider,
+  Paper,
+  Switch,
+  Tab,
+  Tabs,
+  Typography,
+} from "@mui/material";
 import React from "react";
 import { useLocation } from "react-router-dom";
 import { COLORS } from "../../styles/theme";
@@ -539,7 +548,7 @@ const UserStorePage = () => {
                 }}
               />
             </Box>
-            
+
             <Box
               sx={{
                 display: "flex",
@@ -685,7 +694,7 @@ const UserStorePage = () => {
             >
               Manage Orders
             </Typography>
-            {/* Chat component can be added here */}
+            {/* Order management component can be added here */}
           </Box>
         )}
 
