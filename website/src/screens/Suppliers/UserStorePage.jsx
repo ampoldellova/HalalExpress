@@ -538,126 +538,126 @@ const UserStorePage = () => {
                   legend: { hidden: true },
                 }}
               />
+            </Box>
+            
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                gap: 2,
+              }}
+            >
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  mb: 2,
+                  border: "1px solid",
+                  borderColor: COLORS.gray2,
+                  borderRadius: "15px",
+                  p: 2,
+                  width: "48%",
+                }}
+              >
+                <Typography
+                  sx={{
+                    fontFamily: "bold",
+                    fontSize: 24,
+                    textAlign: "left",
+                  }}
+                >
+                  Top Ordered Products
+                </Typography>
+
+                <PieChart
+                  series={[
+                    {
+                      data: pieChartData,
+                      innerRadius: 30,
+                      outerRadius: 80,
+                      paddingAngle: 5,
+                      cornerRadius: 10,
+                    },
+                  ]}
+                  height={300}
+                  slotProps={{
+                    legend: {
+                      labelStyle: {
+                        fontFamily: "regular",
+                        fontSize: 12,
+                        width: 100,
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                      },
+                    },
+                  }}
+                />
+              </Box>
 
               <Box
                 sx={{
                   display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  gap: 2,
+                  flexDirection: "column",
+                  mb: 2,
+                  border: "1px solid",
+                  borderColor: COLORS.gray2,
+                  borderRadius: "15px",
+                  p: 2,
+                  width: "48%",
                 }}
               >
-                <Box
+                <Typography
                   sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    mb: 2,
-                    border: "1px solid",
-                    borderColor: COLORS.gray2,
-                    borderRadius: "15px",
-                    p: 2,
-                    width: "48%",
+                    fontFamily: "bold",
+                    fontSize: 24,
+                    textAlign: "left",
                   }}
                 >
-                  <Typography
-                    sx={{
-                      fontFamily: "bold",
-                      fontSize: 24,
-                      textAlign: "left",
-                    }}
-                  >
-                    Top Ordered Products
-                  </Typography>
+                  Customer Satisfaction: {customerSatisfaction.toFixed(2)}%{" "}
+                  {customerSatisfaction >= 80
+                    ? "😃"
+                    : customerSatisfaction >= 60
+                    ? "🙂"
+                    : customerSatisfaction >= 40
+                    ? "😐"
+                    : customerSatisfaction >= 20
+                    ? "🙁"
+                    : "😢"}
+                </Typography>
 
-                  <PieChart
-                    series={[
-                      {
-                        data: pieChartData,
-                        innerRadius: 30,
-                        outerRadius: 80,
-                        paddingAngle: 5,
-                        cornerRadius: 10,
-                      },
-                    ]}
-                    height={300}
-                    slotProps={{
-                      legend: {
-                        labelStyle: {
-                          fontFamily: "regular",
-                          fontSize: 12,
-                          width: 100,
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                          whiteSpace: "nowrap",
-                        },
-                      },
+                <Box
+                  sx={{
+                    position: "relative",
+                    width: "100%",
+                    height: 300,
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <Box
+                    component="img"
+                    src={gauge}
+                    sx={{
+                      width: "100%",
+                      height: "100%",
+                      position: "absolute",
+                      objectFit: "cover",
+                      top: 0,
+                      left: 0,
+                      zIndex: -1,
                     }}
                   />
-                </Box>
-
-                <Box
-                  sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    mb: 2,
-                    border: "1px solid",
-                    borderColor: COLORS.gray2,
-                    borderRadius: "15px",
-                    p: 2,
-                    width: "48%",
-                  }}
-                >
-                  <Typography
-                    sx={{
-                      fontFamily: "bold",
-                      fontSize: 24,
-                      textAlign: "left",
-                    }}
+                  <GaugeContainer
+                    height={300}
+                    startAngle={-90}
+                    endAngle={90}
+                    value={customerSatisfaction}
                   >
-                    Customer Satisfaction: {customerSatisfaction.toFixed(2)}%{" "}
-                    {customerSatisfaction >= 80
-                      ? "😃"
-                      : customerSatisfaction >= 60
-                      ? "🙂"
-                      : customerSatisfaction >= 40
-                      ? "😐"
-                      : customerSatisfaction >= 20
-                      ? "🙁"
-                      : "😢"}
-                  </Typography>
-
-                  <Box
-                    sx={{
-                      position: "relative",
-                      width: "100%",
-                      height: 300,
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                    }}
-                  >
-                    <Box
-                      component="img"
-                      src={gauge}
-                      sx={{
-                        width: "100%",
-                        height: "100%",
-                        position: "absolute",
-                        objectFit: "cover",
-                        top: 0,
-                        left: 0,
-                        zIndex: -1,
-                      }}
-                    />
-                    <GaugeContainer
-                      height={300}
-                      startAngle={-90}
-                      endAngle={90}
-                      value={customerSatisfaction}
-                    >
-                      <GaugePointer />
-                    </GaugeContainer>
-                  </Box>
+                    <GaugePointer />
+                  </GaugeContainer>
                 </Box>
               </Box>
             </Box>
