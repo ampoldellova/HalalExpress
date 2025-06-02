@@ -59,4 +59,10 @@ router.get(
   orderController.getTopOrderedFoods
 );
 
+router.get(
+  "/store/:storeId/monthly-sales",
+  verifyAndAuthorization,
+  orderController.getStoreMonthlySales
+);
+
 module.exports = router;

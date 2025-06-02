@@ -16,18 +16,18 @@ import { GaugeContainer, useGaugeState } from "@mui/x-charts/Gauge";
 import { LineChart, PieChart } from "@mui/x-charts";
 import gauge from "../../assets/images/gaugeChart.png";
 
-const UserRestaurantPage = () => {
+const UserStorePage = () => {
   const location = useLocation();
-  const restaurant = location.state?.restaurant;
+  const store = location.state?.store;
   const [options, setOptions] = React.useState("dashboard");
   const [isAvailable, setIsAvailable] = React.useState(
-    restaurant?.isAvailable || false
+    store?.isAvailable || false
   );
   const [deliveryAvailability, setDeliveryAvailability] = React.useState(
-    restaurant?.delivery || false
+    store?.delivery || false
   );
   const [pickupAvailability, setPickupAvailability] = React.useState(
-    restaurant?.pickup || false
+    store?.pickup || false
   );
   const [monthlySales, setMonthlySales] = React.useState([]);
   const [topOrderedFoods, setTopOrderedFoods] = React.useState([]);
@@ -42,7 +42,7 @@ const UserRestaurantPage = () => {
           },
         };
         const response = await axios.patch(
-          `http://localhost:6002/api/restaurant/${restaurant?._id}`,
+          `http://localhost:6002/api/supplier/${store?._id}`,
           {},
           config
         );
@@ -71,7 +71,7 @@ const UserRestaurantPage = () => {
           },
         };
         const response = await axios.patch(
-          `http://localhost:6002/api/restaurant/delivery/${restaurant?._id}`,
+          `http://localhost:6002/api/supplier/delivery/${store?._id}`,
           {},
           config
         );
@@ -100,7 +100,7 @@ const UserRestaurantPage = () => {
           },
         };
         const response = await axios.patch(
-          `http://localhost:6002/api/restaurant/pickup/${restaurant?._id}`,
+          `http://localhost:6002/api/supplier/pickup/${store?._id}`,
           {},
           config
         );
@@ -129,7 +129,7 @@ const UserRestaurantPage = () => {
           },
         };
         const response = await axios.get(
-          `http://localhost:6002/api/orders/restaurant/${restaurant?._id}/monthly-sales`,
+          `http://localhost:6002/api/orders/store/${store?._id}/monthly-sales`,
           config
         );
         setMonthlySales(response.data.sales);
@@ -142,33 +142,32 @@ const UserRestaurantPage = () => {
     }
   };
 
-  const fetchTopOrderedFoods = async () => {
-    try {
-      const token = sessionStorage.getItem("token");
-      if (token) {
-        const config = {
-          headers: {
-            Authorization: `Bearer ${JSON.parse(token)}`,
-          },
-        };
-        const response = await axios.get(
-          `http://localhost:6002/api/orders/restaurant/${restaurant?._id}/top-foods`,
-          config
-        );
-        setTopOrderedFoods(response.data.topFoods);
-      } else {
-        console.log("Authentication token not found");
-      }
-    } catch (error) {
-      console.log("Error fetching top ordered foods:", error);
-      toast.error("Failed to fetch top ordered foods", error);
-    }
-  };
+  //   const fetchTopOrderedFoods = async () => {
+  //     try {
+  //       const token = sessionStorage.getItem("token");
+  //       if (token) {
+  //         const config = {
+  //           headers: {
+  //             Authorization: `Bearer ${JSON.parse(token)}`,
+  //           },
+  //         };
+  //         const response = await axios.get(
+  //           `http://localhost:6002/api/orders/restaurant/${restaurant?._id}/top-foods`,
+  //           config
+  //         );
+  //         setTopOrderedFoods(response.data.topFoods);
+  //       } else {
+  //         console.log("Authentication token not found");
+  //       }
+  //     } catch (error) {
+  //       console.log("Error fetching top ordered foods:", error);
+  //       toast.error("Failed to fetch top ordered foods", error);
+  //     }
+  //   };
 
   React.useEffect(() => {
     fetchRestaurantMonthlySales();
-    fetchTopOrderedFoods();
-  }, [restaurant?._id]);
+  }, [store?._id]);
 
   const lineChartData = monthlySales.map((item) => ({
     month: `${item.month} ${item.year}`,
@@ -176,35 +175,34 @@ const UserRestaurantPage = () => {
     orderCount: item.orderCount,
   }));
 
-  const pieChartData = topOrderedFoods.map((food) => ({
-    label: food.title,
-    value: food.totalOrdered,
-  }));
+  //   const pieChartData = topOrderedFoods.map((food) => ({
+  //     label: food.title,
+  //     value: food.totalOrdered,
+  //   }));
 
-  const customerSatisfaction = restaurant?.rating ? restaurant.rating * 20 : 0;
+  //   const customerSatisfaction = restaurant?.rating ? restaurant.rating * 20 : 0;
 
-  function GaugePointer() {
-    const { valueAngle, outerRadius, cx, cy } = useGaugeState();
-    if (valueAngle === null) {
-      return null;
-    }
+  //   function GaugePointer() {
+  //     const { valueAngle, outerRadius, cx, cy } = useGaugeState();
+  //     if (valueAngle === null) {
+  //       return null;
+  //     }
 
-    const target = {
-      x: cx + outerRadius * Math.sin(valueAngle),
-      y: cy - outerRadius * Math.cos(valueAngle),
-    };
-    return (
-      <g>
-        <circle cx={cx} cy={cy} r={5} fill="red" />
-        <path
-          d={`M ${cx} ${cy} L ${target.x} ${target.y}`}
-          stroke="red"
-          strokeWidth={3}
-        />
-      </g>
-    );
-  }
-
+  //     const target = {
+  //       x: cx + outerRadius * Math.sin(valueAngle),
+  //       y: cy - outerRadius * Math.cos(valueAngle),
+  //     };
+  //     return (
+  //       <g>
+  //         <circle cx={cx} cy={cy} r={5} fill="red" />
+  //         <path
+  //           d={`M ${cx} ${cy} L ${target.x} ${target.y}`}
+  //           stroke="red"
+  //           strokeWidth={3}
+  //         />
+  //       </g>
+  //     );
+  //   }
   return (
     <Box
       sx={{
@@ -220,13 +218,13 @@ const UserRestaurantPage = () => {
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            mt: 2,
             width: "50%",
+            mt: 2,
           }}
         >
           <Box
             component="img"
-            src={restaurant?.imageUrl?.url}
+            src={store?.imageUrl?.url}
             sx={{
               width: "100%",
               height: 200,
@@ -238,7 +236,7 @@ const UserRestaurantPage = () => {
           <Box sx={{ display: "flex", width: "100%" }}>
             <Box
               component="img"
-              src={restaurant?.logoUrl?.url}
+              src={store?.logoUrl?.url}
               sx={{
                 width: 120,
                 height: 120,
@@ -251,7 +249,7 @@ const UserRestaurantPage = () => {
 
             <Box sx={{ mt: 1 }}>
               <Typography sx={{ fontFamily: "bold", fontSize: 18 }}>
-                {restaurant?.title}
+                {store?.title}
               </Typography>
               <Box sx={{ display: "flex", alignItems: "flex-start" }}>
                 <PlaceOutlinedIcon
@@ -264,7 +262,7 @@ const UserRestaurantPage = () => {
                     color: COLORS.gray,
                   }}
                 >
-                  {restaurant?.coords?.address}
+                  {store?.coords?.address}
                 </Typography>
               </Box>
             </Box>
@@ -504,7 +502,7 @@ const UserRestaurantPage = () => {
                 textAlign: "center",
               }}
             >
-              Restaurant Dashboard
+              Supplier Dashboard
             </Typography>
 
             <Box
@@ -527,6 +525,7 @@ const UserRestaurantPage = () => {
               >
                 Monthly Sales
               </Typography>
+              
               <LineChart
                 dataset={lineChartData}
                 xAxis={[{ dataKey: "month", scaleType: "band" }]}
@@ -537,128 +536,6 @@ const UserRestaurantPage = () => {
                   legend: { hidden: true },
                 }}
               />
-            </Box>
-
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                gap: 2,
-              }}
-            >
-              <Box
-                sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  mb: 2,
-                  border: "1px solid",
-                  borderColor: COLORS.gray2,
-                  borderRadius: "15px",
-                  p: 2,
-                  width: "48%",
-                }}
-              >
-                <Typography
-                  sx={{
-                    fontFamily: "bold",
-                    fontSize: 24,
-                    textAlign: "left",
-                  }}
-                >
-                  Top Ordered Foods
-                </Typography>
-
-                <PieChart
-                  series={[
-                    {
-                      data: pieChartData,
-                      innerRadius: 30,
-                      outerRadius: 80,
-                      paddingAngle: 5,
-                      cornerRadius: 10,
-                    },
-                  ]}
-                  height={300}
-                  slotProps={{
-                    legend: {
-                      labelStyle: {
-                        fontFamily: "regular",
-                        fontSize: 12,
-                        width: 100,
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        whiteSpace: "nowrap",
-                      },
-                    },
-                  }}
-                />
-              </Box>
-
-              <Box
-                sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  mb: 2,
-                  border: "1px solid",
-                  borderColor: COLORS.gray2,
-                  borderRadius: "15px",
-                  p: 2,
-                  width: "48%",
-                }}
-              >
-                <Typography
-                  sx={{
-                    fontFamily: "bold",
-                    fontSize: 24,
-                    textAlign: "left",
-                  }}
-                >
-                  Customer Satisfaction: {customerSatisfaction}%{" "}
-                  {customerSatisfaction >= 80
-                    ? "😃"
-                    : customerSatisfaction >= 60
-                    ? "🙂"
-                    : customerSatisfaction >= 40
-                    ? "😐"
-                    : customerSatisfaction >= 20
-                    ? "🙁"
-                    : "😢"}
-                </Typography>
-
-                <Box
-                  sx={{
-                    position: "relative",
-                    width: "100%",
-                    height: 300,
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                >
-                  <Box
-                    component="img"
-                    src={gauge}
-                    sx={{
-                      width: "100%",
-                      height: "100%",
-                      position: "absolute",
-                      objectFit: "cover",
-                      top: 0,
-                      left: 0,
-                      zIndex: -1,
-                    }}
-                  />
-                  <GaugeContainer
-                    height={300}
-                    startAngle={-90}
-                    endAngle={90}
-                    value={customerSatisfaction}
-                  >
-                    <GaugePointer />
-                  </GaugeContainer>
-                </Box>
-              </Box>
             </Box>
           </Box>
         )}
@@ -717,4 +594,4 @@ const UserRestaurantPage = () => {
   );
 };
 
-export default UserRestaurantPage;
+export default UserStorePage;

@@ -754,4 +754,101 @@ module.exports = {
       res.status(500).json({ status: false, message: error.message });
     }
   },
+
+  getStoreMonthlySales: async (req, res) => {
+    const { storeId } = req.params;
+    try {
+      const sales = await Order.aggregate([
+        {
+          $match: {
+            supplier: new mongoose.Types.ObjectId(storeId),
+            orderStatus: "Completed",
+            paymentStatus: "Paid",
+          },
+        },
+        {
+          $group: {
+            _id: {
+              year: { $year: "$createdAt" },
+              month: { $month: "$createdAt" },
+            },
+            totalSales: { $sum: "$totalAmount" },
+            orderCount: { $sum: 1 },
+          },
+        },
+        { $sort: { "_id.year": 1, "_id.month": 1 } },
+      ]);
+
+      const monthNames = [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec",
+      ];
+
+      const salesWithMonthName = sales.map((item) => ({
+        year: item._id.year,
+        month: monthNames[item._id.month - 1],
+        totalSales: item.totalSales,
+        orderCount: item.orderCount,
+      }));
+
+      res.status(200).json({ status: true, sales: salesWithMonthName });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ status: false, message: error.message });
+    }
+  },
+
+  // getTopOrderedFoods: async (req, res) => {
+  //   const { restaurantId } = req.params;
+  //   try {
+  //     const topFoods = await Order.aggregate([
+  //       {
+  //         $match: {
+  //           restaurant: new mongoose.Types.ObjectId(restaurantId),
+  //           orderStatus: "Completed",
+  //           paymentStatus: "Paid",
+  //         },
+  //       },
+  //       { $unwind: "$orderItems" },
+  //       {
+  //         $group: {
+  //           _id: "$orderItems.foodId",
+  //           totalOrdered: { $sum: "$orderItems.quantity" },
+  //         },
+  //       },
+  //       { $sort: { totalOrdered: -1 } },
+  //       { $limit: 3 },
+  //       {
+  //         $lookup: {
+  //           from: "foods",
+  //           localField: "_id",
+  //           foreignField: "_id",
+  //           as: "food",
+  //         },
+  //       },
+  //       { $unwind: "$food" },
+  //       {
+  //         $project: {
+  //           foodId: "$food._id",
+  //           title: "$food.title",
+  //           totalOrdered: 1,
+  //         },
+  //       },
+  //     ]);
+  //     res.status(200).json({ status: true, topFoods });
+  //   } catch (error) {
+  //     console.error(error);
+  //     res.status(500).json({ status: false, message: error.message });
+  //   }
+  // },
 };

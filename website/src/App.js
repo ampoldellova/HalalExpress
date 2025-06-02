@@ -19,6 +19,7 @@ import ChatButton from "./components/Chat/ChatButton";
 import Stores from "./screens/Suppliers/Stores";
 import Restaurants from "./screens/Vendors/Restaurants";
 import UserRestaurantPage from "./screens/Vendors/UserRestaurantPage";
+import UserStorePage from "./screens/Suppliers/UserStorePage";
 
 function App() {
   const user = getUser();
@@ -32,10 +33,12 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/verification" element={<VerificationPage />} />
           <Route path="/restaurants/:id" element={<Restaurants />} />
+          <Route path="/stores/:id" element={<Stores />} />
           <Route
             path="/restaurants/restaurant/:restaurantId"
             element={<UserRestaurantPage />}
           />
+          <Route path="/stores/store/:storeId" element={<UserStorePage />} />
           <Route path="/restaurant/:id" element={<RestaurantPage />} />
           <Route path="/stores/:id" element={<Stores />} />
           <Route path="/supplier/:id" element={<SupplierPage />} />
