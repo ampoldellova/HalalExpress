@@ -182,6 +182,7 @@ const ReadyForPickupOrders = ({ readyForPickupOrders }) => {
                           src={pickup}
                           sx={{
                             width: 50,
+                            height: 57,
                             objectFit: "contain",
                             mr: 2,
                           }}
