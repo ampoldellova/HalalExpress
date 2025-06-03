@@ -25,6 +25,7 @@ import { GaugeContainer, useGaugeState } from "@mui/x-charts/Gauge";
 import { LineChart, PieChart } from "@mui/x-charts";
 import gauge from "../../assets/images/gaugeChart.png";
 import ManageOrders from "./ManageOrders";
+import StoreChats from "./StoreChats";
 
 const UserStorePage = () => {
   const location = useLocation();
@@ -720,7 +721,7 @@ const UserStorePage = () => {
             >
               Chats
             </Typography>
-            {/* Chat component can be added here */}
+            <StoreChats store={store} />
           </Box>
         )}
       </Container>

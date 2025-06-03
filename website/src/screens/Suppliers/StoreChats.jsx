@@ -15,7 +15,7 @@ import emptyInbox from "../../assets/images/emptyInbox.png";
 import { COLORS } from "../../styles/theme";
 import SendIcon from "@mui/icons-material/Send";
 
-const RestaurantChats = ({ restaurant }) => {
+const StoreChats = ({ store }) => {
   const [messages, setMessages] = React.useState([]);
   const [conversations, setConversations] = React.useState([]);
   const [latestMessage, setLatestMessage] = React.useState(null);
@@ -28,7 +28,7 @@ const RestaurantChats = ({ restaurant }) => {
 
     const fetchConversations = () => {
       const collectionRef = collection(database, "chats");
-      const q = query(collectionRef, where("user._id", "==", restaurant?._id));
+      const q = query(collectionRef, where("user._id", "==", store?._id));
 
       const unsubscribe = onSnapshot(q, (snapshot) => {
         const chats = snapshot.docs.map((doc) => {
@@ -65,11 +65,8 @@ const RestaurantChats = ({ restaurant }) => {
 
     const fetchLatestMessage = () => {
       const collectionRef = collection(database, "chats");
-      const q1 = query(
-        collectionRef,
-        where("receiverId", "==", restaurant?._id)
-      );
-      const q2 = query(collectionRef, where("user._id", "==", restaurant?._id));
+      const q1 = query(collectionRef, where("receiverId", "==", store?._id));
+      const q2 = query(collectionRef, where("user._id", "==", store?._id));
 
       const unsubscribe1 = onSnapshot(q1, (snapshot1) => {
         const chats1 = snapshot1.docs.map((doc) => {
@@ -96,7 +93,7 @@ const RestaurantChats = ({ restaurant }) => {
           const latestMessages = Object.values(
             allChats.reduce((acc, chat) => {
               const conversationId =
-                chat.receiverId === restaurant?._id
+                chat.receiverId === store?._id
                   ? chat.user._id
                   : chat.receiverId;
 
@@ -126,7 +123,7 @@ const RestaurantChats = ({ restaurant }) => {
       unsubscribeConversations && unsubscribeConversations();
       unsubscribeLatestMessage && unsubscribeLatestMessage();
     };
-  }, [user?._id, restaurant?._id]);
+  }, [user?._id, store?._id]);
 
   useLayoutEffect(() => {
     const collectionRef = collection(database, "chats");
@@ -143,17 +140,17 @@ const RestaurantChats = ({ restaurant }) => {
         }))
         .filter(
           (msg) =>
-            (msg.user._id === restaurant?._id &&
+            (msg.user._id === store?._id &&
               msg.receiverId === selectedConversation?.receiverId) ||
             (msg.user._id === selectedConversation?.receiverId &&
-              msg.receiverId === restaurant?._id)
+              msg.receiverId === store?._id)
         );
 
       setMessages(filteredMessages);
     });
 
     return unsubscribe;
-  }, [restaurant?._id, selectedConversation]);
+  }, [store?._id, selectedConversation]);
 
   const combinedData = conversations.map((conversation) => {
     const latestMessageForConversation = latestMessage?.find((message) => {
@@ -198,15 +195,15 @@ const RestaurantChats = ({ restaurant }) => {
     if (
       newMessage.trim() === "" ||
       !selectedConversation?.user?._id ||
-      !restaurant?._id
+      !store?._id
     ) {
       return;
     }
 
     const senderInfo = {
-      _id: restaurant?._id,
-      name: restaurant?.title,
-      avatar: restaurant?.logoUrl?.url,
+      _id: store?._id,
+      name: store?.title,
+      avatar: store?.logoUrl?.url,
     };
 
     const messageData = {
@@ -224,7 +221,7 @@ const RestaurantChats = ({ restaurant }) => {
     } catch (error) {
       console.error("Error sending message: ", error);
     }
-  }, [newMessage, restaurant, selectedConversation]);
+  }, [newMessage, store, selectedConversation]);
 
   return (
     <>
@@ -328,8 +325,7 @@ const RestaurantChats = ({ restaurant }) => {
                           maxWidth: 200,
                         }}
                       >
-                        {conversation?.latestMessage?.user?._id ===
-                        restaurant?._id
+                        {conversation?.latestMessage?.user?._id === store?._id
                           ? `You: ${conversation?.latestMessage?.text}`
                           : `${conversation?.latestMessage?.user?.name}: ${conversation?.latestMessage?.text}`}
                       </Typography>
@@ -421,7 +417,7 @@ const RestaurantChats = ({ restaurant }) => {
                               sx={{
                                 display: "flex",
                                 flexDirection:
-                                  message.user._id === restaurant?._id
+                                  message.user._id === store?._id
                                     ? "row-reverse"
                                     : "row",
                                 alignItems: "center",
@@ -436,13 +432,9 @@ const RestaurantChats = ({ restaurant }) => {
                                   width: 40,
                                   borderRadius: 99,
                                   marginLeft:
-                                    message.user._id === restaurant?._id
-                                      ? 0
-                                      : 1,
+                                    message.user._id === store?._id ? 0 : 1,
                                   marginRight:
-                                    message.user._id === restaurant?._id
-                                      ? 1
-                                      : 0,
+                                    message.user._id === store?._id ? 1 : 0,
                                 }}
                               />
                               <Box
@@ -452,13 +444,9 @@ const RestaurantChats = ({ restaurant }) => {
                                   borderRadius: 2,
                                   maxWidth: "60%",
                                   marginLeft:
-                                    message.user._id === restaurant?._id
-                                      ? 0
-                                      : 1,
+                                    message.user._id === store?._id ? 0 : 1,
                                   marginRight:
-                                    message.user._id === restaurant?._id
-                                      ? 1
-                                      : 0,
+                                    message.user._id === store?._id ? 1 : 0,
                                 }}
                               >
                                 <Typography
@@ -476,7 +464,7 @@ const RestaurantChats = ({ restaurant }) => {
                                     color: COLORS.gray,
                                     fontSize: 12,
                                     textAlign:
-                                      message.user._id === restaurant?._id
+                                      message.user._id === store?._id
                                         ? "right"
                                         : "left",
                                   }}
@@ -545,4 +533,4 @@ const RestaurantChats = ({ restaurant }) => {
   );
 };
 
-export default RestaurantChats;
+export default StoreChats;
