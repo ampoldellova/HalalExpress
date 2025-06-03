@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  CircularProgress,
   Divider,
   Icon,
   IconButton,
@@ -16,12 +17,66 @@ import AddAddressMapDisplay from "../../components/Users/AddAddressMapDisplay";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import DeleteIcon from "@mui/icons-material/Delete";
+import axios from "axios";
+import { createRefund } from "../../hook/paymongoService";
+import { toast } from "react-toastify";
 
 const PendingOrders = ({ pendingOrders }) => {
   const [selectedOrder, setSelectedOrder] = React.useState(null);
+  const [loading, setLoading] = React.useState(false);
 
   const openOrderDetails = (order) => {
     setSelectedOrder(order);
+  };
+
+  const rejectOrder = async (selectedOrder) => {
+    setLoading(true);
+    try {
+      const token = sessionStorage.getItem("token");
+      const config = {
+        headers: {
+          Authorization: `Bearer ${JSON.parse(token)}`,
+        },
+      };
+
+      if (
+        selectedOrder?.paymentStatus === "Paid" &&
+        selectedOrder?.paymentMethod === "gcash" &&
+        selectedOrder?.orderStatus === "Pending"
+      ) {
+        const amount = selectedOrder?.totalAmount.toFixed(0) * 100;
+        const reason = "Order rejected by the restaurant";
+        const paymentId = selectedOrder?.paymentId;
+        const refundPayment = await createRefund(amount, reason, paymentId);
+        if (refundPayment.data.attributes.status === "pending") {
+          await axios.post(
+            `http://localhost:6002/api/orders/reject`,
+            { orderId: selectedOrder._id },
+            config
+          );
+
+          setSelectedOrder(null);
+          setLoading(false);
+          toast.success("Order rejected successfully!");
+        } else {
+          throw new Error("Failed to process refund");
+        }
+      } else {
+        await axios.post(
+          `http://localhost:6002/api/orders/reject`,
+          { orderId: selectedOrder._id },
+          config
+        );
+
+        setSelectedOrder(null);
+        setLoading(false);
+        toast.success("Order rejected successfully!");
+      }
+    } catch (error) {
+      console.log(error);
+      setLoading(false);
+      toast.error("Error ❌", error.message || "Failed to reject order");
+    }
   };
 
   return (
@@ -465,9 +520,20 @@ const PendingOrders = ({ pendingOrders }) => {
                     borderRadius: 3,
                   }}
                   startIcon={<DeleteIcon />}
-                  onClick={() => {}}
+                  onClick={() => {
+                    const confirmed = window.confirm(
+                      "Are you sure you want to reject this order?"
+                    );
+                    if (confirmed) {
+                      rejectOrder(selectedOrder);
+                    }
+                  }}
                 >
-                  R E J E C T
+                  {loading ? (
+                    <CircularProgress size={24} sx={{ color: COLORS.white }} />
+                  ) : (
+                    "R E J E C T"
+                  )}
                 </Button>
                 <Button
                   fullWidth
@@ -519,198 +585,6 @@ const PendingOrders = ({ pendingOrders }) => {
         </>
       )}
     </>
-    // <Box
-    //   sx={{
-    //     width: "100%",
-    //     height: "80vh",
-    //     mt: 1,
-    //     border: "1px solid #ccc",
-    //     borderRadius: "8px",
-    //     overflowY: "auto",
-    //   }}
-    // >
-    //   <Box
-    //     sx={{
-    //       display: "grid",
-    //       gridTemplateColumns: "repeat(2, 1fr)",
-    //       gap: 2,
-    //       p: 2,
-    //     }}
-    //   >
-    //     {pendingOrders.length > 0 ? (
-    //       pendingOrders.map((order) => (
-    //         <Box
-    //           key={order._id}
-    //           sx={{
-    //             border: "1px solid #e0e0e0",
-    //             borderRadius: "8px",
-    //             position: "relative",
-    //           }}
-    //         >
-    //           <Box
-    //             sx={{
-    //               width: "100%",
-    //               height: "20px",
-    //               bgcolor: COLORS.primary,
-    //               borderRadius: "8px 8px 0 0",
-    //             }}
-    //           />
-
-    //           <Box
-    //             component="img"
-    //             src={pin}
-    //             sx={{
-    //               position: "absolute",
-    //               objectFit: "contain",
-    //               marginLeft: "10px",
-    //               right: 10,
-    //               top: 0,
-    //               width: 50,
-    //               height: 50,
-    //             }}
-    //           />
-    //           <Box sx={{ display: "flex", alignItems: "flex-start", p: 1 }}>
-    //             <Box
-    //               component="img"
-    //               src={order?.userId?.profile?.url}
-    //               sx={{
-    //                 width: 30,
-    //                 height: 30,
-    //                 borderRadius: 99,
-    //               }}
-    //             />
-
-    //             <Box sx={{ display: "flex", flexDirection: "column", ml: 1 }}>
-    //               <Typography
-    //                 sx={{
-    //                   fontFamily: "bold",
-    //                   fontSize: 16,
-    //                 }}
-    //               >
-    //                 Order #: {order?._id}
-    //               </Typography>
-
-    //               <Typography
-    //                 sx={{
-    //                   fontFamily: "bold",
-    //                   fontSize: 14,
-    //                   color: COLORS.gray,
-    //                 }}
-    //               >
-    //                 Customer: {order?.userId?.username}
-    //               </Typography>
-
-    //               <Typography
-    //                 sx={{
-    //                   fontFamily: "regular",
-    //                   fontSize: 14,
-    //                   color: COLORS.gray,
-    //                 }}
-    //               >
-    //                 Delivery option:{" "}
-    //                 {order?.deliveryOption === "standard"
-    //                   ? "For Delivery"
-    //                   : "For Pickup"}
-    //               </Typography>
-
-    //               <Box sx={{ display: "flex", alignItems: "center" }}>
-    //                 <Typography
-    //                   sx={{
-    //                     fontFamily: "regular",
-    //                     fontSize: 14,
-    //                     color: COLORS.gray,
-    //                   }}
-    //                 >
-    //                   Payment Method:
-    //                 </Typography>
-
-    //                 {order?.paymentMethod === "gcash" ? (
-    //                   <Box
-    //                     component="img"
-    //                     src={gcash}
-    //                     sx={{
-    //                       height: 14,
-    //                       ml: 1,
-    //                       objectFit: "contain",
-    //                     }}
-    //                   />
-    //                 ) : (
-    //                   <Typography
-    //                     sx={{
-    //                       fontFamily: "regular",
-    //                       fontSize: 14,
-    //                       color: COLORS.gray,
-    //                     }}
-    //                   >
-    //                     Cash on Delivery
-    //                   </Typography>
-    //                 )}
-    //               </Box>
-
-    //               <Typography
-    //                 sx={{
-    //                   fontFamily: "regular",
-    //                   fontSize: 14,
-    //                   color: COLORS.gray,
-    //                 }}
-    //               >
-    //                 Payment Status:{" "}
-    //                 {order?.paymentStatus === "Paid" ? "🟢 Paid" : "🟡 Pending"}
-    //               </Typography>
-
-    //               <Typography
-    //                 sx={{
-    //                   fontFamily: "regular",
-    //                   fontSize: 14,
-    //                   color: COLORS.gray,
-    //                 }}
-    //               >
-    //                 Ordered on:{" "}
-    //                 {new Date(order?.createdAt).toLocaleDateString("en-US", {
-    //                   month: "long",
-    //                   day: "numeric",
-    //                   year: "numeric",
-    //                 })}{" "}
-    //                 at{" "}
-    //                 {new Date(order?.createdAt).toLocaleTimeString("en-US", {
-    //                   hour: "numeric",
-    //                   minute: "2-digit",
-    //                   hour12: true,
-    //                 })}
-    //               </Typography>
-    //             </Box>
-    //           </Box>
-    //         </Box>
-    //       ))
-    //     ) : (
-    //       <Box
-    //         sx={{
-    //           display: "flex",
-    //           justifyContent: "center",
-    //           alignItems: "center",
-    //           flexDirection: "column",
-    //           width: "100%",
-    //           height: "100%",
-    //         }}
-    //       >
-    //         <Lottie
-    //           animationData={empty}
-    //           loop={true}
-    //           style={{ width: 300, height: 300 }}
-    //         />
-    //         <Typography
-    //           sx={{
-    //             fontFamily: "regular",
-    //             color: COLORS.gray,
-    //             fontSize: 16,
-    //           }}
-    //         >
-    //           No orders found.
-    //         </Typography>
-    //       </Box>
-    //     )}
-    //   </Box>
-    // </Box>
   );
 };
 
