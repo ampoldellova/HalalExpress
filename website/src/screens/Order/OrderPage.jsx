@@ -248,6 +248,8 @@ const OrderPage = () => {
                         flexDirection: "column",
                         alignItems: "center",
                         justifyContent: "center",
+                        height: "90vh",
+                        overflowY: "auto",
                       }}
                     >
                       {pendingOrders.map((order) => (
@@ -430,7 +432,9 @@ const OrderPage = () => {
                         display: "flex",
                         flexDirection: "column",
                         alignItems: "center",
-                        justifyContent: "center",
+                        justifyContent: "flex-start",
+                        height: "90vh",
+                        overflowY: "auto",
                       }}
                     >
                       {pastOrders.map((order) => (
@@ -630,7 +634,8 @@ const OrderPage = () => {
                         flexDirection: "column",
                         alignItems: "center",
                         justifyContent: "center",
-                        height: "80vh",
+                        height: "90vh",
+                        overflowY: "auto",
                       }}
                     >
                       <Box

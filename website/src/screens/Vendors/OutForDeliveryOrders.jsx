@@ -1,22 +1,10 @@
-import {
-  Box,
-  Button,
-  CircularProgress,
-  Modal,
-  Typography,
-} from "@mui/material";
-import React from "react";
+import { Box, Typography } from "@mui/material";
 import { COLORS } from "../../styles/theme";
 import pin from "../../assets/images/pin.png";
 import Lottie from "lottie-react";
 import empty from "../../assets/anime/emptyOrders.json";
 import delivery from "../../assets/anime/delivery.json";
 import pickup from "../../assets/images/pickup.png";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import axios from "axios";
-import { toast } from "react-toastify";
-import { QRCodeSVG } from "qrcode.react";
-import icon from "../../assets/images/icon.png";
 
 const OutForDeliveryOrders = ({ outForDeliveryOrders }) => {
   return (

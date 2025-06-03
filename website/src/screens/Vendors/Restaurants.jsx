@@ -153,7 +153,9 @@ const Restaurants = () => {
                             justifyContent: "space-between",
                           }}
                         >
-                          <Tooltip title={`${restaurant?.rating} ⭐`}>
+                          <Tooltip
+                            title={`${restaurant?.rating.toFixed(1)} ⭐`}
+                          >
                             <span>
                               <Rating
                                 value={restaurant?.rating}
