@@ -18,6 +18,7 @@ import { getUser } from "../../utils/helpers";
 import axios from "axios";
 import CancelOrderModal from "../../components/Order/CancelOrderModal";
 import RateOrderModal from "../../components/Order/RateOrderModal";
+import OrderTrackingMapView from "../../components/Order/OrderTrackingMapView";
 
 const COLORS = {
   primary: "#30b9b2",
@@ -462,6 +463,20 @@ const OrderDetails = () => {
         </Grid2>
 
         <Grid2 item xs={12} md={6}>
+          {order?.orderStatus === "Out for delivery" && (
+            <Box
+              sx={{
+                p: 2,
+                mb: 5,
+                borderRadius: 3,
+                bgcolor: COLORS.offwhite,
+                width: { xs: 435, md: 400 },
+              }}
+            >
+              <OrderTrackingMapView order={order} />
+            </Box>
+          )}
+
           <Box
             sx={{
               borderRadius: 3,
@@ -561,7 +576,7 @@ const OrderDetails = () => {
                     fontFamily: "regular",
                     fontSize: 14,
                     color: COLORS.gray,
-                    marginTop: 15,
+                    marginTop: 2,
                   }}
                 >
                   Your order is prepared and ready for pickup! The restaurant's

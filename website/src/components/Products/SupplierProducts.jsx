@@ -114,7 +114,14 @@ const SupplierProducts = ({ supplierId }) => {
     <Grid2
       container
       spacing={3}
-      sx={{ flexDirection: "row", justifyContent: "flex-start", mt: 2 }}
+      sx={{
+        flexDirection: "row",
+        justifyContent: "flex-start",
+        mt: 2,
+        height: "70vh",
+        overflowY: "auto",
+        position: "relative",
+      }}
     >
       {products.map((product) => (
         <Card

@@ -216,7 +216,7 @@ const SupplierPage = () => {
 
         <Divider />
 
-        <Box sx={{ px: 2, mb: 5 }}>
+        <Box sx={{ px: 2, mb: 5, width: "100%", overflowY: "auto" }}>
           <Typography
             sx={{
               fontFamily: "bold",
