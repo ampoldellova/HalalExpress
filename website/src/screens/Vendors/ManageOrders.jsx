@@ -2,12 +2,12 @@ import { Box, Typography } from "@mui/material";
 import React from "react";
 import { COLORS } from "../../styles/theme";
 import PendingOrders from "./PendingOrders";
-import Loader from "../../components/Loader";
 import Lottie from "lottie-react";
 import PreparingOrders from "./PreparingOrders";
 import ReadyForPickupOrders from "./ReadyForPickupOrders";
 import OutForDeliveryOrders from "./OutForDeliveryOrders";
 import DeliveredOrders from "./DeliveredOrders";
+import CompletedOrders from "./CompletedOrders";
 
 const ManageOrders = ({ restaurantId }) => {
   const [orderStatus, setOrderStatus] = React.useState("Pending");
@@ -282,6 +282,10 @@ const ManageOrders = ({ restaurantId }) => {
 
           {orderStatus === "Delivered" && (
             <DeliveredOrders deliveredOrders={deliveredOrders} />
+          )}
+
+          {orderStatus === "Completed" && (
+            <CompletedOrders completedOrders={completedOrders} />
           )}
         </>
       )}

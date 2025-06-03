@@ -615,7 +615,7 @@ const UserRestaurantPage = () => {
                     textAlign: "left",
                   }}
                 >
-                  Customer Satisfaction: {customerSatisfaction}%{" "}
+                  Customer Satisfaction: {customerSatisfaction.toFixed(0)}%{" "}
                   {customerSatisfaction >= 80
                     ? "😃"
                     : customerSatisfaction >= 60

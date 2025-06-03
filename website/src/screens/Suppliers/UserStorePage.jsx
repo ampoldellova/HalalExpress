@@ -624,7 +624,7 @@ const UserStorePage = () => {
                     textAlign: "left",
                   }}
                 >
-                  Customer Satisfaction: {customerSatisfaction.toFixed(2)}%{" "}
+                  Customer Satisfaction: {customerSatisfaction.toFixed(0)}%{" "}
                   {customerSatisfaction >= 80
                     ? "😃"
                     : customerSatisfaction >= 60
