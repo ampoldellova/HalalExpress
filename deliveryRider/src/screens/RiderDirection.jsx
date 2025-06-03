@@ -42,7 +42,7 @@ const RiderDirection = () => {
   const fetchOrderDetails = async () => {
     try {
       const response = await axios.get(
-        `https://localhost:6002/api/orders/accept-order/${orderId}`
+        `http://localhost:6002/api/orders/accept-order/${orderId}`
       );
       // const response = await axios.get(
       //   `https://halalexpress.onrender.com/api/orders/accept-order/${orderId}`
@@ -146,7 +146,7 @@ const RiderDirection = () => {
       }
 
       await axios.get(
-        `https://localhost:6002/api/orders/arrived-notification/${orderId}`
+        `http://localhost:6002/api/orders/arrived-notification/${orderId}`
       );
 
       const message = {
