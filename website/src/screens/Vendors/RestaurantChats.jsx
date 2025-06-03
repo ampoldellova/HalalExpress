@@ -122,7 +122,7 @@ const RestaurantChats = ({ restaurantId }) => {
       unsubscribeConversations && unsubscribeConversations();
       unsubscribeLatestMessage && unsubscribeLatestMessage();
     };
-  }, [user?._id]);
+  }, [user?._id, restaurantId]);
 
   useLayoutEffect(() => {
     const collectionRef = collection(database, "chats");
@@ -174,6 +174,12 @@ const RestaurantChats = ({ restaurantId }) => {
   const openChat = (conversation) => {
     setSelectedConversation(conversation);
   };
+
+  React.useEffect(() => {
+    if (combinedData.length > 0 && !selectedConversation) {
+      setSelectedConversation(combinedData[0]);
+    }
+  }, [combinedData, selectedConversation]);
 
   const groupMessagesByDate = (messages) => {
     return messages.reduce((groups, message) => {
@@ -300,12 +306,52 @@ const RestaurantChats = ({ restaurantId }) => {
               </Box>
             ))}
           </Box>
+
           <Divider orientation="vertical" />
 
-          <Box sx={{ width: 565, overflowY: "auto", bgcolor: "#f5f5f5" }}>
+          <Box
+            sx={{
+              width: 565,
+              overflowY: "auto",
+              bgcolor: "#f5f5f5",
+              position: "relative",
+            }}
+          >
+            <Box
+              sx={{
+                bgcolor: COLORS.primary,
+                p: 2,
+                position: "sticky",
+                top: 0,
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
+              <Box
+                component="img"
+                src={selectedConversation?.receiverAvatar}
+                sx={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: 99,
+                  objectFit: "cover",
+                  mr: 2,
+                }}
+              />
+              <Typography
+                sx={{
+                  fontFamily: "bold",
+                  color: COLORS.white,
+                  fontSize: 24,
+                }}
+              >
+                {selectedConversation?.receiverName}
+              </Typography>
+            </Box>
+
             {selectedConversation && (
               <>
-                <Box sx={{ height: "88%", overflowY: "auto", py: 2 }}>
+                <Box sx={{ overflowY: "auto", py: 2 }}>
                   {messages.length > 0 ? (
                     Object.entries(groupMessagesByDate(messages)).map(
                       ([date, msgs]) => (
@@ -316,14 +362,18 @@ const RestaurantChats = ({ restaurantId }) => {
                                 fontFamily: "bold",
                                 color: COLORS.gray,
                                 fontSize: 13,
-                                background: "#e0e0e0",
                                 borderRadius: 2,
                                 display: "inline-block",
                                 px: 2,
                                 py: 0.5,
+                                mt: 1,
                               }}
                             >
-                              {date}
+                              {new Date(date).toLocaleDateString("en-US", {
+                                month: "short",
+                                day: "numeric",
+                                year: "numeric",
+                              })}
                             </Typography>
                           </Box>
                           {msgs.map((message) => (
@@ -405,7 +455,14 @@ const RestaurantChats = ({ restaurantId }) => {
                   )}
                 </Box>
 
-                <Box sx={{ p: 2 }}>
+                <Box
+                  sx={{
+                    p: 2,
+                    position: "sticky",
+                    bottom: 0,
+                    bgcolor: "#f5f5f5",
+                  }}
+                >
                   <TextField
                     fullWidth
                     variant="outlined"
