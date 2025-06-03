@@ -167,6 +167,15 @@ const Conversations = ({ onClose }) => {
     return () => unsubscribe();
   }, [user?._id, selectedConversation?.user?._id]);
 
+  const groupMessagesByDate = (messages) => {
+    return messages.reduce((groups, message) => {
+      const date = new Date(message.createdAt).toLocaleDateString();
+      if (!groups[date]) groups[date] = [];
+      groups[date].push(message);
+      return groups;
+    }, {});
+  };
+
   const handleSendMessage = useCallback(async () => {
     if (
       newMessage.trim() === "" ||
@@ -451,62 +460,93 @@ const Conversations = ({ onClose }) => {
 
           <Box sx={{ height: "61%", overflowY: "auto", py: 2 }}>
             {messages.length > 0 ? (
-              messages.map((message) => (
-                <Box
-                  key={message._id}
-                  sx={{
-                    display: "flex",
-                    flexDirection:
-                      message.user._id === user._id ? "row-reverse" : "row",
-                    alignItems: "center",
-                    marginBottom: 2,
-                  }}
-                >
-                  <Box
-                    component="img"
-                    src={message.user.avatar}
-                    sx={{
-                      height: 40,
-                      width: 40,
-                      borderRadius: 99,
-                      marginLeft: message.user._id === user._id ? 0 : 1,
-                      marginRight: message.user._id === user._id ? 1 : 0,
-                    }}
-                  />
+              Object.entries(groupMessagesByDate(messages)).map(
+                ([date, msgs]) => (
+                  <React.Fragment key={date}>
+                    <Box sx={{ textAlign: "center", my: 2 }}>
+                      <Typography
+                        sx={{
+                          fontFamily: "bold",
+                          color: COLORS.gray,
+                          fontSize: 13,
+                          borderRadius: 2,
+                          display: "inline-block",
+                          px: 2,
+                          py: 0.5,
+                          mt: 1,
+                        }}
+                      >
+                        {new Date(date).toLocaleDateString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
+                        })}
+                      </Typography>
+                    </Box>
 
-                  <Box
-                    sx={{
-                      backgroundColor: COLORS.offwhite,
-                      padding: 1.5,
-                      borderRadius: 2,
-                      maxWidth: "60%",
-                      marginLeft: message.user._id === user._id ? 0 : 1,
-                      marginRight: message.user._id === user._id ? 1 : 0,
-                    }}
-                  >
-                    <Typography
-                      sx={{
-                        fontFamily: "regular",
-                        color: COLORS.black,
-                        fontSize: 12,
-                      }}
-                    >
-                      {message.text}
-                    </Typography>
-                    <Typography
-                      sx={{
-                        fontFamily: "regular",
-                        color: COLORS.gray,
-                        fontSize: 12,
-                        textAlign:
-                          message.user._id === user._id ? "right" : "left",
-                      }}
-                    >
-                      {formatTime(message.createdAt)}
-                    </Typography>
-                  </Box>
-                </Box>
-              ))
+                    {msgs.map((message) => (
+                      <Box
+                        key={message._id}
+                        sx={{
+                          display: "flex",
+                          flexDirection:
+                            message.user._id === user._id
+                              ? "row-reverse"
+                              : "row",
+                          alignItems: "center",
+                          marginBottom: 2,
+                        }}
+                      >
+                        <Box
+                          component="img"
+                          src={message.user.avatar}
+                          sx={{
+                            height: 40,
+                            width: 40,
+                            borderRadius: 99,
+                            marginLeft: message.user._id === user._id ? 0 : 1,
+                            marginRight: message.user._id === user._id ? 1 : 0,
+                          }}
+                        />
+
+                        <Box
+                          sx={{
+                            backgroundColor: COLORS.offwhite,
+                            padding: 1.5,
+                            borderRadius: 2,
+                            maxWidth: "60%",
+                            marginLeft: message.user._id === user._id ? 0 : 1,
+                            marginRight: message.user._id === user._id ? 1 : 0,
+                          }}
+                        >
+                          <Typography
+                            sx={{
+                              fontFamily: "regular",
+                              color: COLORS.black,
+                              fontSize: 12,
+                            }}
+                          >
+                            {message.text}
+                          </Typography>
+                          <Typography
+                            sx={{
+                              fontFamily: "regular",
+                              color: COLORS.gray,
+                              fontSize: 12,
+                              textAlign:
+                                message.user._id === user._id
+                                  ? "right"
+                                  : "left",
+                            }}
+                          >
+                            {formatTime(message.createdAt)}
+                          </Typography>
+                        </Box>
+                      </Box>
+                    ))}
+                  </React.Fragment>
+                )
+              )
             ) : (
               <Typography
                 sx={{

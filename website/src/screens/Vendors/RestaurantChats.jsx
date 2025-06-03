@@ -342,7 +342,6 @@ const RestaurantChats = ({ restaurant }) => {
                 <Divider />
               </Box>
             ))}
-            
           </Box>
 
           <Divider orientation="vertical" />
