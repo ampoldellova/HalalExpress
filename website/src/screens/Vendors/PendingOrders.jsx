@@ -21,6 +21,7 @@ import { createRefund } from "../../hook/paymongoService";
 import { toast } from "react-toastify";
 import { database } from "../../config/firebase";
 import { addDoc, collection } from "firebase/firestore";
+import note from "../../assets/images/note.png";
 
 const PendingOrders = ({ pendingOrders }) => {
   const [selectedOrder, setSelectedOrder] = React.useState(null);
@@ -357,33 +358,35 @@ const PendingOrders = ({ pendingOrders }) => {
                 Order #: {selectedOrder?._id}
               </Typography>
 
-              <Box
-                sx={{
-                  bgcolor: COLORS.white,
-                  p: 2,
-                  width: 500,
-                  borderRadius: 5,
-                }}
-              >
-                <Typography sx={{ fontFamily: "bold", fontSize: 18 }}>
-                  To be delivered to:
-                </Typography>
-                <Typography
+              {selectedOrder?.deliveryOption === "standard" && (
+                <Box
                   sx={{
-                    fontFamily: "regular",
-                    fontSize: 14,
-                    color: COLORS.gray,
+                    bgcolor: COLORS.white,
+                    p: 2,
+                    width: 500,
+                    borderRadius: 5,
                   }}
                 >
-                  {selectedOrder?.deliveryAddress?.address}
-                </Typography>
+                  <Typography sx={{ fontFamily: "bold", fontSize: 18 }}>
+                    To be delivered to:
+                  </Typography>
+                  <Typography
+                    sx={{
+                      fontFamily: "regular",
+                      fontSize: 14,
+                      color: COLORS.gray,
+                    }}
+                  >
+                    {selectedOrder?.deliveryAddress?.address}
+                  </Typography>
 
-                {selectedOrder?.deliveryAddress?.coordinates && (
-                  <AddAddressMapDisplay
-                    region={selectedOrder?.deliveryAddress?.coordinates}
-                  />
-                )}
-              </Box>
+                  {selectedOrder?.deliveryAddress?.coordinates && (
+                    <AddAddressMapDisplay
+                      region={selectedOrder?.deliveryAddress?.coordinates}
+                    />
+                  )}
+                </Box>
+              )}
 
               <Box
                 sx={{
@@ -399,15 +402,43 @@ const PendingOrders = ({ pendingOrders }) => {
 
                 {selectedOrder?.orderItems?.map((order) => (
                   <Box sx={{ display: "flex", mb: 2 }} key={order._id}>
-                    <Box
-                      component="img"
-                      src={
-                        order?.foodId
-                          ? order?.foodId?.imageUrl?.url
-                          : order?.productId?.imageUrl?.url
-                      }
-                      sx={{ width: 50, height: 50, mr: 1, borderRadius: 3 }}
-                    />
+                    <Box sx={{ position: "relative" }}>
+                      <Box
+                        component="img"
+                        src={
+                          order?.foodId
+                            ? order?.foodId?.imageUrl?.url
+                            : order?.productId?.imageUrl?.url
+                        }
+                        sx={{
+                          width: 50,
+                          height: 50,
+                          mr: 1,
+                          borderRadius: 3,
+                        }}
+                      />
+
+                      {order?.instructions && (
+                        <Box
+                          component="img"
+                          src={note}
+                          sx={{
+                            width: 25,
+                            height: 25,
+                            position: "absolute",
+                            right: 0,
+                            top: -10,
+                            cursor: "pointer",
+                            "&:hover": {
+                              opacity: 0.8,
+                            },
+                          }}
+                          onClick={() => {
+                            toast.info(order?.instructions);
+                          }}
+                        />
+                      )}
+                    </Box>
 
                     <Box
                       sx={{
@@ -553,6 +584,17 @@ const PendingOrders = ({ pendingOrders }) => {
                     ₱ {selectedOrder?.totalAmount.toFixed(2)}
                   </Typography>
                 </Box>
+
+                {selectedOrder?.orderNote && (
+                  <Box sx={{ mt: 2 }}>
+                    <Typography sx={{ fontFamily: "regular", fontSize: 14 }}>
+                      Order note:
+                    </Typography>
+                    <Typography sx={{ fontFamily: "regular", fontSize: 14 }}>
+                      {selectedOrder?.orderNote}
+                    </Typography>
+                  </Box>
+                )}
               </Box>
 
               <Box
