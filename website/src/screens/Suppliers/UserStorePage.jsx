@@ -24,6 +24,7 @@ import { toast } from "react-toastify";
 import { GaugeContainer, useGaugeState } from "@mui/x-charts/Gauge";
 import { LineChart, PieChart } from "@mui/x-charts";
 import gauge from "../../assets/images/gaugeChart.png";
+import ManageOrders from "./ManageOrders";
 
 const UserStorePage = () => {
   const location = useLocation();
@@ -694,7 +695,7 @@ const UserStorePage = () => {
             >
               Manage Orders
             </Typography>
-            {/* Order management component can be added here */}
+            <ManageOrders storeId={store?._id} />
           </Box>
         )}
 

@@ -1,11 +1,4 @@
-import {
-  Box,
-  Button,
-  CircularProgress,
-  Divider,
-  IconButton,
-  Typography,
-} from "@mui/material";
+import { Box, Divider, IconButton, Typography } from "@mui/material";
 import React from "react";
 import { COLORS } from "../../styles/theme";
 import gcash from "../../assets/images/gcash1.png";
@@ -14,128 +7,18 @@ import Lottie from "lottie-react";
 import empty from "../../assets/anime/emptyOrders.json";
 import AddAddressMapDisplay from "../../components/Users/AddAddressMapDisplay";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import DeleteIcon from "@mui/icons-material/Delete";
-import axios from "axios";
-import { createRefund } from "../../hook/paymongoService";
 import { toast } from "react-toastify";
-import { database } from "../../config/firebase";
-import { addDoc, collection } from "firebase/firestore";
 import note from "../../assets/images/note.png";
 
-const PendingOrders = ({ pendingOrders }) => {
+const CompletedOrders = ({ completedOrders }) => {
   const [selectedOrder, setSelectedOrder] = React.useState(null);
-  const [loading, setLoading] = React.useState(false);
-  const [acceptOrderLoading, setAcceptOrderLoading] = React.useState(false);
-
   const openOrderDetails = (order) => {
     setSelectedOrder(order);
   };
 
-  const rejectOrder = async (selectedOrder) => {
-    setLoading(true);
-    try {
-      const token = sessionStorage.getItem("token");
-      const config = {
-        headers: {
-          Authorization: `Bearer ${JSON.parse(token)}`,
-        },
-      };
-
-      if (
-        selectedOrder?.paymentStatus === "Paid" &&
-        selectedOrder?.paymentMethod === "gcash" &&
-        selectedOrder?.orderStatus === "Pending"
-      ) {
-        const amount = selectedOrder?.totalAmount.toFixed(0) * 100;
-        const reason = "Order rejected by the restaurant";
-        const paymentId = selectedOrder?.paymentId;
-        const refundPayment = await createRefund(amount, reason, paymentId);
-        if (refundPayment.data.attributes.status === "pending") {
-          await axios.post(
-            `http://localhost:6002/api/orders/reject`,
-            { orderId: selectedOrder._id },
-            config
-          );
-
-          setSelectedOrder(null);
-          setLoading(false);
-          toast.success("Order rejected successfully!");
-        } else {
-          throw new Error("Failed to process refund");
-        }
-      } else {
-        await axios.post(
-          `http://localhost:6002/api/orders/reject`,
-          { orderId: selectedOrder._id },
-          config
-        );
-
-        setSelectedOrder(null);
-        setLoading(false);
-        toast.success("Order rejected successfully!");
-      }
-    } catch (error) {
-      console.log(error);
-      setLoading(false);
-      toast.error("Error ❌", error.message || "Failed to reject order");
-    }
-  };
-
-  const acceptOrder = async (selectedOrder) => {
-    setAcceptOrderLoading(true);
-    try {
-      const token = sessionStorage.getItem("token");
-      const config = {
-        headers: {
-          Authorization: `Bearer ${JSON.parse(token)}`,
-        },
-      };
-
-      await axios.post(
-        `http://localhost:6002/api/orders/accept`,
-        { orderId: selectedOrder._id },
-        config
-      );
-
-      const message = {
-        _id: new Date().getTime().toString(),
-        text: `Thank you for placing your order! We are now preparing your order.`,
-        createdAt: new Date(),
-        user: {
-          _id: selectedOrder?.restaurant
-            ? selectedOrder?.restaurant?._id
-            : selectedOrder?.supplier?._id,
-          name: selectedOrder?.restaurant
-            ? selectedOrder?.restaurant?.title
-            : selectedOrder?.supplier?.title,
-          avatar: selectedOrder?.restaurant
-            ? selectedOrder?.restaurant?.logoUrl?.url
-            : selectedOrder?.supplier?.logoUrl?.url,
-        },
-        receiverId: selectedOrder?.userId?._id,
-        receiverName: selectedOrder?.userId?.username,
-        receiverAvatar: selectedOrder?.userId?.profile?.url,
-      };
-
-      try {
-        await addDoc(collection(database, "chats"), message);
-      } catch (error) {
-        console.error("Error adding document: ", error);
-      }
-
-      setAcceptOrderLoading(false);
-      setSelectedOrder(null);
-      toast.success("Order accepted successfully!");
-    } catch (error) {
-      setAcceptOrderLoading(false);
-      toast.error("Error ❌", error.message);
-    }
-  };
-
   return (
     <>
-      {pendingOrders.length > 0 ? (
+      {completedOrders.length > 0 ? (
         <Box
           sx={{
             width: "100%",
@@ -155,7 +38,7 @@ const PendingOrders = ({ pendingOrders }) => {
                 p: 2,
               }}
             >
-              {pendingOrders.map((order) => (
+              {completedOrders.map((order) => (
                 <Box
                   key={order._id}
                   sx={{
@@ -368,7 +251,7 @@ const PendingOrders = ({ pendingOrders }) => {
                   }}
                 >
                   <Typography sx={{ fontFamily: "bold", fontSize: 18 }}>
-                    To be delivered to:
+                    Delivery Address:
                   </Typography>
                   <Typography
                     sx={{
@@ -597,65 +480,6 @@ const PendingOrders = ({ pendingOrders }) => {
                   </Box>
                 )}
               </Box>
-
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  width: 500,
-                  mb: 2,
-                  gap: 2,
-                }}
-              >
-                <Button
-                  fullWidth
-                  sx={{
-                    bgcolor: COLORS.secondary,
-                    color: COLORS.white,
-                    fontFamily: "bold",
-                    borderRadius: 3,
-                  }}
-                  startIcon={<DeleteIcon />}
-                  onClick={() => {
-                    const confirmed = window.confirm(
-                      "Are you sure you want to reject this order?"
-                    );
-                    if (confirmed) {
-                      rejectOrder(selectedOrder);
-                    }
-                  }}
-                >
-                  {loading ? (
-                    <CircularProgress size={24} sx={{ color: COLORS.white }} />
-                  ) : (
-                    "R E J E C T"
-                  )}
-                </Button>
-                <Button
-                  fullWidth
-                  sx={{
-                    bgcolor: COLORS.primary,
-                    color: COLORS.white,
-                    fontFamily: "bold",
-                    borderRadius: 3,
-                  }}
-                  startIcon={<CheckCircleIcon />}
-                  onClick={() => {
-                    const confirmed = window.confirm(
-                      "Are you sure you want to accept this order?"
-                    );
-                    if (confirmed) {
-                      acceptOrder(selectedOrder);
-                    }
-                  }}
-                >
-                  {acceptOrderLoading ? (
-                    <CircularProgress size={24} sx={{ color: COLORS.white }} />
-                  ) : (
-                    "A C C E P T"
-                  )}
-                </Button>
-              </Box>
             </Box>
           )}
         </Box>
@@ -693,4 +517,4 @@ const PendingOrders = ({ pendingOrders }) => {
   );
 };
 
-export default PendingOrders;
+export default CompletedOrders;
