@@ -35,9 +35,12 @@ const SupplyCategoryList = ({
       showsHorizontalScrollIndicator={false}
       horizontal
       style={{ marginTop: 5 }}
-      keyExtractor={(item) => item.id}
+      keyExtractor={(item) => item._id}
       renderItem={({ item }) => (
-        <TouchableOpacity onPress={() => handleSelectedCategory(item)}>
+        <TouchableOpacity
+          key={item._id}
+          onPress={() => handleSelectedCategory(item)}
+        >
           <CategoryItem selected={selected} category={item} />
         </TouchableOpacity>
       )}

@@ -12,7 +12,7 @@ const Foods = ({ foods }) => {
         style={{ marginTop: 5, rowGap: 10 }}
         scrollEnabled
         keyExtractor={(item) => item._id}
-        renderItem={({ item }) => <FoodComponent item={item} />}
+        renderItem={({ item }) => <FoodComponent key={item._id} item={item} />}
       />
     </View>
   );

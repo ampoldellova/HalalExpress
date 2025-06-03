@@ -136,8 +136,6 @@ const RestaurantChatList = () => {
     };
   });
 
-  console.log(combinedData);
-
   const renderItem = ({ item }) => {
     return (
       <>

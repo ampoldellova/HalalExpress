@@ -17,6 +17,7 @@ const Products = ({ ingredients }) => {
         keyExtractor={(item) => item._id}
         renderItem={({ item }) => (
           <ProductComponent
+            key={item._id}
             item={item}
             onPress={() => navigation.navigate("product-page", item)}
           />

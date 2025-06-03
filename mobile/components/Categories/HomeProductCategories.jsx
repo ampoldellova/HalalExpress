@@ -6,7 +6,7 @@ const HomeProductCategories = ({ ingredients }) => {
   const navigation = useNavigation();
 
   const renderIngredientCategoryItem = ({ item }) => (
-    <View style={{ flex: 1, alignItems: "center" }}>
+    <View key={item._id} style={{ flex: 1, alignItems: "center" }}>
       <CategoryIngredientComp
         item={item}
         onPress={() => navigation.navigate("product-page", item)}

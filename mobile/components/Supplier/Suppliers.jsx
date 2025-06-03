@@ -19,6 +19,7 @@ const Suppliers = ({ suppliers }) => {
         keyExtractor={(item) => item._id}
         renderItem={({ item }) => (
           <StoreComponent
+            key={item._id}
             item={item}
             onPress={() => {
               navigation.navigate("supplier-page", item), setSupplierObj(item);
