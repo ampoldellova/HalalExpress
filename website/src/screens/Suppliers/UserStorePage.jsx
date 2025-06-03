@@ -719,7 +719,7 @@ const UserStorePage = () => {
                 textAlign: "center",
               }}
             >
-              Chats
+              Store Chats
             </Typography>
             <StoreChats store={store} />
           </Box>

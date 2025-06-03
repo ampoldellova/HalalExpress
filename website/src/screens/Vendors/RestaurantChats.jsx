@@ -325,7 +325,7 @@ const RestaurantChats = ({ restaurant }) => {
                           whiteSpace: "nowrap",
                           overflow: "hidden",
                           textOverflow: "ellipsis",
-                          maxWidth: 200,
+                          maxWidth: 190,
                         }}
                       >
                         {conversation?.latestMessage?.user?._id ===
@@ -342,6 +342,7 @@ const RestaurantChats = ({ restaurant }) => {
                 <Divider />
               </Box>
             ))}
+            
           </Box>
 
           <Divider orientation="vertical" />

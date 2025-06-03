@@ -322,7 +322,7 @@ const StoreChats = ({ store }) => {
                           whiteSpace: "nowrap",
                           overflow: "hidden",
                           textOverflow: "ellipsis",
-                          maxWidth: 200,
+                          maxWidth: 190,
                         }}
                       >
                         {conversation?.latestMessage?.user?._id === store?._id
