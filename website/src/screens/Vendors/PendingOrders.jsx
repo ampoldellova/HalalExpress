@@ -20,10 +20,13 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import axios from "axios";
 import { createRefund } from "../../hook/paymongoService";
 import { toast } from "react-toastify";
+import { database } from "../../config/firebase";
+import { addDoc, collection } from "firebase/firestore";
 
 const PendingOrders = ({ pendingOrders }) => {
   const [selectedOrder, setSelectedOrder] = React.useState(null);
   const [loading, setLoading] = React.useState(false);
+  const [acceptOrderLoading, setAcceptOrderLoading] = React.useState(false);
 
   const openOrderDetails = (order) => {
     setSelectedOrder(order);
@@ -76,6 +79,57 @@ const PendingOrders = ({ pendingOrders }) => {
       console.log(error);
       setLoading(false);
       toast.error("Error ❌", error.message || "Failed to reject order");
+    }
+  };
+
+  const acceptOrder = async (selectedOrder) => {
+    setAcceptOrderLoading(true);
+    try {
+      const token = sessionStorage.getItem("token");
+      const config = {
+        headers: {
+          Authorization: `Bearer ${JSON.parse(token)}`,
+        },
+      };
+
+      await axios.post(
+        `http://localhost:6002/api/orders/accept`,
+        { orderId: selectedOrder._id },
+        config
+      );
+
+      const message = {
+        _id: new Date().getTime().toString(),
+        text: `Thank you for placing your order! We are now preparing your order.`,
+        createdAt: new Date(),
+        user: {
+          _id: selectedOrder?.restaurant
+            ? selectedOrder?.restaurant?._id
+            : selectedOrder?.supplier?._id,
+          name: selectedOrder?.restaurant
+            ? selectedOrder?.restaurant?.title
+            : selectedOrder?.supplier?.title,
+          avatar: selectedOrder?.restaurant
+            ? selectedOrder?.restaurant?.logoUrl?.url
+            : selectedOrder?.supplier?.logoUrl?.url,
+        },
+        receiverId: selectedOrder?.userId?._id,
+        receiverName: selectedOrder?.userId?.username,
+        receiverAvatar: selectedOrder?.userId?.profile?.url,
+      };
+
+      try {
+        await addDoc(collection(database, "chats"), message);
+      } catch (error) {
+        console.error("Error adding document: ", error);
+      }
+
+      setAcceptOrderLoading(false);
+      setSelectedOrder(null);
+      toast.success("Order accepted successfully!");
+    } catch (error) {
+      setAcceptOrderLoading(false);
+      toast.error("Error ❌", error.message);
     }
   };
 
@@ -544,9 +598,20 @@ const PendingOrders = ({ pendingOrders }) => {
                     borderRadius: 3,
                   }}
                   startIcon={<CheckCircleIcon />}
-                  onClick={() => {}}
+                  onClick={() => {
+                    const confirmed = window.confirm(
+                      "Are you sure you want to accept this order?"
+                    );
+                    if (confirmed) {
+                      acceptOrder(selectedOrder);
+                    }
+                  }}
                 >
-                  A C C E P T
+                  {acceptOrderLoading ? (
+                    <CircularProgress size={24} sx={{ color: COLORS.white }} />
+                  ) : (
+                    "A C C E P T"
+                  )}
                 </Button>
               </Box>
             </Box>
