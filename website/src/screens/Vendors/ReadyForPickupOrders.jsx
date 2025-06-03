@@ -1,4 +1,10 @@
-import { Box, Button, CircularProgress, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Modal,
+  Typography,
+} from "@mui/material";
 import React from "react";
 import { COLORS } from "../../styles/theme";
 import pin from "../../assets/images/pin.png";
@@ -6,14 +12,16 @@ import Lottie from "lottie-react";
 import empty from "../../assets/anime/emptyOrders.json";
 import delivery from "../../assets/anime/delivery.json";
 import pickup from "../../assets/images/pickup.png";
-import gcash from "../../assets/images/gcash.png";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import note from "../../assets/images/note.png";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { QRCodeSVG } from "qrcode.react";
+import icon from "../../assets/images/icon.png";
 
 const ReadyForPickupOrders = ({ readyForPickupOrders }) => {
   const [loading, setLoading] = React.useState(false);
+  const [showQR, setShowQR] = React.useState(false);
+  const [selectedOrder, setSelectedOrder] = React.useState(null);
 
   const markOrderAsCompleted = async (orderId) => {
     setLoading(true);
@@ -40,6 +48,12 @@ const ReadyForPickupOrders = ({ readyForPickupOrders }) => {
       );
     }
   };
+
+  const showOrderQRCode = (order) => {
+    setSelectedOrder(order);
+    setShowQR(true);
+  };
+
   return (
     <>
       {readyForPickupOrders.length > 0 ? (
@@ -188,6 +202,7 @@ const ReadyForPickupOrders = ({ readyForPickupOrders }) => {
                         borderRadius: 3,
                       }}
                       startIcon={<CheckCircleIcon />}
+                      onClick={() => showOrderQRCode(order)}
                     >
                       {loading ? (
                         <CircularProgress
@@ -266,8 +281,88 @@ const ReadyForPickupOrders = ({ readyForPickupOrders }) => {
           </Typography>
         </Box>
       )}
+
+      <Modal
+        open={showQR}
+        onClose={() => {
+          setSelectedOrder(null);
+          setShowQR(false);
+        }}
+      >
+        <Box sx={style}>
+          <Box
+            sx={{
+              width: "100%",
+              height: "20px",
+              bgcolor: COLORS.primary,
+              borderRadius: "8px 8px 0 0",
+            }}
+          />
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              flexDirection: "column",
+              p: 2,
+            }}
+          >
+            <Typography
+              sx={{
+                fontFamily: "regular",
+                fontSize: 12,
+                textAlign: "center",
+                mb: 2,
+                fontStyle: "italic",
+              }}
+            >
+              Note: Please present this QR code to the delivery person to accept
+              the order.
+            </Typography>
+
+            {selectedOrder && (
+              <QRCodeSVG
+                size={228}
+                value={`http://localhost:5173/accept-order/${selectedOrder?._id}`}
+                imageSettings={{
+                  src: icon,
+                  x: undefined,
+                  y: undefined,
+                  height: 50,
+                  width: 50,
+                  opacity: 1,
+                  excavate: true,
+                }}
+              />
+            )}
+
+            <Typography
+              sx={{
+                fontFamily: "regular",
+                fontSize: 12,
+                textAlign: "center",
+                my: 2,
+              }}
+            >
+              {`http://localhost:5173/accept-order/${selectedOrder?._id}`}
+            </Typography>
+          </Box>
+        </Box>
+      </Modal>
     </>
   );
 };
 
 export default ReadyForPickupOrders;
+
+const style = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  bgcolor: "background.paper",
+  justifyContent: "center",
+  borderRadius: 5,
+  width: 300,
+  overflowY: "auto",
+};
