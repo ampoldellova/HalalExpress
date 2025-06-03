@@ -1,11 +1,13 @@
-import React, { useLayoutEffect } from "react";
+import React, { useCallback, useLayoutEffect } from "react";
 import note from "../../assets/images/rating_bk.jpg";
 import { Box, Divider, IconButton, TextField, Typography } from "@mui/material";
 import {
+  addDoc,
   collection,
   onSnapshot,
   orderBy,
   query,
+  serverTimestamp,
   where,
 } from "firebase/firestore";
 import { database } from "../../config/firebase";
@@ -14,7 +16,7 @@ import emptyInbox from "../../assets/images/emptyInbox.png";
 import { COLORS } from "../../styles/theme";
 import SendIcon from "@mui/icons-material/Send";
 
-const RestaurantChats = ({ restaurantId }) => {
+const RestaurantChats = ({ restaurant }) => {
   const [messages, setMessages] = React.useState([]);
   const [conversations, setConversations] = React.useState([]);
   const [latestMessage, setLatestMessage] = React.useState(null);
@@ -27,7 +29,7 @@ const RestaurantChats = ({ restaurantId }) => {
 
     const fetchConversations = () => {
       const collectionRef = collection(database, "chats");
-      const q = query(collectionRef, where("user._id", "==", restaurantId));
+      const q = query(collectionRef, where("user._id", "==", restaurant?._id));
 
       const unsubscribe = onSnapshot(q, (snapshot) => {
         const chats = snapshot.docs.map((doc) => {
@@ -64,8 +66,11 @@ const RestaurantChats = ({ restaurantId }) => {
 
     const fetchLatestMessage = () => {
       const collectionRef = collection(database, "chats");
-      const q1 = query(collectionRef, where("receiverId", "==", restaurantId));
-      const q2 = query(collectionRef, where("user._id", "==", restaurantId));
+      const q1 = query(
+        collectionRef,
+        where("receiverId", "==", restaurant?._id)
+      );
+      const q2 = query(collectionRef, where("user._id", "==", restaurant?._id));
 
       const unsubscribe1 = onSnapshot(q1, (snapshot1) => {
         const chats1 = snapshot1.docs.map((doc) => {
@@ -92,7 +97,7 @@ const RestaurantChats = ({ restaurantId }) => {
           const latestMessages = Object.values(
             allChats.reduce((acc, chat) => {
               const conversationId =
-                chat.receiverId === restaurantId
+                chat.receiverId === restaurant?._id
                   ? chat.user._id
                   : chat.receiverId;
 
@@ -122,7 +127,7 @@ const RestaurantChats = ({ restaurantId }) => {
       unsubscribeConversations && unsubscribeConversations();
       unsubscribeLatestMessage && unsubscribeLatestMessage();
     };
-  }, [user?._id, restaurantId]);
+  }, [user?._id, restaurant?._id]);
 
   useLayoutEffect(() => {
     const collectionRef = collection(database, "chats");
@@ -139,17 +144,17 @@ const RestaurantChats = ({ restaurantId }) => {
         }))
         .filter(
           (msg) =>
-            (msg.user._id === restaurantId &&
+            (msg.user._id === restaurant?._id &&
               msg.receiverId === selectedConversation?.receiverId) ||
             (msg.user._id === selectedConversation?.receiverId &&
-              msg.receiverId === restaurantId)
+              msg.receiverId === restaurant?._id)
         );
 
       setMessages(filteredMessages);
     });
 
     return unsubscribe;
-  }, [restaurantId, selectedConversation]);
+  }, [restaurant?._id, selectedConversation]);
 
   const combinedData = conversations.map((conversation) => {
     const latestMessageForConversation = latestMessage?.find((message) => {
@@ -189,6 +194,38 @@ const RestaurantChats = ({ restaurantId }) => {
       return groups;
     }, {});
   };
+
+  const handleSendMessage = useCallback(async () => {
+    if (
+      newMessage.trim() === "" ||
+      !selectedConversation?.user?._id ||
+      !restaurant?._id
+    ) {
+      return;
+    }
+
+    const senderInfo = {
+      _id: restaurant?._id,
+      name: restaurant?.title,
+      avatar: restaurant?.logoUrl?.url,
+    };
+
+    const messageData = {
+      text: newMessage.trim(),
+      createdAt: serverTimestamp(),
+      user: senderInfo,
+      receiverId: selectedConversation.receiverId,
+      receiverName: selectedConversation.receiverName,
+      receiverAvatar: selectedConversation.receiverAvatar,
+    };
+
+    try {
+      await addDoc(collection(database, "chats"), messageData);
+      setNewMessage("");
+    } catch (error) {
+      console.error("Error sending message: ", error);
+    }
+  }, [newMessage, restaurant, selectedConversation]);
 
   return (
     <>
@@ -292,7 +329,8 @@ const RestaurantChats = ({ restaurantId }) => {
                           maxWidth: 200,
                         }}
                       >
-                        {conversation?.latestMessage?.user?._id === restaurantId
+                        {conversation?.latestMessage?.user?._id ===
+                        restaurant?._id
                           ? `You: ${conversation?.latestMessage?.text}`
                           : `${conversation?.latestMessage?.user?.name}: ${conversation?.latestMessage?.text}`}
                       </Typography>
@@ -382,7 +420,7 @@ const RestaurantChats = ({ restaurantId }) => {
                               sx={{
                                 display: "flex",
                                 flexDirection:
-                                  message.user._id === restaurantId
+                                  message.user._id === restaurant?._id
                                     ? "row-reverse"
                                     : "row",
                                 alignItems: "center",
@@ -397,9 +435,13 @@ const RestaurantChats = ({ restaurantId }) => {
                                   width: 40,
                                   borderRadius: 99,
                                   marginLeft:
-                                    message.user._id === restaurantId ? 0 : 1,
+                                    message.user._id === restaurant?._id
+                                      ? 0
+                                      : 1,
                                   marginRight:
-                                    message.user._id === restaurantId ? 1 : 0,
+                                    message.user._id === restaurant?._id
+                                      ? 1
+                                      : 0,
                                 }}
                               />
                               <Box
@@ -409,9 +451,13 @@ const RestaurantChats = ({ restaurantId }) => {
                                   borderRadius: 2,
                                   maxWidth: "60%",
                                   marginLeft:
-                                    message.user._id === restaurantId ? 0 : 1,
+                                    message.user._id === restaurant?._id
+                                      ? 0
+                                      : 1,
                                   marginRight:
-                                    message.user._id === restaurantId ? 1 : 0,
+                                    message.user._id === restaurant?._id
+                                      ? 1
+                                      : 0,
                                 }}
                               >
                                 <Typography
@@ -429,7 +475,7 @@ const RestaurantChats = ({ restaurantId }) => {
                                     color: COLORS.gray,
                                     fontSize: 12,
                                     textAlign:
-                                      message.user._id === restaurantId
+                                      message.user._id === restaurant?._id
                                         ? "right"
                                         : "left",
                                   }}
@@ -468,16 +514,16 @@ const RestaurantChats = ({ restaurantId }) => {
                     variant="outlined"
                     placeholder="Type a message..."
                     value={newMessage}
-                    // onChange={(e) => setNewMessage(e.target.value)}
-                    // onKeyDown={(e) => {
-                    //   if (e.key === "Enter") {
-                    //     e.preventDefault();
-                    //     handleSendMessage();
-                    //   }
-                    // }}
+                    onChange={(e) => setNewMessage(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        handleSendMessage();
+                      }
+                    }}
                     InputProps={{
                       endAdornment: (
-                        <IconButton>
+                        <IconButton onClick={handleSendMessage}>
                           <SendIcon />
                         </IconButton>
                       ),

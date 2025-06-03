@@ -711,7 +711,7 @@ const UserRestaurantPage = () => {
             >
               Restaurant Chats
             </Typography>
-            <RestaurantChats restaurantId={restaurant?._id} />
+            <RestaurantChats restaurant={restaurant} />
           </Box>
         )}
       </Container>
