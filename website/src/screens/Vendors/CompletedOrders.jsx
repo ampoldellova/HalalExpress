@@ -298,6 +298,7 @@ const CompletedOrders = ({ completedOrders }) => {
                           height: 50,
                           mr: 1,
                           borderRadius: 3,
+                          objectFit: "cover",
                         }}
                       />
 
