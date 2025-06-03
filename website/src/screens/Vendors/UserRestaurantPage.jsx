@@ -16,6 +16,7 @@ import { GaugeContainer, useGaugeState } from "@mui/x-charts/Gauge";
 import { LineChart, PieChart } from "@mui/x-charts";
 import gauge from "../../assets/images/gaugeChart.png";
 import ManageOrders from "./ManageOrders";
+import RestaurantChats from "./RestaurantChats";
 
 const UserRestaurantPage = () => {
   const location = useLocation();
@@ -708,9 +709,9 @@ const UserRestaurantPage = () => {
                 textAlign: "center",
               }}
             >
-              Chats
+              Restaurant Chats
             </Typography>
-            {/* Chat component can be added here */}
+            <RestaurantChats restaurantId={restaurant?._id} />
           </Box>
         )}
       </Container>
