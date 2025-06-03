@@ -6,6 +6,7 @@ import Loader from "../../components/Loader";
 import Lottie from "lottie-react";
 import PreparingOrders from "./PreparingOrders";
 import ReadyForPickupOrders from "./ReadyForPickupOrders";
+import OutForDeliveryOrders from "./OutForDeliveryOrders";
 
 const ManageOrders = ({ restaurantId }) => {
   const [orderStatus, setOrderStatus] = React.useState("Pending");
@@ -272,6 +273,10 @@ const ManageOrders = ({ restaurantId }) => {
 
           {orderStatus === "Ready for pickup" && (
             <ReadyForPickupOrders readyForPickupOrders={readyForPickupOrders} />
+          )}
+
+          {orderStatus === "Out for delivery" && (
+            <OutForDeliveryOrders outForDeliveryOrders={outForDeliveryOrders} />
           )}
         </>
       )}
