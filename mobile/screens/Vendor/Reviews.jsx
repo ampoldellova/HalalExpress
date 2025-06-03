@@ -97,6 +97,7 @@ const Reviews = ({ item }) => {
           }}
           renderItem={({ item }) => (
             <View
+              key={item?._id}
               style={{
                 marginHorizontal: 10,
                 marginBottom: 10,

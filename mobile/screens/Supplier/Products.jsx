@@ -79,7 +79,7 @@ const Products = () => {
                 marginHorizontal: 10,
               }}
               renderItem={({ item }) => (
-                <View style={{ flex: 1, alignItems: "center" }}>
+                <View key={item._id} style={{ flex: 1, alignItems: "center" }}>
                   <CategoryIngredientComp item={item} />
                 </View>
               )}
