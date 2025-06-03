@@ -4,6 +4,7 @@ import { COLORS } from "../../styles/theme";
 import PendingOrders from "./PendingOrders";
 import Loader from "../../components/Loader";
 import Lottie from "lottie-react";
+import PreparingOrders from "./PreparingOrders";
 
 const ManageOrders = ({ restaurantId }) => {
   const [orderStatus, setOrderStatus] = React.useState("Pending");
@@ -262,6 +263,10 @@ const ManageOrders = ({ restaurantId }) => {
         <>
           {orderStatus === "Pending" && (
             <PendingOrders pendingOrders={pendingOrders} />
+          )}
+
+          {orderStatus === "Preparing" && (
+            <PreparingOrders preparingOrders={preparingOrders} />
           )}
         </>
       )}

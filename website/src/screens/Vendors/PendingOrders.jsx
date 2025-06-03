@@ -3,7 +3,6 @@ import {
   Button,
   CircularProgress,
   Divider,
-  Icon,
   IconButton,
   Typography,
 } from "@mui/material";
@@ -618,36 +617,34 @@ const PendingOrders = ({ pendingOrders }) => {
           )}
         </Box>
       ) : (
-        <>
-          <Box
+        <Box
+          sx={{
+            width: "100%",
+            height: "80vh",
+            mt: 1,
+            border: `1px solid ${COLORS.gray2}`,
+            borderRadius: "8px",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            flexDirection: "column",
+          }}
+        >
+          <Lottie
+            animationData={empty}
+            loop={true}
+            style={{ width: 300, height: 300 }}
+          />
+          <Typography
             sx={{
-              width: "100%",
-              height: "80vh",
-              mt: 1,
-              border: `1px solid ${COLORS.gray2}`,
-              borderRadius: "8px",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              flexDirection: "column",
+              fontFamily: "regular",
+              color: COLORS.gray,
+              fontSize: 16,
             }}
           >
-            <Lottie
-              animationData={empty}
-              loop={true}
-              style={{ width: 300, height: 300 }}
-            />
-            <Typography
-              sx={{
-                fontFamily: "regular",
-                color: COLORS.gray,
-                fontSize: 16,
-              }}
-            >
-              No orders found.
-            </Typography>
-          </Box>
-        </>
+            No orders found.
+          </Typography>
+        </Box>
       )}
     </>
   );
