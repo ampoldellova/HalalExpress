@@ -34,58 +34,58 @@ const CancelOrderModal = ({ open, onClose, order }) => {
     } else {
       try {
         const token = await sessionStorage.getItem("token");
-        if (token) {
-          const config = {
-            headers: {
-              Authorization: `Bearer ${JSON.parse(token)}`,
-            },
-          };
 
-          if (
-            order.paymentStatus === "Paid" &&
-            order.paymentMethod === "gcash" &&
-            order.orderStatus === "Pending"
-          ) {
-            const amount = order.subTotal * 100;
-            const paymentId = order.paymentId;
-            const refundPayment = await createRefund(amount, notes, paymentId);
-            console.log(refundPayment);
-            if (refundPayment.data.attributes.status === "pending") {
-              await axios.post(
-                "http://localhost:6002/api/orders/cancel",
-                { orderId: order._id },
-                config
-              );
-              onClose();
-              navigate(`/order-page/${user._id}`);
-              toast.success("Order cancelled successfully");
-            } else {
-              throw new Error("Failed to process refund");
-            }
-          } else {
-            toast.error(
-              "You cannot cancel this order as it is not in a cancellable state"
+        const config = {
+          headers: {
+            Authorization: `Bearer ${JSON.parse(token)}`,
+          },
+        };
+
+        if (
+          order.paymentStatus === "Paid" &&
+          order.paymentMethod === "gcash" &&
+          order.orderStatus === "Pending"
+        ) {
+          const amount = order.subTotal.toFixed(0) * 100;
+          const paymentId = order.paymentId;
+          const refundPayment = await createRefund(amount, notes, paymentId);
+          if (refundPayment.data.attributes.status === "pending") {
+            await axios.post(
+              "http://localhost:6002/api/orders/cancel",
+              { orderId: order._id },
+              config
             );
+            onClose();
+            navigate(`/order-page/${user._id}`);
+            toast.success("Order cancelled successfully");
+          } else {
+            throw new Error("Failed to process refund");
           }
         } else if (
           order.paymentStatus === "Pending" &&
           order.orderStatus === "Pending"
         ) {
-          const config = {
-            headers: {
-              Authorization: `Bearer ${JSON.parse(token)}`,
-            },
-          };
-          await axios.post(
-            "http://localhost:6002/api/orders/cancel",
-            { orderId: order._id },
-            config
-          );
-          onClose();
-          navigate(`/order-page/${user._id}`);
-          toast.success("Order cancelled successfully");
+          try {
+            const config = {
+              headers: {
+                Authorization: `Bearer ${JSON.parse(token)}`,
+              },
+            };
+            await axios.post(
+              "http://localhost:6002/api/orders/cancel",
+              { orderId: order._id },
+              config
+            );
+            onClose();
+            navigate(`/order-page/${user._id}`);
+            toast.success("Order cancelled successfully");
+          } catch (error) {
+            console.log(error);
+          }
         } else {
-          toast.error("You must be logged in to cancel your order");
+          toast.error(
+            "You cannot cancel this order as it is not in a cancellable state"
+          );
         }
       } catch (error) {
         toast.error(error.response.data.message);

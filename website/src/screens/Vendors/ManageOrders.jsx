@@ -8,6 +8,7 @@ import ReadyForPickupOrders from "./ReadyForPickupOrders";
 import OutForDeliveryOrders from "./OutForDeliveryOrders";
 import DeliveredOrders from "./DeliveredOrders";
 import CompletedOrders from "./CompletedOrders";
+import CancelledOrders from "./CancelledOrders";
 
 const ManageOrders = ({ restaurantId }) => {
   const [orderStatus, setOrderStatus] = React.useState("Pending");
@@ -286,6 +287,10 @@ const ManageOrders = ({ restaurantId }) => {
 
           {orderStatus === "Completed" && (
             <CompletedOrders completedOrders={completedOrders} />
+          )}
+
+          {orderStatus === "Cancelled" && (
+            <CancelledOrders cancelledOrders={cancelledOrders} />
           )}
         </>
       )}

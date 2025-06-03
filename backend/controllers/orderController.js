@@ -154,7 +154,7 @@ module.exports = {
         .status(200)
         .json({ status: true, message: "Order cancelled successfully", order });
     } catch (error) {
-      // console.log(error);
+      console.log(error);
       res.status(500).json({ status: false, message: error });
     }
   },

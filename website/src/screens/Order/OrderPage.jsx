@@ -247,7 +247,7 @@ const OrderPage = () => {
                         display: "flex",
                         flexDirection: "column",
                         alignItems: "center",
-                        justifyContent: "center",
+                        justifyContent: "flex-start",
                         height: "90vh",
                         overflowY: "auto",
                       }}
@@ -663,7 +663,7 @@ const OrderPage = () => {
                         display: "flex",
                         flexDirection: "column",
                         alignItems: "center",
-                        justifyContent: "center",
+                        justifyContent: "flex-start",
                       }}
                     >
                       {cancelledOrders.map((order) => (
