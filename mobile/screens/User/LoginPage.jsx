@@ -89,22 +89,13 @@ const LoginPage = () => {
     } catch (error) {
       setLogin(false);
       setLoader(false);
-
       if (error.response && error.response.status === 401) {
         Toast.show({
           type: "error",
           text1: "Login Error 🚨",
           text2: "Invalid email or password",
         });
-      } else {
-        Toast.show({
-          type: "error",
-          text1: "Login Error 🚨",
-          text2: "Something went wrong. Please try again.",
-        });
       }
-    } finally {
-      setLoader(false);
     }
   };
   return (
