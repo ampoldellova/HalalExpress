@@ -324,7 +324,7 @@ const ReadyForPickupOrders = ({ readyForPickupOrders }) => {
             {selectedOrder && (
               <QRCodeSVG
                 size={228}
-                value={`http://localhost:5173/accept-order/${selectedOrder?._id}`}
+                value={`https://halal-express.vercel.app/accept-order/${selectedOrder?._id}`}
                 imageSettings={{
                   src: icon,
                   x: undefined,
@@ -345,7 +345,7 @@ const ReadyForPickupOrders = ({ readyForPickupOrders }) => {
                 my: 2,
               }}
             >
-              {`http://localhost:5173/accept-order/${selectedOrder?._id}`}
+              {`https://halal-express.vercel.app/accept-order/${selectedOrder?._id}`}
             </Typography>
           </Box>
         </Box>
