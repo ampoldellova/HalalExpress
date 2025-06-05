@@ -29,7 +29,7 @@ const ProductCategories = ({
   const getProductCategories = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:6002/api/supplyCategory/`
+        `https://halalexpress.onrender.com/api/supplyCategory/`
       );
       setProductCategories(response.data);
     } catch (error) {

@@ -38,8 +38,8 @@ const CategoryFoods = ({ foods }) => {
 
   const handleConfirmClearCart = async (cartItem, config) => {
     try {
-      await axios.delete(`http://localhost:6002/api/cart/clear-cart`, config);
-      await axios.post(`http://localhost:6002/api/cart/`, cartItem, config);
+      await axios.delete(`https://halalexpress.onrender.com/api/cart/clear-cart`, config);
+      await axios.post(`https://halalexpress.onrender.com/api/cart/`, cartItem, config);
       toast.success("Item added to cart ");
     } catch (error) {
       console.error("Error clearing cart or adding food:", error);
@@ -73,7 +73,7 @@ const CategoryFoods = ({ foods }) => {
       };
 
       const response = await axios.post(
-        `http://localhost:6002/api/cart/`,
+        `https://halalexpress.onrender.com/api/cart/`,
         cartItem,
         config
       );

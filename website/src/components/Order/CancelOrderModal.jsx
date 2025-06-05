@@ -51,7 +51,7 @@ const CancelOrderModal = ({ open, onClose, order }) => {
           const refundPayment = await createRefund(amount, notes, paymentId);
           if (refundPayment.data.attributes.status === "pending") {
             await axios.post(
-              "http://localhost:6002/api/orders/cancel",
+              "https://halalexpress.onrender.com/api/orders/cancel",
               { orderId: order._id },
               config
             );
@@ -72,7 +72,7 @@ const CancelOrderModal = ({ open, onClose, order }) => {
               },
             };
             await axios.post(
-              "http://localhost:6002/api/orders/cancel",
+              "https://halalexpress.onrender.com/api/orders/cancel",
               { orderId: order._id },
               config
             );

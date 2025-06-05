@@ -39,7 +39,7 @@ const RateOrderModal = ({ open, onClose, order }) => {
           };
 
           await axios.post(
-            `http://localhost:6002/api/orders/rate`,
+            `https://halalexpress.onrender.com/api/orders/rate`,
             { orderId: order?._id, stars: rating, feedback },
             config
           );
