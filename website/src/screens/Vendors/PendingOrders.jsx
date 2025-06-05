@@ -53,7 +53,7 @@ const PendingOrders = ({ pendingOrders }) => {
         const refundPayment = await createRefund(amount, reason, paymentId);
         if (refundPayment.data.attributes.status === "pending") {
           await axios.post(
-            `http://localhost:6002/api/orders/reject`,
+            `https://halalexpress.onrender.com/api/orders/reject`,
             { orderId: selectedOrder._id },
             config
           );
@@ -66,7 +66,7 @@ const PendingOrders = ({ pendingOrders }) => {
         }
       } else {
         await axios.post(
-          `http://localhost:6002/api/orders/reject`,
+          `https://halalexpress.onrender.com/api/orders/reject`,
           { orderId: selectedOrder._id },
           config
         );
@@ -93,7 +93,7 @@ const PendingOrders = ({ pendingOrders }) => {
       };
 
       await axios.post(
-        `http://localhost:6002/api/orders/accept`,
+        `https://halalexpress.onrender.com/api/orders/accept`,
         { orderId: selectedOrder._id },
         config
       );

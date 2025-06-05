@@ -44,7 +44,7 @@ const UserRestaurantPage = () => {
           },
         };
         const response = await axios.patch(
-          `http://localhost:6002/api/restaurant/${restaurant?._id}`,
+          `https://halalexpress.onrender.com/api/restaurant/${restaurant?._id}`,
           {},
           config
         );
@@ -73,7 +73,7 @@ const UserRestaurantPage = () => {
           },
         };
         const response = await axios.patch(
-          `http://localhost:6002/api/restaurant/delivery/${restaurant?._id}`,
+          `https://halalexpress.onrender.com/api/restaurant/delivery/${restaurant?._id}`,
           {},
           config
         );
@@ -102,7 +102,7 @@ const UserRestaurantPage = () => {
           },
         };
         const response = await axios.patch(
-          `http://localhost:6002/api/restaurant/pickup/${restaurant?._id}`,
+          `https://halalexpress.onrender.com/api/restaurant/pickup/${restaurant?._id}`,
           {},
           config
         );
@@ -131,7 +131,7 @@ const UserRestaurantPage = () => {
           },
         };
         const response = await axios.get(
-          `http://localhost:6002/api/orders/restaurant/${restaurant?._id}/monthly-sales`,
+          `https://halalexpress.onrender.com/api/orders/restaurant/${restaurant?._id}/monthly-sales`,
           config
         );
         setMonthlySales(response.data.sales);
@@ -154,7 +154,7 @@ const UserRestaurantPage = () => {
           },
         };
         const response = await axios.get(
-          `http://localhost:6002/api/orders/restaurant/${restaurant?._id}/top-foods`,
+          `https://halalexpress.onrender.com/api/orders/restaurant/${restaurant?._id}/top-foods`,
           config
         );
         setTopOrderedFoods(response.data.topFoods);

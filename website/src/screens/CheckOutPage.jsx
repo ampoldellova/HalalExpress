@@ -97,7 +97,7 @@ const CheckOutPage = () => {
       const restaurantId = cart.cartItems[0].foodId.restaurant;
       try {
         const response = await axios.get(
-          `http://localhost:6002/api/restaurant/byId/${restaurantId}`
+          `https://halalexpress.onrender.com/api/restaurant/byId/${restaurantId}`
         );
         setRestaurant(response.data.data);
       } catch (error) {
@@ -111,7 +111,7 @@ const CheckOutPage = () => {
       const supplierId = cart.cartItems[0].productId.supplier;
       try {
         const response = await axios.get(
-          `http://localhost:6002/api/supplier/byId/${supplierId}`
+          `https://halalexpress.onrender.com/api/supplier/byId/${supplierId}`
         );
         setSupplier(response.data.data);
       } catch (error) {
@@ -131,7 +131,7 @@ const CheckOutPage = () => {
         };
 
         const response = await axios.get(
-          `http://localhost:6002/api/users/address/list`,
+          `https://halalexpress.onrender.com/api/users/address/list`,
           config
         );
         setAddresses(response.data.addresses);
@@ -167,7 +167,7 @@ const CheckOutPage = () => {
       formData.append("phone", phone);
 
       const response = await axios.put(
-        `http://localhost:6002/api/users/`,
+        `https://halalexpress.onrender.com/api/users/`,
         formData,
         {
           headers: {
@@ -311,7 +311,7 @@ const CheckOutPage = () => {
           };
 
           const response = await axios.post(
-            `http://localhost:6002/api/orders/check-out`,
+            `https://halalexpress.onrender.com/api/orders/check-out`,
             data,
             config
           );

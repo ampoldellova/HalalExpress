@@ -23,7 +23,7 @@ const Restaurants = () => {
         };
 
         const response = await axios.get(
-          `http://localhost:6002/api/restaurant/owner/${userId}`,
+          `https://halalexpress.onrender.com/api/restaurant/owner/${userId}`,
           config
         );
         setRestaurants(response.data.data);

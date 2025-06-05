@@ -25,7 +25,7 @@ const ManageOrders = ({ storeId }) => {
       };
 
       const response = await fetch(
-        `http://localhost:6002/api/orders/store/${storeId}/orders`,
+        `https://halalexpress.onrender.com/api/orders/store/${storeId}/orders`,
         config
       );
       const data = await response.json();

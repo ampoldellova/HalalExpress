@@ -32,7 +32,7 @@ const PaymentConfirmation = () => {
         };
 
         const response = await axios.post(
-          `http://localhost:6002/api/orders/check-out`,
+          `https://halalexpress.onrender.com/api/orders/check-out`,
           parsedData,
           config
         );

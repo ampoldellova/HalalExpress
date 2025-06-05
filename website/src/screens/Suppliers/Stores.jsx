@@ -22,7 +22,7 @@ const Stores = () => {
         };
 
         const response = await axios(
-          `http://localhost:6002/api/supplier/owner/${userId}`,
+          `https://halalexpress.onrender.com/api/supplier/owner/${userId}`,
           config
         );
         setStores(response.data.data);

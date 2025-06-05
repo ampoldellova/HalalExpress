@@ -55,7 +55,7 @@ const HomePage = () => {
         };
 
         const response = await axios.get(
-          `http://localhost:6002/api/supplier/list`,
+          `https://halalexpress.onrender.com/api/supplier/list`,
           config
         );
         setSuppliers(response.data);
@@ -71,7 +71,7 @@ const HomePage = () => {
   const getRestaurants = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:6002/api/restaurant/list`
+        `https://halalexpress.onrender.com/api/restaurant/list`
       );
       setRestaurants(response.data);
       setFoodsLoaded(true);
@@ -82,7 +82,7 @@ const HomePage = () => {
 
   const getFoods = async () => {
     try {
-      const response = await axios.get(`http://localhost:6002/api/foods/list`);
+      const response = await axios.get(`https://halalexpress.onrender.com/api/foods/list`);
       setFoods(response.data);
       setRestaurantsLoaded(true);
     } catch (error) {
@@ -101,7 +101,7 @@ const HomePage = () => {
         };
 
         const response = await axios.get(
-          `http://localhost:6002/api/ingredients/list`,
+          `https://halalexpress.onrender.com/api/ingredients/list`,
           config
         );
         setProducts(response.data);

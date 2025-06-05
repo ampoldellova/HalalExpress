@@ -25,7 +25,7 @@ const VerificationPage = () => {
     setLoading(true);
 
     try {
-      const endpoint = `http://localhost:6002/verify-otp`;
+      const endpoint = `https://halalexpress.onrender.com/verify-otp`;
       const verification = {
         email: data.email,
         otp: otp,

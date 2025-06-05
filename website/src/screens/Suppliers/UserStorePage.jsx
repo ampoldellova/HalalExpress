@@ -53,7 +53,7 @@ const UserStorePage = () => {
           },
         };
         const response = await axios.patch(
-          `http://localhost:6002/api/supplier/${store?._id}`,
+          `https://halalexpress.onrender.com/api/supplier/${store?._id}`,
           {},
           config
         );
@@ -82,7 +82,7 @@ const UserStorePage = () => {
           },
         };
         const response = await axios.patch(
-          `http://localhost:6002/api/supplier/delivery/${store?._id}`,
+          `https://halalexpress.onrender.com/api/supplier/delivery/${store?._id}`,
           {},
           config
         );
@@ -111,7 +111,7 @@ const UserStorePage = () => {
           },
         };
         const response = await axios.patch(
-          `http://localhost:6002/api/supplier/pickup/${store?._id}`,
+          `https://halalexpress.onrender.com/api/supplier/pickup/${store?._id}`,
           {},
           config
         );
@@ -140,7 +140,7 @@ const UserStorePage = () => {
           },
         };
         const response = await axios.get(
-          `http://localhost:6002/api/orders/store/${store?._id}/monthly-sales`,
+          `https://halalexpress.onrender.com/api/orders/store/${store?._id}/monthly-sales`,
           config
         );
         setMonthlySales(response.data.sales);
@@ -163,7 +163,7 @@ const UserStorePage = () => {
           },
         };
         const response = await axios.get(
-          `http://localhost:6002/api/orders/store/${store?._id}/top-items`,
+          `https://halalexpress.onrender.com/api/orders/store/${store?._id}/top-items`,
           config
         );
         setTopOrderedItems(response.data.topItems);

@@ -19,7 +19,7 @@ const ConfirmPayment = () => {
   const fetchOrderDetails = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:6002/api/orders/accept-order/${orderId}`
+        `https://halalexpress.onrender.com/api/orders/accept-order/${orderId}`
       );
 
       if (
@@ -39,7 +39,7 @@ const ConfirmPayment = () => {
     setLoading(true);
     try {
       await axios.post(
-        `http://localhost:6002/api/orders/update-payment/${orderId}`
+        `https://halalexpress.onrender.com/api/orders/update-payment/${orderId}`
       );
       // await axios.post(
       //   `https://halalexpress.onrender.com/api/orders/update-payment/${orderId}`

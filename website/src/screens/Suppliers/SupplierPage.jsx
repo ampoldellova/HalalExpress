@@ -46,7 +46,7 @@ const SupplierPage = () => {
   const getSupplier = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:6002/api/supplier/byId/${supplierId.id}`
+        `https://halalexpress.onrender.com/api/supplier/byId/${supplierId.id}`
       );
       setSupplier(response.data.data);
     } catch (error) {
