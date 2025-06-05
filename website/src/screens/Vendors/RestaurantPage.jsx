@@ -216,17 +216,25 @@ const RestaurantPage = () => {
 
         <Divider />
 
-        <Box sx={{ px: 2, mb: 5 }}>
-          <Typography
-            sx={{
-              fontFamily: "bold",
-              color: COLORS.black,
-              fontSize: 24,
-              mt: 3,
-            }}
-          >
-            Available Foods
-          </Typography>
+        <Typography
+          sx={{
+            fontFamily: "bold",
+            color: COLORS.black,
+            fontSize: 24,
+            mt: 3,
+          }}
+        >
+          Available Foods
+        </Typography>
+        <Box
+          sx={{
+            px: 2,
+            mb: 5,
+            width: "100%",
+            overflowY: "auto",
+            height: "70vh",
+          }}
+        >
           <RestaurantFoods restaurantId={restaurantId.id} />
         </Box>
       </Box>

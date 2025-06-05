@@ -52,8 +52,15 @@ const RestaurantFoods = ({ restaurantId }) => {
 
   const handleConfirmClearCart = async (cartItem, config) => {
     try {
-      await axios.delete(`https://halalexpress.onrender.com/api/cart/clear-cart`, config);
-      await axios.post(`https://halalexpress.onrender.com/api/cart/`, cartItem, config);
+      await axios.delete(
+        `https://halalexpress.onrender.com/api/cart/clear-cart`,
+        config
+      );
+      await axios.post(
+        `https://halalexpress.onrender.com/api/cart/`,
+        cartItem,
+        config
+      );
       toast.success("Item added to cart ");
     } catch (error) {
       console.error("Error clearing cart or adding food:", error);
@@ -115,7 +122,12 @@ const RestaurantFoods = ({ restaurantId }) => {
     <Grid2
       container
       spacing={3}
-      sx={{ flexDirection: "row", justifyContent: "center", mt: 2 }}
+      sx={{
+        flexDirection: "row",
+        justifyContent: "center",
+        mt: 2,
+        position: "relative",
+      }}
     >
       {foods.map((food) => (
         <Card
