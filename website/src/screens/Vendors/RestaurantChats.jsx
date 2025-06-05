@@ -262,11 +262,21 @@ const RestaurantChats = ({ restaurant }) => {
             sx={{
               width: 350,
               overflowY: "auto",
-              borderRadius: 8,
             }}
           >
             {combinedData.map((conversation) => (
-              <Box key={conversation._id} sx={{ px: 2 }}>
+              <Box
+                key={conversation._id}
+                sx={{
+                  px: 2,
+                  "&:hover": {
+                    backgroundColor: COLORS.offwhite,
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  },
+                }}
+              >
                 <Box
                   sx={{
                     display: "flex",
