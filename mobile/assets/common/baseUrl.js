@@ -8,11 +8,11 @@ let baseUrl = "";
 //     : (baseUrl = "http://192.168.254.156:6002");
 // }
 
-{
-  Platform.OS == "android"
-    ? (baseUrl = "http://192.168.254.114:6002")
-    : (baseUrl = "http://192.168.254.114:6002");
-}
+// {
+//   Platform.OS == "android"
+//     ? (baseUrl = "http://192.168.254.114:6002")
+//     : (baseUrl = "http://192.168.254.114:6002");
+// }
 
 // {
 //   Platform.OS == "android"
@@ -20,11 +20,11 @@ let baseUrl = "";
 //     : (baseUrl = "http://192.168.40.226:6002");
 // }
 
-// {
-//   Platform.OS == "android"
-//     ? (baseUrl = "https://halalexpress.onrender.com")
-//     : (baseUrl = "https://halalexpress.onrender.com");
-// }
+{
+  Platform.OS == "android"
+    ? (baseUrl = "https://halalexpress.onrender.com")
+    : (baseUrl = "https://halalexpress.onrender.com");
+}
 
 // {
 //   Platform.OS == "android"
