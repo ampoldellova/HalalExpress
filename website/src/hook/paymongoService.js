@@ -35,7 +35,7 @@ const attachPaymentMethod = async (paymentIntentId, paymentMethodId, data) => {
       data: {
         attributes: {
           payment_method: paymentMethodId,
-          return_url: `http://localhost:3000/payment-confirmation?data=${encodeURIComponent(
+          return_url: `https://halal-express.vercel.app/payment-confirmation?data=${encodeURIComponent(
             JSON.stringify(data)
           )}`,
         },
