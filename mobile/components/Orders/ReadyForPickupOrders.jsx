@@ -259,7 +259,7 @@ const ReadyForPickupOrders = ({ readyForPickupOrders }) => {
                 order.
               </Text>
               <QRCode
-                value={`https://halal-express-rider.vercel.app/accept-order/${selectedItem?._id}`}
+                value={`https://halal-express-rd5v.vercel.app/accept-order/${selectedItem?._id}`}
                 size={200}
                 logo={require("../../assets/logo.png")}
                 logoBackgroundColor="transparent"
@@ -272,7 +272,7 @@ const ReadyForPickupOrders = ({ readyForPickupOrders }) => {
                   textAlign: "center",
                 }}
               >
-                {`https://halal-express-rider.vercel.app/accept-order/${selectedItem?._id}`}
+                {`https://halal-express-rd5v.vercel.app/accept-order/${selectedItem?._id}`}
               </Text>
             </ModalContent>
           </Modal>
