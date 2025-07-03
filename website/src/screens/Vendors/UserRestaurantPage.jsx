@@ -25,6 +25,7 @@ import { LineChart, PieChart } from "@mui/x-charts";
 import gauge from "../../assets/images/gaugeChart.png";
 import ManageOrders from "./ManageOrders";
 import RestaurantChats from "./RestaurantChats";
+import ArticleIcon from "@mui/icons-material/Article";
 
 const UserRestaurantPage = () => {
   const location = useLocation();
@@ -730,6 +731,7 @@ const UserRestaurantPage = () => {
                   >
                     Today
                   </Button>
+
                   <Button
                     onClick={() => handleFilterChange("week")}
                     variant={salesFilter === "week" ? "contained" : "outlined"}
@@ -745,6 +747,7 @@ const UserRestaurantPage = () => {
                   >
                     This Week
                   </Button>
+
                   <Button
                     onClick={() => handleFilterChange("month")}
                     variant={salesFilter === "month" ? "contained" : "outlined"}
@@ -763,6 +766,27 @@ const UserRestaurantPage = () => {
                     Monthly
                   </Button>
                 </ButtonGroup>
+
+                <Button
+                  onClick={() => handleFilterChange("month")}
+                  style={{
+                    fontFamily: "bold",
+                    color: COLORS.white,
+                    backgroundColor: COLORS.primary,
+                    fontSize: 14,
+                    textTransform: "none",
+                    padding: "6px 12px",
+                  }}
+                  startIcon={<ArticleIcon />}
+                >
+                  Print{" "}
+                  {salesFilter === "month"
+                    ? "Monthly"
+                    : salesFilter === "week"
+                    ? "Weekly"
+                    : "Daily"}{" "}
+                  Report
+                </Button>
               </Box>
 
               <LineChart
