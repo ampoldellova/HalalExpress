@@ -878,4 +878,131 @@ module.exports = {
       res.status(500).json({ status: false, message: error.message });
     }
   },
+
+  getRestaurantDailySales: async (req, res) => {
+    const { restaurantId } = req.params;
+    const { date } = req.query; // Expected format: YYYY-MM-DD
+    
+    try {
+      let targetDate;
+      if (date) {
+        targetDate = new Date(date);
+      } else {
+        targetDate = new Date(); // Today
+      }
+      
+      // Set start and end of the day
+      const startOfDay = new Date(targetDate);
+      startOfDay.setHours(0, 0, 0, 0);
+      
+      const endOfDay = new Date(targetDate);
+      endOfDay.setHours(23, 59, 59, 999);
+
+      const sales = await Order.aggregate([
+        {
+          $match: {
+            restaurant: new mongoose.Types.ObjectId(restaurantId),
+            orderStatus: "Completed",
+            paymentStatus: "Paid",
+            createdAt: {
+              $gte: startOfDay,
+              $lte: endOfDay
+            }
+          },
+        },
+        {
+          $group: {
+            _id: { $hour: "$createdAt" },
+            totalSales: { $sum: "$totalAmount" },
+            orderCount: { $sum: 1 },
+          },
+        },
+        { $sort: { "_id": 1 } },
+      ]);
+
+      // Fill in missing hours with 0 sales
+      const hourlyData = [];
+      for (let hour = 0; hour < 24; hour++) {
+        const existingData = sales.find(item => item._id === hour);
+        hourlyData.push({
+          period: `${hour.toString().padStart(2, '0')}:00`,
+          totalSales: existingData ? existingData.totalSales : 0,
+          orderCount: existingData ? existingData.orderCount : 0,
+          hour: hour,
+          isPastHour: hour <= new Date().getHours()
+        });
+      }
+
+      res.status(200).json({ status: true, sales: hourlyData });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ status: false, message: error.message });
+    }
+  },
+
+  getRestaurantWeeklySales: async (req, res) => {
+    const { restaurantId } = req.params;
+    
+    try {
+      const today = new Date();
+      const startOfWeek = new Date(today);
+      startOfWeek.setDate(today.getDate() - 6); // Last 7 days including today
+      startOfWeek.setHours(0, 0, 0, 0);
+      
+      const endOfWeek = new Date(today);
+      endOfWeek.setHours(23, 59, 59, 999);
+
+      const sales = await Order.aggregate([
+        {
+          $match: {
+            restaurant: new mongoose.Types.ObjectId(restaurantId),
+            orderStatus: "Completed",
+            paymentStatus: "Paid",
+            createdAt: {
+              $gte: startOfWeek,
+              $lte: endOfWeek
+            }
+          },
+        },
+        {
+          $group: {
+            _id: {
+              year: { $year: "$createdAt" },
+              month: { $month: "$createdAt" },
+              day: { $dayOfMonth: "$createdAt" }
+            },
+            totalSales: { $sum: "$totalAmount" },
+            orderCount: { $sum: 1 },
+          },
+        },
+        { $sort: { "_id.year": 1, "_id.month": 1, "_id.day": 1 } },
+      ]);
+
+      // Fill in missing days with 0 sales
+      const weeklyData = [];
+      for (let i = 6; i >= 0; i--) {
+        const date = new Date(today);
+        date.setDate(today.getDate() - i);
+        
+        const existingData = sales.find(item => 
+          item._id.year === date.getFullYear() &&
+          item._id.month === date.getMonth() + 1 &&
+          item._id.day === date.getDate()
+        );
+        
+        weeklyData.push({
+          period: date.toLocaleDateString('en-US', { weekday: 'short' }),
+          totalSales: existingData ? existingData.totalSales : 0,
+          orderCount: existingData ? existingData.orderCount : 0,
+          date: date.toDateString(),
+          isToday: i === 0
+        });
+      }
+
+      res.status(200).json({ status: true, sales: weeklyData });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ status: false, message: error.message });
+    }
+  },
 };

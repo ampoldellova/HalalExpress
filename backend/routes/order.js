@@ -54,6 +54,36 @@ router.get(
 );
 
 router.get(
+  "/restaurant/:restaurantId/daily-sales",
+  verifyAndAuthorization,
+  orderController.getRestaurantDailySales
+);
+
+router.get(
+  "/restaurant/:restaurantId/weekly-sales",
+  verifyAndAuthorization,
+  orderController.getRestaurantWeeklySales
+);
+
+router.get(
+  "/restaurant/:restaurantId/sales/today",
+  verifyAndAuthorization,
+  orderController.getRestaurantDailySales
+);
+
+router.get(
+  "/restaurant/:restaurantId/sales/day",
+  verifyAndAuthorization,
+  orderController.getRestaurantDailySales
+);
+
+router.get(
+  "/restaurant/:restaurantId/sales/week",
+  verifyAndAuthorization,
+  orderController.getRestaurantWeeklySales
+);
+
+router.get(
   "/restaurant/:restaurantId/top-foods",
   verifyAndAuthorization,
   orderController.getTopOrderedFoods

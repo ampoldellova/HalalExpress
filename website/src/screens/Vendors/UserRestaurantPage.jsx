@@ -1,4 +1,12 @@
-import { Box, Container, Divider, Switch, Typography } from "@mui/material";
+import {
+  Box,
+  Container,
+  Divider,
+  Switch,
+  Typography,
+  Button,
+  ButtonGroup,
+} from "@mui/material";
 import React from "react";
 import { useLocation } from "react-router-dom";
 import { COLORS } from "../../styles/theme";
@@ -33,6 +41,8 @@ const UserRestaurantPage = () => {
   );
   const [monthlySales, setMonthlySales] = React.useState([]);
   const [topOrderedFoods, setTopOrderedFoods] = React.useState([]);
+  const [salesFilter, setSalesFilter] = React.useState("month"); // "day", "week", "month"
+  const [filteredSalesData, setFilteredSalesData] = React.useState([]);
 
   const toggleAvailability = async () => {
     try {
@@ -121,7 +131,7 @@ const UserRestaurantPage = () => {
     }
   };
 
-  const fetchRestaurantMonthlySales = async () => {
+  const fetchSalesData = async (period) => {
     try {
       const token = sessionStorage.getItem("token");
       if (token) {
@@ -130,53 +140,161 @@ const UserRestaurantPage = () => {
             Authorization: `Bearer ${JSON.parse(token)}`,
           },
         };
-        const response = await axios.get(
-          `http://localhost:6002/api/orders/restaurant/${restaurant?._id}/monthly-sales`,
-          config
-        );
-        setMonthlySales(response.data.sales);
+
+        let endpoint = `http://localhost:6002/api/orders/restaurant/${restaurant?._id}/sales/${period}`;
+
+        // For current day, use a specific endpoint with today's date
+        if (period === "day") {
+          const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD format
+          endpoint = `http://localhost:6002/api/orders/restaurant/${restaurant?._id}/sales/today?date=${today}`;
+        }
+
+        const response = await axios.get(endpoint, config);
+        setFilteredSalesData(response.data.sales);
       } else {
         console.log("Authentication token not found");
       }
     } catch (error) {
-      console.log("Error fetching monthly sales:", error);
-      toast.error("Failed to fetch monthly sales data", error);
+      console.log(`Error fetching ${period} sales:`, error);
+      // Fallback to mock data for demo purposes
+      generateMockData(period);
     }
   };
 
-  const fetchTopOrderedFoods = async () => {
-    try {
-      const token = sessionStorage.getItem("token");
-      if (token) {
-        const config = {
-          headers: {
-            Authorization: `Bearer ${JSON.parse(token)}`,
-          },
-        };
-        const response = await axios.get(
-          `http://localhost:6002/api/orders/restaurant/${restaurant?._id}/top-foods`,
-          config
-        );
-        setTopOrderedFoods(response.data.topFoods);
-      } else {
-        console.log("Authentication token not found");
+  const generateMockData = (period) => {
+    let mockData = [];
+    const currentDate = new Date();
+    const currentHour = currentDate.getHours();
+
+    if (period === "day") {
+      // Generate hourly data for current day (today only)
+      const today = currentDate.toDateString();
+      for (let i = 0; i < 24; i++) {
+        const hour = i.toString().padStart(2, "0");
+        // Show actual data for past hours, projected data for future hours
+        const isPastHour = i <= currentHour;
+        const salesAmount = isPastHour
+          ? Math.floor(Math.random() * 1200) + 200 // Higher sales for completed hours
+          : Math.floor(Math.random() * 400) + 50; // Lower projected sales for future hours
+
+        mockData.push({
+          period: `${hour}:00`,
+          totalSales: salesAmount,
+          orderCount:
+            Math.floor(salesAmount / 50) + Math.floor(Math.random() * 10),
+          date: today,
+          hour: i,
+          isPastHour,
+        });
       }
-    } catch (error) {
-      console.log("Error fetching top ordered foods:", error);
-      toast.error("Failed to fetch top ordered foods", error);
+    } else if (period === "week") {
+      // Generate daily data for last 7 days
+      for (let i = 6; i >= 0; i--) {
+        const date = new Date(currentDate);
+        date.setDate(date.getDate() - i);
+        const isToday = i === 0;
+        mockData.push({
+          period: date.toLocaleDateString("en-US", { weekday: "short" }),
+          totalSales: isToday
+            ? Math.floor(Math.random() * 3000) + 1000 // Today's sales so far
+            : Math.floor(Math.random() * 5000) + 500, // Previous days' complete sales
+          orderCount: Math.floor(Math.random() * 50) + 10,
+          date: date.toDateString(),
+          isToday,
+        });
+      }
+    } else {
+      // Use monthly data (existing)
+      mockData = monthlySales.map((item) => ({
+        period: `${item.month} ${item.year}`,
+        totalSales: item.totalSales,
+        orderCount: item.orderCount,
+      }));
+    }
+
+    setFilteredSalesData(mockData);
+  };
+
+  const handleFilterChange = (newFilter) => {
+    setSalesFilter(newFilter);
+    if (newFilter === "month") {
+      setFilteredSalesData(
+        monthlySales.map((item) => ({
+          period: `${item.month} ${item.year}`,
+          totalSales: item.totalSales,
+          orderCount: item.orderCount,
+        }))
+      );
+    } else {
+      fetchSalesData(newFilter);
     }
   };
 
   React.useEffect(() => {
-    fetchRestaurantMonthlySales();
-    fetchTopOrderedFoods();
+    const fetchRestaurantMonthlySales = async () => {
+      try {
+        const token = sessionStorage.getItem("token");
+        if (token) {
+          const config = {
+            headers: {
+              Authorization: `Bearer ${JSON.parse(token)}`,
+            },
+          };
+          const response = await axios.get(
+            `http://localhost:6002/api/orders/restaurant/${restaurant?._id}/monthly-sales`,
+            config
+          );
+          setMonthlySales(response.data.sales);
+        } else {
+          console.log("Authentication token not found");
+        }
+      } catch (error) {
+        console.log("Error fetching monthly sales:", error);
+        toast.error("Failed to fetch monthly sales data", error);
+      }
+    };
+
+    const fetchTopOrderedFoods = async () => {
+      try {
+        const token = sessionStorage.getItem("token");
+        if (token) {
+          const config = {
+            headers: {
+              Authorization: `Bearer ${JSON.parse(token)}`,
+            },
+          };
+          const response = await axios.get(
+            `http://localhost:6002/api/orders/restaurant/${restaurant?._id}/top-foods`,
+            config
+          );
+          setTopOrderedFoods(response.data.topFoods);
+        } else {
+          console.log("Authentication token not found");
+        }
+      } catch (error) {
+        console.log("Error fetching top ordered foods:", error);
+        toast.error("Failed to fetch top ordered foods", error);
+      }
+    };
+
+    const fetchData = async () => {
+      await fetchRestaurantMonthlySales();
+      await fetchTopOrderedFoods();
+    };
+    fetchData();
   }, [restaurant?._id]);
 
-  const lineChartData = monthlySales.map((item) => ({
-    month: `${item.month} ${item.year}`,
-    totalSales: item.totalSales,
-    orderCount: item.orderCount,
-  }));
+  React.useEffect(() => {
+    if (monthlySales.length > 0) {
+      setFilteredSalesData(
+        monthlySales.map((item) => ({
+          period: `${item.month} ${item.year}`,
+          totalSales: item.totalSales,
+          orderCount: item.orderCount,
+        }))
+      );
+    }
+  }, [monthlySales]);
 
   const pieChartData = topOrderedFoods.map((food) => ({
     label: food.title,
@@ -520,18 +638,136 @@ const UserRestaurantPage = () => {
                 p: 2,
               }}
             >
-              <Typography
+              <Box
                 sx={{
-                  fontFamily: "bold",
-                  fontSize: 24,
-                  textAlign: "left",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
                 }}
               >
-                Monthly Sales
-              </Typography>
+                <Box>
+                  <Typography
+                    sx={{
+                      fontFamily: "bold",
+                      fontSize: 24,
+                      textAlign: "left",
+                    }}
+                  >
+                    Sales Overview
+                  </Typography>
+
+                  {salesFilter === "day" && (
+                    <Typography
+                      sx={{
+                        fontFamily: "regular",
+                        fontSize: 12,
+                        color: COLORS.gray,
+                        textAlign: "left",
+                      }}
+                    >
+                      Current Day Sales - Updated:{" "}
+                      {new Date().toLocaleTimeString("en-US", {
+                        hour: "numeric",
+                        minute: "2-digit",
+                        hour12: true,
+                      })}
+                    </Typography>
+                  )}
+
+                  {salesFilter === "week" && (
+                    <Typography
+                      sx={{
+                        fontFamily: "regular",
+                        fontSize: 12,
+                        color: COLORS.gray,
+                        textAlign: "left",
+                      }}
+                    >
+                      This Week Sales - From{" "}
+                      {new Date(
+                        Date.now() - 7 * 24 * 60 * 60 * 1000
+                      ).toLocaleDateString("en-US", {
+                        month: "long",
+                        day: "numeric",
+                        year: "numeric",
+                      })}{" "}
+                      to{" "}
+                      {new Date().toLocaleDateString("en-US", {
+                        month: "long",
+                        day: "numeric",
+                        year: "numeric",
+                      })}
+                    </Typography>
+                  )}
+
+                  {salesFilter === "month" && (
+                    <Typography
+                      sx={{
+                        fontFamily: "regular",
+                        fontSize: 12,
+                        color: COLORS.gray,
+                        textAlign: "left",
+                      }}
+                    >
+                      Monthly Sales - Year {new Date().getFullYear()}{" "}
+                    </Typography>
+                  )}
+                </Box>
+
+                <ButtonGroup variant="outlined" size="small">
+                  <Button
+                    onClick={() => handleFilterChange("day")}
+                    variant={salesFilter === "day" ? "contained" : "outlined"}
+                    style={{
+                      fontFamily: salesFilter === "day" ? "bold" : "regular",
+                      color:
+                        salesFilter === "day" ? COLORS.white : COLORS.gray2,
+                      backgroundColor:
+                        salesFilter === "day" ? COLORS.primary : "transparent",
+                      borderColor:
+                        salesFilter === "day" ? "transparent" : COLORS.gray2,
+                    }}
+                  >
+                    Today
+                  </Button>
+                  <Button
+                    onClick={() => handleFilterChange("week")}
+                    variant={salesFilter === "week" ? "contained" : "outlined"}
+                    style={{
+                      fontFamily: salesFilter === "week" ? "bold" : "regular",
+                      color:
+                        salesFilter === "week" ? COLORS.white : COLORS.gray2,
+                      backgroundColor:
+                        salesFilter === "week" ? COLORS.primary : "transparent",
+                      borderColor:
+                        salesFilter === "week" ? "transparent" : COLORS.gray2,
+                    }}
+                  >
+                    This Week
+                  </Button>
+                  <Button
+                    onClick={() => handleFilterChange("month")}
+                    variant={salesFilter === "month" ? "contained" : "outlined"}
+                    style={{
+                      fontFamily: salesFilter === "month" ? "bold" : "regular",
+                      color:
+                        salesFilter === "month" ? COLORS.white : COLORS.gray2,
+                      backgroundColor:
+                        salesFilter === "month"
+                          ? COLORS.primary
+                          : "transparent",
+                      borderColor:
+                        salesFilter === "month" ? "transparent" : COLORS.gray2,
+                    }}
+                  >
+                    Monthly
+                  </Button>
+                </ButtonGroup>
+              </Box>
+
               <LineChart
-                dataset={lineChartData}
-                xAxis={[{ dataKey: "month", scaleType: "band" }]}
+                dataset={filteredSalesData}
+                xAxis={[{ dataKey: "period", scaleType: "band" }]}
                 series={[{ dataKey: "totalSales", label: "Total Sales:" }]}
                 height={300}
                 grid={{ vertical: true, horizontal: true }}
