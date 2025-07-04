@@ -26,6 +26,8 @@ import gauge from "../../assets/images/gaugeChart.png";
 import ManageOrders from "./ManageOrders";
 import RestaurantChats from "./RestaurantChats";
 import ArticleIcon from "@mui/icons-material/Article";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 
 const UserRestaurantPage = () => {
   const location = useLocation();
@@ -42,7 +44,7 @@ const UserRestaurantPage = () => {
   );
   const [monthlySales, setMonthlySales] = React.useState([]);
   const [topOrderedFoods, setTopOrderedFoods] = React.useState([]);
-  const [salesFilter, setSalesFilter] = React.useState("month"); // "day", "week", "month"
+  const [salesFilter, setSalesFilter] = React.useState("month");
   const [filteredSalesData, setFilteredSalesData] = React.useState([]);
 
   const toggleAvailability = async () => {
@@ -144,9 +146,8 @@ const UserRestaurantPage = () => {
 
         let endpoint = `http://localhost:6002/api/orders/restaurant/${restaurant?._id}/sales/${period}`;
 
-        // For current day, use a specific endpoint with today's date
         if (period === "day") {
-          const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD format
+          const today = new Date().toISOString().split("T")[0];
           endpoint = `http://localhost:6002/api/orders/restaurant/${restaurant?._id}/sales/today?date=${today}`;
         }
 
@@ -157,7 +158,6 @@ const UserRestaurantPage = () => {
       }
     } catch (error) {
       console.log(`Error fetching ${period} sales:`, error);
-      // Fallback to mock data for demo purposes
       generateMockData(period);
     }
   };
@@ -168,15 +168,13 @@ const UserRestaurantPage = () => {
     const currentHour = currentDate.getHours();
 
     if (period === "day") {
-      // Generate hourly data for current day (today only)
       const today = currentDate.toDateString();
       for (let i = 0; i < 24; i++) {
         const hour = i.toString().padStart(2, "0");
-        // Show actual data for past hours, projected data for future hours
         const isPastHour = i <= currentHour;
         const salesAmount = isPastHour
-          ? Math.floor(Math.random() * 1200) + 200 // Higher sales for completed hours
-          : Math.floor(Math.random() * 400) + 50; // Lower projected sales for future hours
+          ? Math.floor(Math.random() * 1200) + 200
+          : Math.floor(Math.random() * 400) + 50;
 
         mockData.push({
           period: `${hour}:00`,
@@ -189,7 +187,6 @@ const UserRestaurantPage = () => {
         });
       }
     } else if (period === "week") {
-      // Generate daily data for last 7 days
       for (let i = 6; i >= 0; i--) {
         const date = new Date(currentDate);
         date.setDate(date.getDate() - i);
@@ -197,15 +194,14 @@ const UserRestaurantPage = () => {
         mockData.push({
           period: date.toLocaleDateString("en-US", { weekday: "short" }),
           totalSales: isToday
-            ? Math.floor(Math.random() * 3000) + 1000 // Today's sales so far
-            : Math.floor(Math.random() * 5000) + 500, // Previous days' complete sales
+            ? Math.floor(Math.random() * 3000) + 1000
+            : Math.floor(Math.random() * 5000) + 500,
           orderCount: Math.floor(Math.random() * 50) + 10,
           date: date.toDateString(),
           isToday,
         });
       }
     } else {
-      // Use monthly data (existing)
       mockData = monthlySales.map((item) => ({
         period: `${item.month} ${item.year}`,
         totalSales: item.totalSales,
@@ -228,6 +224,154 @@ const UserRestaurantPage = () => {
       );
     } else {
       fetchSalesData(newFilter);
+    }
+  };
+
+  const generatePDFReport = async () => {
+    try {
+      toast.info("Generating PDF report...");
+
+      const pdf = new jsPDF("p", "mm", "a4");
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+
+      pdf.setFontSize(20);
+      pdf.setFont("helvetica", "bold");
+      pdf.text(`${restaurant?.title} - Sales Report`, pageWidth / 2, 20, {
+        align: "center",
+      });
+
+      pdf.setFontSize(12);
+      pdf.setFont("helvetica", "normal");
+      const reportType =
+        salesFilter === "month"
+          ? "Monthly"
+          : salesFilter === "week"
+          ? "Weekly"
+          : "Daily";
+      pdf.text(`${reportType} Sales Report`, pageWidth / 2, 30, {
+        align: "center",
+      });
+
+      pdf.setFontSize(10);
+      pdf.text(`Restaurant: ${restaurant?.title}`, 20, 45);
+      pdf.text(`Address: ${restaurant?.coords?.address}`, 20, 52);
+      pdf.text(
+        `Generated on: ${new Date().toLocaleDateString("en-US", {
+          weekday: "long",
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        })}`,
+        20,
+        59
+      );
+
+      let dateRange = "";
+      if (salesFilter === "day") {
+        dateRange = "";
+      } else if (salesFilter === "week") {
+        const startDate = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+        const endDate = new Date();
+        dateRange = `Period:  ${startDate.toLocaleDateString("en-US", {
+          month: "long",
+          day: "numeric",
+          year: "numeric",
+        })} to ${endDate.toLocaleDateString("en-US", {
+          month: "long",
+          day: "numeric",
+          year: "numeric",
+        })}`;
+      } else {
+        dateRange = `Year: ${new Date().getFullYear()}`;
+      }
+
+      pdf.text(dateRange, 20, 66);
+
+      const totalSales = filteredSalesData.reduce(
+        (sum, item) => sum + item.totalSales,
+        0
+      );
+      const totalOrders = filteredSalesData.reduce(
+        (sum, item) => sum + (item.orderCount || 0),
+        0
+      );
+      const avgOrderValue = totalOrders > 0 ? totalSales / totalOrders : 0;
+
+      pdf.setFontSize(12);
+      pdf.setFont("helvetica", "bold");
+      pdf.text("Sales Summary", 20, 85);
+
+      pdf.setFont("helvetica", "normal");
+      pdf.setFontSize(10);
+      pdf.text(`Total Sales: Php.${totalSales.toFixed(2)}`, 20, 95);
+      pdf.text(`Total Orders: ${totalOrders}`, 20, 102);
+      pdf.text(`Average Order Value: Php.${avgOrderValue.toFixed(2)}`, 20, 109);
+
+      // Add sales data table
+      pdf.setFontSize(12);
+      pdf.setFont("helvetica", "bold");
+      pdf.text("Detailed Sales Data", 20, 125);
+
+      // Table headers
+      pdf.setFontSize(10);
+      pdf.setFont("helvetica", "bold");
+      let yPosition = 135;
+      pdf.text("Period", 20, yPosition);
+      pdf.text("Sales (Php)", 80, yPosition);
+      pdf.text("Order Count", 140, yPosition);
+
+      // Table content
+      pdf.setFont("helvetica", "normal");
+      yPosition += 10;
+
+      filteredSalesData.forEach((item, index) => {
+        if (yPosition > pageHeight - 30) {
+          pdf.addPage();
+          yPosition = 20;
+          pdf.setFont("helvetica", "bold");
+          pdf.text("Period", 20, yPosition);
+          pdf.text("Sales (Php)", 80, yPosition);
+          pdf.text("Orders", 140, yPosition);
+          pdf.setFont("helvetica", "normal");
+          yPosition += 10;
+        }
+
+        pdf.text(item.period, 20, yPosition);
+        pdf.text(item.totalSales.toFixed(2), 80, yPosition);
+        pdf.text((item.orderCount || 0).toString(), 140, yPosition);
+        yPosition += 8;
+      });
+
+      const currentDate = new Date();
+      pdf.setFontSize(8);
+      pdf.setFont("helvetica", "italic");
+      pdf.text(
+        `Generated by ${restaurant?.title} on ${currentDate.toLocaleDateString(
+          "en-US",
+          {
+            month: "long",
+            day: "numeric",
+            year: "numeric",
+          }
+        )} at ${currentDate.toLocaleTimeString()}`,
+        pageWidth / 2,
+        pageHeight - 10,
+        { align: "center" }
+      );
+
+      const fileName = `${restaurant?.title?.replace(
+        /[^a-zA-Z0-9]/g,
+        "_"
+      )}_${reportType}_Sales_Report_${
+        new Date().toISOString().split("T")[0]
+      }.pdf`;
+      pdf.save(fileName);
+
+      toast.success("PDF report generated successfully!");
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+      toast.error("Failed to generate PDF report");
     }
   };
 
@@ -646,78 +790,22 @@ const UserRestaurantPage = () => {
                   alignItems: "center",
                 }}
               >
-                <Box>
-                  <Typography
-                    sx={{
-                      fontFamily: "bold",
-                      fontSize: 24,
-                      textAlign: "left",
-                    }}
-                  >
-                    Sales Overview
-                  </Typography>
-
-                  {salesFilter === "day" && (
-                    <Typography
-                      sx={{
-                        fontFamily: "regular",
-                        fontSize: 12,
-                        color: COLORS.gray,
-                        textAlign: "left",
-                      }}
-                    >
-                      Current Day Sales - Updated:{" "}
-                      {new Date().toLocaleTimeString("en-US", {
-                        hour: "numeric",
-                        minute: "2-digit",
-                        hour12: true,
-                      })}
-                    </Typography>
-                  )}
-
-                  {salesFilter === "week" && (
-                    <Typography
-                      sx={{
-                        fontFamily: "regular",
-                        fontSize: 12,
-                        color: COLORS.gray,
-                        textAlign: "left",
-                      }}
-                    >
-                      This Week Sales - From{" "}
-                      {new Date(
-                        Date.now() - 7 * 24 * 60 * 60 * 1000
-                      ).toLocaleDateString("en-US", {
-                        month: "long",
-                        day: "numeric",
-                        year: "numeric",
-                      })}{" "}
-                      to{" "}
-                      {new Date().toLocaleDateString("en-US", {
-                        month: "long",
-                        day: "numeric",
-                        year: "numeric",
-                      })}
-                    </Typography>
-                  )}
-
-                  {salesFilter === "month" && (
-                    <Typography
-                      sx={{
-                        fontFamily: "regular",
-                        fontSize: 12,
-                        color: COLORS.gray,
-                        textAlign: "left",
-                      }}
-                    >
-                      Monthly Sales - Year {new Date().getFullYear()}{" "}
-                    </Typography>
-                  )}
-                </Box>
+                <Typography
+                  sx={{
+                    fontFamily: "bold",
+                    fontSize: 24,
+                    textAlign: "left",
+                  }}
+                >
+                  Sales Overview
+                </Typography>
 
                 <ButtonGroup variant="outlined" size="small">
                   <Button
-                    onClick={() => handleFilterChange("day")}
+                    onClick={() => {
+                      handleFilterChange("day");
+                      console.log(filteredSalesData);
+                    }}
                     variant={salesFilter === "day" ? "contained" : "outlined"}
                     style={{
                       fontFamily: salesFilter === "day" ? "bold" : "regular",
@@ -733,7 +821,10 @@ const UserRestaurantPage = () => {
                   </Button>
 
                   <Button
-                    onClick={() => handleFilterChange("week")}
+                    onClick={() => {
+                      handleFilterChange("week");
+                      console.log(filteredSalesData);
+                    }}
                     variant={salesFilter === "week" ? "contained" : "outlined"}
                     style={{
                       fontFamily: salesFilter === "week" ? "bold" : "regular",
@@ -749,7 +840,10 @@ const UserRestaurantPage = () => {
                   </Button>
 
                   <Button
-                    onClick={() => handleFilterChange("month")}
+                    onClick={() => {
+                      handleFilterChange("month");
+                      console.log(filteredSalesData);
+                    }}
                     variant={salesFilter === "month" ? "contained" : "outlined"}
                     style={{
                       fontFamily: salesFilter === "month" ? "bold" : "regular",
@@ -768,7 +862,7 @@ const UserRestaurantPage = () => {
                 </ButtonGroup>
 
                 <Button
-                  onClick={() => handleFilterChange("month")}
+                  onClick={generatePDFReport}
                   style={{
                     fontFamily: "bold",
                     color: COLORS.white,
@@ -788,6 +882,63 @@ const UserRestaurantPage = () => {
                   Report
                 </Button>
               </Box>
+
+              {salesFilter === "day" && (
+                <Typography
+                  sx={{
+                    fontFamily: "regular",
+                    fontSize: 12,
+                    color: COLORS.gray,
+                    textAlign: "left",
+                  }}
+                >
+                  Current Day Sales - Updated:{" "}
+                  {new Date().toLocaleTimeString("en-US", {
+                    hour: "numeric",
+                    minute: "2-digit",
+                    hour12: true,
+                  })}
+                </Typography>
+              )}
+
+              {salesFilter === "week" && (
+                <Typography
+                  sx={{
+                    fontFamily: "regular",
+                    fontSize: 12,
+                    color: COLORS.gray,
+                    textAlign: "left",
+                  }}
+                >
+                  This Week Sales - From{" "}
+                  {new Date(
+                    Date.now() - 7 * 24 * 60 * 60 * 1000
+                  ).toLocaleDateString("en-US", {
+                    month: "long",
+                    day: "numeric",
+                    year: "numeric",
+                  })}{" "}
+                  to{" "}
+                  {new Date().toLocaleDateString("en-US", {
+                    month: "long",
+                    day: "numeric",
+                    year: "numeric",
+                  })}
+                </Typography>
+              )}
+
+              {salesFilter === "month" && (
+                <Typography
+                  sx={{
+                    fontFamily: "regular",
+                    fontSize: 12,
+                    color: COLORS.gray,
+                    textAlign: "left",
+                  }}
+                >
+                  Monthly Sales - Year {new Date().getFullYear()}{" "}
+                </Typography>
+              )}
 
               <LineChart
                 dataset={filteredSalesData}
