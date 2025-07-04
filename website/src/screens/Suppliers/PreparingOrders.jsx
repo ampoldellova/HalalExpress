@@ -23,7 +23,7 @@ const PreparingOrders = ({ preparingOrders }) => {
       };
 
       await axios.post(
-        `http://localhost:6002/api/orders/mark-as-ready`,
+        `https://halalexpress.onrender.com/api/orders/mark-as-ready`,
         { orderId },
         config
       );
