@@ -308,12 +308,10 @@ const UserRestaurantPage = () => {
       pdf.text(`Total Orders: ${totalOrders}`, 20, 102);
       pdf.text(`Average Order Value: Php.${avgOrderValue.toFixed(2)}`, 20, 109);
 
-      // Add sales data table
       pdf.setFontSize(12);
       pdf.setFont("helvetica", "bold");
       pdf.text("Detailed Sales Data", 20, 125);
 
-      // Table headers
       pdf.setFontSize(10);
       pdf.setFont("helvetica", "bold");
       let yPosition = 135;
@@ -321,7 +319,6 @@ const UserRestaurantPage = () => {
       pdf.text("Sales (Php)", 80, yPosition);
       pdf.text("Order Count", 140, yPosition);
 
-      // Table content
       pdf.setFont("helvetica", "normal");
       yPosition += 10;
 
