@@ -881,20 +881,19 @@ module.exports = {
 
   getRestaurantDailySales: async (req, res) => {
     const { restaurantId } = req.params;
-    const { date } = req.query; // Expected format: YYYY-MM-DD
-    
+    const { date } = req.query;
+
     try {
       let targetDate;
       if (date) {
         targetDate = new Date(date);
       } else {
-        targetDate = new Date(); // Today
+        targetDate = new Date(); 
       }
-      
-      // Set start and end of the day
+
       const startOfDay = new Date(targetDate);
       startOfDay.setHours(0, 0, 0, 0);
-      
+
       const endOfDay = new Date(targetDate);
       endOfDay.setHours(23, 59, 59, 999);
 
@@ -906,8 +905,8 @@ module.exports = {
             paymentStatus: "Paid",
             createdAt: {
               $gte: startOfDay,
-              $lte: endOfDay
-            }
+              $lte: endOfDay,
+            },
           },
         },
         {
@@ -917,19 +916,18 @@ module.exports = {
             orderCount: { $sum: 1 },
           },
         },
-        { $sort: { "_id": 1 } },
+        { $sort: { _id: 1 } },
       ]);
 
-      // Fill in missing hours with 0 sales
       const hourlyData = [];
       for (let hour = 0; hour < 24; hour++) {
-        const existingData = sales.find(item => item._id === hour);
+        const existingData = sales.find((item) => item._id === hour);
         hourlyData.push({
-          period: `${hour.toString().padStart(2, '0')}:00`,
+          period: `${hour.toString().padStart(2, "0")}:00`,
           totalSales: existingData ? existingData.totalSales : 0,
           orderCount: existingData ? existingData.orderCount : 0,
           hour: hour,
-          isPastHour: hour <= new Date().getHours()
+          isPastHour: hour <= new Date().getHours(),
         });
       }
 
@@ -942,13 +940,13 @@ module.exports = {
 
   getRestaurantWeeklySales: async (req, res) => {
     const { restaurantId } = req.params;
-    
+
     try {
       const today = new Date();
       const startOfWeek = new Date(today);
       startOfWeek.setDate(today.getDate() - 6); // Last 7 days including today
       startOfWeek.setHours(0, 0, 0, 0);
-      
+
       const endOfWeek = new Date(today);
       endOfWeek.setHours(23, 59, 59, 999);
 
@@ -960,8 +958,8 @@ module.exports = {
             paymentStatus: "Paid",
             createdAt: {
               $gte: startOfWeek,
-              $lte: endOfWeek
-            }
+              $lte: endOfWeek,
+            },
           },
         },
         {
@@ -969,7 +967,7 @@ module.exports = {
             _id: {
               year: { $year: "$createdAt" },
               month: { $month: "$createdAt" },
-              day: { $dayOfMonth: "$createdAt" }
+              day: { $dayOfMonth: "$createdAt" },
             },
             totalSales: { $sum: "$totalAmount" },
             orderCount: { $sum: 1 },
@@ -983,19 +981,141 @@ module.exports = {
       for (let i = 6; i >= 0; i--) {
         const date = new Date(today);
         date.setDate(today.getDate() - i);
-        
-        const existingData = sales.find(item => 
-          item._id.year === date.getFullYear() &&
-          item._id.month === date.getMonth() + 1 &&
-          item._id.day === date.getDate()
+
+        const existingData = sales.find(
+          (item) =>
+            item._id.year === date.getFullYear() &&
+            item._id.month === date.getMonth() + 1 &&
+            item._id.day === date.getDate()
         );
-        
+
         weeklyData.push({
-          period: date.toLocaleDateString('en-US', { weekday: 'short' }),
+          period: date.toLocaleDateString("en-US", { weekday: "short" }),
           totalSales: existingData ? existingData.totalSales : 0,
           orderCount: existingData ? existingData.orderCount : 0,
           date: date.toDateString(),
-          isToday: i === 0
+          isToday: i === 0,
+        });
+      }
+
+      res.status(200).json({ status: true, sales: weeklyData });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ status: false, message: error.message });
+    }
+  },
+
+  getSupplierDailySales: async (req, res) => {
+    const { storeId } = req.params;
+    const { date } = req.query; 
+
+    try {
+      let targetDate;
+      if (date) {
+        targetDate = new Date(date);
+      } else {
+        targetDate = new Date(); 
+      }
+
+      const startOfDay = new Date(targetDate);
+      startOfDay.setHours(0, 0, 0, 0);
+
+      const endOfDay = new Date(targetDate);
+      endOfDay.setHours(23, 59, 59, 999);
+
+      const sales = await Order.aggregate([
+        {
+          $match: {
+            supplier: new mongoose.Types.ObjectId(storeId),
+            orderStatus: "Completed",
+            paymentStatus: "Paid",
+            createdAt: {
+              $gte: startOfDay,
+              $lte: endOfDay,
+            },
+          },
+        },
+        {
+          $group: {
+            _id: { $hour: "$createdAt" },
+            totalSales: { $sum: "$totalAmount" },
+            orderCount: { $sum: 1 },
+          },
+        },
+        { $sort: { _id: 1 } },
+      ]);
+
+      const hourlyData = [];
+      for (let hour = 0; hour < 24; hour++) {
+        const existingData = sales.find((item) => item._id === hour);
+        hourlyData.push({
+          period: `${hour.toString().padStart(2, "0")}:00`,
+          totalSales: existingData ? existingData.totalSales : 0,
+          orderCount: existingData ? existingData.orderCount : 0,
+          hour: hour,
+          isPastHour: hour <= new Date().getHours(),
+        });
+      }
+
+      res.status(200).json({ status: true, sales: hourlyData });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ status: false, message: error.message });
+    }
+  },
+
+  getSupplierWeeklySales: async (req, res) => {
+    const { storeId } = req.params;
+
+    try {
+      const today = new Date();
+      const sevenDaysAgo = new Date(today);
+      sevenDaysAgo.setDate(today.getDate() - 6);
+
+      const sales = await Order.aggregate([
+        {
+          $match: {
+            supplier: new mongoose.Types.ObjectId(storeId),
+            orderStatus: "Completed",
+            paymentStatus: "Paid",
+            createdAt: {
+              $gte: sevenDaysAgo,
+              $lte: today,
+            },
+          },
+        },
+        {
+          $group: {
+            _id: {
+              year: { $year: "$createdAt" },
+              month: { $month: "$createdAt" },
+              day: { $dayOfMonth: "$createdAt" },
+            },
+            totalSales: { $sum: "$totalAmount" },
+            orderCount: { $sum: 1 },
+          },
+        },
+        { $sort: { "_id.year": 1, "_id.month": 1, "_id.day": 1 } },
+      ]);
+
+      const weeklyData = [];
+      for (let i = 6; i >= 0; i--) {
+        const date = new Date(today);
+        date.setDate(today.getDate() - i);
+        
+        const existingData = sales.find(
+          (item) =>
+            item._id.year === date.getFullYear() &&
+            item._id.month === date.getMonth() + 1 &&
+            item._id.day === date.getDate()
+        );
+
+        weeklyData.push({
+          period: date.toLocaleDateString("en-US", { weekday: "short" }),
+          totalSales: existingData ? existingData.totalSales : 0,
+          orderCount: existingData ? existingData.orderCount : 0,
+          date: date.toDateString(),
+          isToday: i === 0,
         });
       }
 

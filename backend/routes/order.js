@@ -101,4 +101,16 @@ router.get(
   orderController.getTopOrderedItems
 );
 
+router.get(
+  "/supplier/:supplierId/sales/day",
+  verifyAndAuthorization,
+  orderController.getSupplierDailySales
+);
+
+router.get(
+  "/supplier/:supplierId/sales/week",
+  verifyAndAuthorization,
+  orderController.getSupplierWeeklySales
+);
+
 module.exports = router;

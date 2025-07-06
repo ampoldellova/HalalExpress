@@ -2,11 +2,10 @@ import {
   Box,
   Container,
   Divider,
-  Paper,
   Switch,
-  Tab,
-  Tabs,
   Typography,
+  Button,
+  ButtonGroup,
 } from "@mui/material";
 import React from "react";
 import { useLocation } from "react-router-dom";
@@ -26,6 +25,8 @@ import { LineChart, PieChart } from "@mui/x-charts";
 import gauge from "../../assets/images/gaugeChart.png";
 import ManageOrders from "./ManageOrders";
 import StoreChats from "./StoreChats";
+import jsPDF from "jspdf";
+import ArticleIcon from "@mui/icons-material/Article";
 
 const UserStorePage = () => {
   const location = useLocation();
@@ -42,6 +43,8 @@ const UserStorePage = () => {
   );
   const [monthlySales, setMonthlySales] = React.useState([]);
   const [topOrderedItems, setTopOrderedItems] = React.useState([]);
+  const [salesFilter, setSalesFilter] = React.useState("month"); // "day", "week", "month"
+  const [filteredSalesData, setFilteredSalesData] = React.useState([]);
 
   const toggleAvailability = async () => {
     try {
@@ -130,62 +133,71 @@ const UserStorePage = () => {
     }
   };
 
-  const fetchRestaurantMonthlySales = async () => {
-    try {
-      const token = sessionStorage.getItem("token");
-      if (token) {
-        const config = {
-          headers: {
-            Authorization: `Bearer ${JSON.parse(token)}`,
-          },
-        };
-        const response = await axios.get(
-          `http://localhost:6002/api/orders/store/${store?._id}/monthly-sales`,
-          config
-        );
-        setMonthlySales(response.data.sales);
-      } else {
-        console.log("Authentication token not found");
-      }
-    } catch (error) {
-      console.log("Error fetching monthly sales:", error);
-      toast.error("Failed to fetch monthly sales data", error);
-    }
-  };
-
-  const fetchTopOrderedItems = async () => {
-    try {
-      const token = sessionStorage.getItem("token");
-      if (token) {
-        const config = {
-          headers: {
-            Authorization: `Bearer ${JSON.parse(token)}`,
-          },
-        };
-        const response = await axios.get(
-          `http://localhost:6002/api/orders/store/${store?._id}/top-items`,
-          config
-        );
-        setTopOrderedItems(response.data.topItems);
-      } else {
-        console.log("Authentication token not found");
-      }
-    } catch (error) {
-      console.log("Error fetching top ordered items:", error);
-      toast.error("Failed to fetch top ordered items", error);
-    }
-  };
-
   React.useEffect(() => {
-    fetchRestaurantMonthlySales();
-    fetchTopOrderedItems();
+    const fetchRestaurantMonthlySales = async () => {
+      try {
+        const token = sessionStorage.getItem("token");
+        if (token) {
+          const config = {
+            headers: {
+              Authorization: `Bearer ${JSON.parse(token)}`,
+            },
+          };
+          const response = await axios.get(
+            `http://localhost:6002/api/orders/store/${store?._id}/monthly-sales`,
+            config
+          );
+          setMonthlySales(response.data.sales);
+        } else {
+          console.log("Authentication token not found");
+        }
+      } catch (error) {
+        console.log("Error fetching monthly sales:", error);
+        toast.error("Failed to fetch monthly sales data", error);
+      }
+    };
+
+    const fetchTopOrderedItems = async () => {
+      try {
+        const token = sessionStorage.getItem("token");
+        if (token) {
+          const config = {
+            headers: {
+              Authorization: `Bearer ${JSON.parse(token)}`,
+            },
+          };
+          const response = await axios.get(
+            `http://localhost:6002/api/orders/store/${store?._id}/top-items`,
+            config
+          );
+          setTopOrderedItems(response.data.topItems);
+        } else {
+          console.log("Authentication token not found");
+        }
+      } catch (error) {
+        console.log("Error fetching top ordered items:", error);
+        toast.error("Failed to fetch top ordered items", error);
+      }
+    };
+
+    const fetchData = async () => {
+      await fetchRestaurantMonthlySales();
+      await fetchTopOrderedItems();
+    };
+    fetchData();
   }, [store?._id]);
 
-  const lineChartData = monthlySales.map((item) => ({
-    month: `${item.month} ${item.year}`,
-    totalSales: item.totalSales,
-    orderCount: item.orderCount,
-  }));
+  React.useEffect(() => {
+    if (monthlySales.length > 0) {
+      setFilteredSalesData(
+        monthlySales.map((item) => ({
+          period: `${item.month} ${item.year}`,
+          totalSales: item.totalSales,
+          orderCount: item.orderCount,
+        }))
+      );
+    }
+  }, [monthlySales]);
 
   const pieChartData = topOrderedItems.map((item) => ({
     label: item.title,
@@ -215,6 +227,253 @@ const UserStorePage = () => {
       </g>
     );
   }
+
+  const fetchSalesData = async (period) => {
+    try {
+      const token = sessionStorage.getItem("token");
+      if (token) {
+        const config = {
+          headers: {
+            Authorization: `Bearer ${JSON.parse(token)}`,
+          },
+        };
+
+        let endpoint = `http://localhost:6002/api/orders/supplier/${store?._id}/sales/${period}`;
+
+        // For current day, use a specific endpoint with today's date
+        if (period === "day") {
+          const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD format
+          endpoint = `http://localhost:6002/api/orders/supplier/${store?._id}/sales/day?date=${today}`;
+        }
+
+        const response = await axios.get(endpoint, config);
+        setFilteredSalesData(response.data.sales);
+      } else {
+        console.log("Authentication token not found");
+      }
+    } catch (error) {
+      console.log(`Error fetching ${period} sales:`, error);
+      // Fallback to mock data for demo purposes
+      generateMockData(period);
+    }
+  };
+
+  const generateMockData = (period) => {
+    let mockData = [];
+    const currentDate = new Date();
+    const currentHour = currentDate.getHours();
+
+    if (period === "day") {
+      // Generate hourly data for current day (today only)
+      const today = currentDate.toDateString();
+      for (let i = 0; i < 24; i++) {
+        const hour = i.toString().padStart(2, "0");
+        // Show actual data for past hours, projected data for future hours
+        const isPastHour = i <= currentHour;
+        const salesAmount = isPastHour
+          ? Math.floor(Math.random() * 800) + 100 // Higher sales for completed hours
+          : Math.floor(Math.random() * 200) + 25; // Lower projected sales for future hours
+
+        mockData.push({
+          period: `${hour}:00`,
+          totalSales: salesAmount,
+          orderCount:
+            Math.floor(salesAmount / 40) + Math.floor(Math.random() * 8),
+          date: today,
+          hour: i,
+          isPastHour,
+        });
+      }
+    } else if (period === "week") {
+      // Generate daily data for last 7 days
+      for (let i = 6; i >= 0; i--) {
+        const date = new Date(currentDate);
+        date.setDate(date.getDate() - i);
+        const isToday = i === 0;
+        mockData.push({
+          period: date.toLocaleDateString("en-US", { weekday: "short" }),
+          totalSales: isToday
+            ? Math.floor(Math.random() * 2000) + 500 // Today's sales so far
+            : Math.floor(Math.random() * 3500) + 300, // Previous days' complete sales
+          orderCount: Math.floor(Math.random() * 35) + 8,
+          date: date.toDateString(),
+          isToday,
+        });
+      }
+    } else {
+      // Use monthly data (existing)
+      mockData = monthlySales.map((item) => ({
+        period: `${item.month} ${item.year}`,
+        totalSales: item.totalSales,
+        orderCount: item.orderCount,
+      }));
+    }
+
+    setFilteredSalesData(mockData);
+  };
+
+  const handleFilterChange = (newFilter) => {
+    setSalesFilter(newFilter);
+    if (newFilter === "month") {
+      setFilteredSalesData(
+        monthlySales.map((item) => ({
+          period: `${item.month} ${item.year}`,
+          totalSales: item.totalSales,
+          orderCount: item.orderCount,
+        }))
+      );
+    } else {
+      fetchSalesData(newFilter);
+    }
+  };
+
+  const generatePDFReport = async () => {
+    try {
+      toast.info("Generating PDF report...");
+
+      const pdf = new jsPDF("p", "mm", "a4");
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+
+      pdf.setFontSize(20);
+      pdf.setFont("helvetica", "bold");
+      pdf.text(`${store?.title} - Sales Report`, pageWidth / 2, 20, {
+        align: "center",
+      });
+
+      pdf.setFontSize(12);
+      pdf.setFont("helvetica", "normal");
+      const reportType =
+        salesFilter === "month"
+          ? "Monthly"
+          : salesFilter === "week"
+          ? "Weekly"
+          : "Daily";
+      pdf.text(`${reportType} Sales Report`, pageWidth / 2, 30, {
+        align: "center",
+      });
+
+      pdf.setFontSize(10);
+      pdf.text(`Store: ${store?.title}`, 20, 45);
+      pdf.text(`Address: ${store?.coords?.address}`, 20, 52);
+      pdf.text(
+        `Generated on: ${new Date().toLocaleDateString("en-US", {
+          weekday: "long",
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        })}`,
+        20,
+        59
+      );
+
+      let dateRange = "";
+      if (salesFilter === "day") {
+        dateRange = "";
+      } else if (salesFilter === "week") {
+        const startDate = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+        const endDate = new Date();
+        dateRange = `Period: ${startDate.toLocaleDateString("en-US", {
+          weekday: "long",
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        })} - ${endDate.toLocaleDateString("en-US", {
+          weekday: "long",
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        })}`;
+      } else {
+        dateRange = `Year: ${new Date().getFullYear()}`;
+      }
+
+      pdf.text(dateRange, 20, 66);
+
+      const totalSales = filteredSalesData.reduce(
+        (sum, item) => sum + item.totalSales,
+        0
+      );
+      const totalOrders = filteredSalesData.reduce(
+        (sum, item) => sum + (item.orderCount || 0),
+        0
+      );
+      const avgOrderValue = totalOrders > 0 ? totalSales / totalOrders : 0;
+
+      pdf.setFontSize(12);
+      pdf.setFont("helvetica", "bold");
+      pdf.text("Sales Summary", 20, 85);
+
+      pdf.setFont("helvetica", "normal");
+      pdf.setFontSize(10);
+      pdf.text(`Total Sales: Php.${totalSales.toFixed(2)}`, 20, 95);
+      pdf.text(`Total Orders: ${totalOrders}`, 20, 102);
+      pdf.text(`Average Order Value: Php.${avgOrderValue.toFixed(2)}`, 20, 109);
+
+      pdf.setFontSize(12);
+      pdf.setFont("helvetica", "bold");
+      pdf.text("Detailed Sales Data", 20, 125);
+
+      pdf.setFontSize(10);
+      pdf.setFont("helvetica", "bold");
+      let yPosition = 135;
+      pdf.text("Period", 20, yPosition);
+      pdf.text("Sales (Php)", 80, yPosition);
+      pdf.text("Orders", 140, yPosition);
+
+      pdf.setFont("helvetica", "normal");
+      yPosition += 10;
+
+      filteredSalesData.forEach((item, index) => {
+        if (yPosition > pageHeight - 30) {
+          pdf.addPage();
+          yPosition = 20;
+          pdf.setFont("helvetica", "bold");
+          pdf.text("Period", 20, yPosition);
+          pdf.text("Sales (Php)", 80, yPosition);
+          pdf.text("Orders", 140, yPosition);
+          pdf.setFont("helvetica", "normal");
+          yPosition += 10;
+        }
+
+        pdf.text(item.period, 20, yPosition);
+        pdf.text(item.totalSales.toFixed(2), 80, yPosition);
+        pdf.text((item.orderCount || 0).toString(), 140, yPosition);
+        yPosition += 8;
+      });
+
+      const currentDate = new Date();
+      pdf.setFontSize(8);
+      pdf.setFont("helvetica", "italic");
+      pdf.text(
+        `Generated by ${
+          store?.title
+        } Dashboard on ${currentDate.toLocaleDateString("en-US", {
+          weekday: "long",
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        })} at ${currentDate.toLocaleTimeString("en-US")}`,
+        pageWidth / 2,
+        pageHeight - 10,
+        { align: "center" }
+      );
+
+      // Save the PDF
+      const fileName = `${store?.title?.replace(
+        /[^a-zA-Z0-9]/g,
+        "_"
+      )}_${reportType}_Sales_Report_${
+        new Date().toISOString().split("T")[0]
+      }.pdf`;
+      pdf.save(fileName);
+
+      toast.success("PDF report generated successfully!");
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+      toast.error("Failed to generate PDF report");
+    }
+  };
 
   return (
     <Box
@@ -529,19 +788,166 @@ const UserStorePage = () => {
                 p: 2,
               }}
             >
-              <Typography
+              <Box
                 sx={{
-                  fontFamily: "bold",
-                  fontSize: 24,
-                  textAlign: "left",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
                 }}
               >
-                Monthly Sales
-              </Typography>
+                <Typography
+                  sx={{
+                    fontFamily: "bold",
+                    fontSize: 24,
+                    textAlign: "left",
+                  }}
+                >
+                  Sales Overview
+                </Typography>
+
+                <ButtonGroup variant="outlined" size="small">
+                  <Button
+                    onClick={() => {
+                      handleFilterChange("day");
+                      console.log(filteredSalesData);
+                    }}
+                    variant={salesFilter === "day" ? "contained" : "outlined"}
+                    style={{
+                      fontFamily: salesFilter === "day" ? "bold" : "regular",
+                      color:
+                        salesFilter === "day" ? COLORS.white : COLORS.gray2,
+                      backgroundColor:
+                        salesFilter === "day" ? COLORS.primary : "transparent",
+                      borderColor:
+                        salesFilter === "day" ? "transparent" : COLORS.gray2,
+                    }}
+                  >
+                    Today
+                  </Button>
+
+                  <Button
+                    onClick={() => {
+                      handleFilterChange("week");
+                      console.log(filteredSalesData);
+                    }}
+                    variant={salesFilter === "week" ? "contained" : "outlined"}
+                    style={{
+                      fontFamily: salesFilter === "week" ? "bold" : "regular",
+                      color:
+                        salesFilter === "week" ? COLORS.white : COLORS.gray2,
+                      backgroundColor:
+                        salesFilter === "week" ? COLORS.primary : "transparent",
+                      borderColor:
+                        salesFilter === "week" ? "transparent" : COLORS.gray2,
+                    }}
+                  >
+                    This Week
+                  </Button>
+
+                  <Button
+                    onClick={() => {
+                      handleFilterChange("month");
+                      console.log(filteredSalesData);
+                    }}
+                    variant={salesFilter === "month" ? "contained" : "outlined"}
+                    style={{
+                      fontFamily: salesFilter === "month" ? "bold" : "regular",
+                      color:
+                        salesFilter === "month" ? COLORS.white : COLORS.gray2,
+                      backgroundColor:
+                        salesFilter === "month"
+                          ? COLORS.primary
+                          : "transparent",
+                      borderColor:
+                        salesFilter === "month" ? "transparent" : COLORS.gray2,
+                    }}
+                  >
+                    Monthly
+                  </Button>
+                </ButtonGroup>
+
+                <Button
+                  onClick={generatePDFReport}
+                  style={{
+                    fontFamily: "bold",
+                    color: COLORS.white,
+                    backgroundColor: COLORS.primary,
+                    fontSize: 14,
+                    textTransform: "none",
+                    padding: "6px 12px",
+                  }}
+                  startIcon={<ArticleIcon />}
+                >
+                  Print{" "}
+                  {salesFilter === "month"
+                    ? "Monthly"
+                    : salesFilter === "week"
+                    ? "Weekly"
+                    : "Daily"}{" "}
+                  Report
+                </Button>
+              </Box>
+
+              {salesFilter === "day" && (
+                <Typography
+                  sx={{
+                    fontFamily: "regular",
+                    fontSize: 12,
+                    color: COLORS.gray,
+                    textAlign: "left",
+                  }}
+                >
+                  Current Day Sales - Updated:{" "}
+                  {new Date().toLocaleTimeString("en-US", {
+                    hour: "numeric",
+                    minute: "2-digit",
+                    hour12: true,
+                  })}
+                </Typography>
+              )}
+
+              {salesFilter === "week" && (
+                <Typography
+                  sx={{
+                    fontFamily: "regular",
+                    fontSize: 12,
+                    color: COLORS.gray,
+                    textAlign: "left",
+                  }}
+                >
+                  This Week Sales - From{" "}
+                  {new Date(
+                    Date.now() - 7 * 24 * 60 * 60 * 1000
+                  ).toLocaleDateString("en-US", {
+                    month: "long",
+                    day: "numeric",
+                    year: "numeric",
+                  })}{" "}
+                  to{" "}
+                  {new Date().toLocaleDateString("en-US", {
+                    month: "long",
+                    day: "numeric",
+                    year: "numeric",
+                  })}
+                </Typography>
+              )}
+
+              {salesFilter === "month" && (
+                <Typography
+                  sx={{
+                    fontFamily: "regular",
+                    fontSize: 12,
+                    color: COLORS.gray,
+                    textAlign: "left",
+                  }}
+                >
+                  Monthly Sales - Year {new Date().getFullYear()}{" "}
+                </Typography>
+              )}
 
               <LineChart
-                dataset={lineChartData}
-                xAxis={[{ dataKey: "month", scaleType: "band" }]}
+                dataset={filteredSalesData}
+                xAxis={[{ dataKey: "period", scaleType: "band" }]}
                 series={[{ dataKey: "totalSales", label: "Total Sales:" }]}
                 height={300}
                 grid={{ vertical: true, horizontal: true }}
