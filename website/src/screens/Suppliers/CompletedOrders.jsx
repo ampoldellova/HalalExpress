@@ -46,7 +46,7 @@ const CompletedOrders = ({ completedOrders, storeId }) => {
 
       // Fetch store-specific delivery report data from backend
       const response = await axios.get(
-        `http://localhost:6002/api/orders/store/${storeId}/delivery-report`,
+        `https://halalexpress.onrender.com/api/orders/store/${storeId}/delivery-report`,
         config
       );
 

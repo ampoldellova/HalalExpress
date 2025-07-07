@@ -52,7 +52,7 @@ const CartDrawer = ({ onClick }) => {
         };
 
         const response = await axios.get(
-          `http://localhost:6002/api/cart/`,
+          `https://halalexpress.onrender.com/api/cart/`,
           config
         );
         setCartItems(response.data.cartItems);
@@ -77,7 +77,7 @@ const CartDrawer = ({ onClick }) => {
 
       const serializedUser = encodeURIComponent(JSON.stringify(user));
       await axios.delete(
-        `http://localhost:6002/api/cart/remove-food?user=${serializedUser}&itemId=${foodId}`,
+        `https://halalexpress.onrender.com/api/cart/remove-food?user=${serializedUser}&itemId=${foodId}`,
         config
       );
 
@@ -100,7 +100,7 @@ const CartDrawer = ({ onClick }) => {
         };
 
         await axios.patch(
-          `http://localhost:6002/api/cart/increment/${itemId}`,
+          `https://halalexpress.onrender.com/api/cart/increment/${itemId}`,
           {},
           config
         );
@@ -126,7 +126,7 @@ const CartDrawer = ({ onClick }) => {
         };
 
         await axios.patch(
-          `http://localhost:6002/api/cart/decrement/${itemId}`,
+          `https://halalexpress.onrender.com/api/cart/decrement/${itemId}`,
           {},
           config
         );

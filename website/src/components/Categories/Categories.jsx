@@ -28,7 +28,7 @@ const Categories = ({
 
   const getCategories = async () => {
     try {
-      const response = await axios.get(`http://localhost:6002/api/category`);
+      const response = await axios.get(`https://halalexpress.onrender.com/api/category`);
       setCategories(response.data);
     } catch (error) {
       console.log("Error fetching restaurants:", error);

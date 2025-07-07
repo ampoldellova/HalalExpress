@@ -70,7 +70,7 @@ export default function NavigationBar() {
         };
 
         const response = await axios.get(
-          `http://localhost:6002/api/cart/`,
+          `https://halalexpress.onrender.com/api/cart/`,
           config
         );
         setCart(response.data.cart);

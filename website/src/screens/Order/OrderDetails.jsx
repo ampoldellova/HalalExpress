@@ -58,7 +58,7 @@ const OrderDetails = () => {
         };
 
         await axios.post(
-          `http://localhost:6002/api/orders/receive`,
+          `https://halalexpress.onrender.com/api/orders/receive`,
           { orderId: order?._id },
           config
         );

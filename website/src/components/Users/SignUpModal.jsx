@@ -51,7 +51,7 @@ const SignUpModal = ({ open, onClose }) => {
         password,
       };
 
-      const response = await axios.post(`http://localhost:6002/register`, data);
+      const response = await axios.post(`https://halalexpress.onrender.com/register`, data);
 
       if (response.status === 200) {
         onClose();

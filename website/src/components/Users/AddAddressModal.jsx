@@ -82,7 +82,7 @@ const AddAddressModal = ({ open, onClose, fetchUserAddresses }) => {
                     longitude: region.longitude,
                 };
 
-                await axios.post(`http://localhost:6002/api/users/address`, data, config);
+                await axios.post(`https://halalexpress.onrender.com/api/users/address`, data, config);
                 setLoader(false);
                 fetchUserAddresses();
                 toast.success('Address added successfully');

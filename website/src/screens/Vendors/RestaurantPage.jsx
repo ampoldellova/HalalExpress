@@ -46,7 +46,7 @@ const RestaurantPage = () => {
   const getRestaurant = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:6002/api/restaurant/byId/${restaurantId.id}`
+        `https://halalexpress.onrender.com/api/restaurant/byId/${restaurantId.id}`
       );
       setRestaurant(response.data.data);
     } catch (error) {

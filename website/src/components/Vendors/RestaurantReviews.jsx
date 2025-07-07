@@ -14,7 +14,7 @@ const RestaurantReviews = ({ open, onClose, restaurantId }) => {
   const fetchRestaurantReviews = async () => {
     try {
       const response = await fetch(
-        `http://localhost:6002/api/orders/${restaurantId}/reviews`
+        `https://halalexpress.onrender.com/api/orders/${restaurantId}/reviews`
       );
 
       const data = await response.json();

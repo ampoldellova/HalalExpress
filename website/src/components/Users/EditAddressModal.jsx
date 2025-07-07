@@ -90,7 +90,7 @@ const EditAddressModal = ({ userAddress, fetchUserAddresses }) => {
                     },
                 };
 
-                await axios.put(`http://localhost:6002/api/users/address`, data, config);
+                await axios.put(`https://halalexpress.onrender.com/api/users/address`, data, config);
                 toast.success('Address updated successfully');
                 fetchUserAddresses();
                 handleCloseEditAddressModal();

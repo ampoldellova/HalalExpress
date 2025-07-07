@@ -86,7 +86,7 @@ const Profile = () => {
       formData.append("phone", phone);
 
       const response = await axios.put(
-        `http://localhost:6002/api/users/`,
+        `https://halalexpress.onrender.com/api/users/`,
         formData,
         {
           headers: {

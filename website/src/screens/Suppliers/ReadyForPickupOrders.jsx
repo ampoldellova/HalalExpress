@@ -34,7 +34,7 @@ const ReadyForPickupOrders = ({ readyForPickupOrders }) => {
       };
 
       await axios.post(
-        `http://localhost:6002/api/orders/mark-as-completed`,
+        `https://halalexpress.onrender.com/api/orders/mark-as-completed`,
         { orderId },
         config
       );

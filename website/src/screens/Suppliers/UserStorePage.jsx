@@ -56,7 +56,7 @@ const UserStorePage = () => {
           },
         };
         const response = await axios.patch(
-          `http://localhost:6002/api/supplier/${store?._id}`,
+          `https://halalexpress.onrender.com/api/supplier/${store?._id}`,
           {},
           config
         );
@@ -85,7 +85,7 @@ const UserStorePage = () => {
           },
         };
         const response = await axios.patch(
-          `http://localhost:6002/api/supplier/delivery/${store?._id}`,
+          `https://halalexpress.onrender.com/api/supplier/delivery/${store?._id}`,
           {},
           config
         );
@@ -114,7 +114,7 @@ const UserStorePage = () => {
           },
         };
         const response = await axios.patch(
-          `http://localhost:6002/api/supplier/pickup/${store?._id}`,
+          `https://halalexpress.onrender.com/api/supplier/pickup/${store?._id}`,
           {},
           config
         );
@@ -144,7 +144,7 @@ const UserStorePage = () => {
             },
           };
           const response = await axios.get(
-            `http://localhost:6002/api/orders/store/${store?._id}/monthly-sales`,
+            `https://halalexpress.onrender.com/api/orders/store/${store?._id}/monthly-sales`,
             config
           );
           setMonthlySales(response.data.sales);
@@ -167,7 +167,7 @@ const UserStorePage = () => {
             },
           };
           const response = await axios.get(
-            `http://localhost:6002/api/orders/store/${store?._id}/top-items`,
+            `https://halalexpress.onrender.com/api/orders/store/${store?._id}/top-items`,
             config
           );
           setTopOrderedItems(response.data.topItems);
@@ -238,12 +238,12 @@ const UserStorePage = () => {
           },
         };
 
-        let endpoint = `http://localhost:6002/api/orders/supplier/${store?._id}/sales/${period}`;
+        let endpoint = `https://halalexpress.onrender.com/api/orders/supplier/${store?._id}/sales/${period}`;
 
         // For current day, use a specific endpoint with today's date
         if (period === "day") {
           const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD format
-          endpoint = `http://localhost:6002/api/orders/supplier/${store?._id}/sales/day?date=${today}`;
+          endpoint = `https://halalexpress.onrender.com/api/orders/supplier/${store?._id}/sales/day?date=${today}`;
         }
 
         const response = await axios.get(endpoint, config);

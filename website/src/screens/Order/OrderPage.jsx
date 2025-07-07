@@ -40,7 +40,7 @@ const OrderPage = () => {
         };
 
         const response = await axios.get(
-          "http://localhost:6002/api/orders/",
+          "https://halalexpress.onrender.com/api/orders/",
           config
         );
         setOrders(response.data.orders);

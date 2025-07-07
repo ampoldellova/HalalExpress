@@ -36,7 +36,7 @@ const SupplierInfoModal = ({ open, onClose, supplierId }) => {
   const getSupplier = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:6002/api/supplier/byId/${supplierId}`
+        `https://halalexpress.onrender.com/api/supplier/byId/${supplierId}`
       );
       setSupplier(response.data.data);
     } catch (error) {

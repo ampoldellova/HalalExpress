@@ -38,7 +38,7 @@ const LoginModal = ({ open, onClose, signUp }) => {
 
   const loginUser = async () => {
     try {
-      const { data } = await axios.post(`http://localhost:6002/login`, {
+      const { data } = await axios.post(`https://halalexpress.onrender.com/login`, {
         email,
         password,
       });

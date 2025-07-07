@@ -14,7 +14,7 @@ const SupplierReviews = ({ open, onClose, supplierId }) => {
   const fetchSupplierReviews = async () => {
     try {
       const response = await fetch(
-        `http://localhost:6002/api/orders/${supplierId}/reviews`
+        `https://halalexpress.onrender.com/api/orders/${supplierId}/reviews`
       );
 
       const data = await response.json();

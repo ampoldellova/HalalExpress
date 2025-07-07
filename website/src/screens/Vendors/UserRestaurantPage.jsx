@@ -57,7 +57,7 @@ const UserRestaurantPage = () => {
           },
         };
         const response = await axios.patch(
-          `http://localhost:6002/api/restaurant/${restaurant?._id}`,
+          `https://halalexpress.onrender.com/api/restaurant/${restaurant?._id}`,
           {},
           config
         );
@@ -86,7 +86,7 @@ const UserRestaurantPage = () => {
           },
         };
         const response = await axios.patch(
-          `http://localhost:6002/api/restaurant/delivery/${restaurant?._id}`,
+          `https://halalexpress.onrender.com/api/restaurant/delivery/${restaurant?._id}`,
           {},
           config
         );
@@ -115,7 +115,7 @@ const UserRestaurantPage = () => {
           },
         };
         const response = await axios.patch(
-          `http://localhost:6002/api/restaurant/pickup/${restaurant?._id}`,
+          `https://halalexpress.onrender.com/api/restaurant/pickup/${restaurant?._id}`,
           {},
           config
         );
@@ -144,11 +144,11 @@ const UserRestaurantPage = () => {
           },
         };
 
-        let endpoint = `http://localhost:6002/api/orders/restaurant/${restaurant?._id}/sales/${period}`;
+        let endpoint = `https://halalexpress.onrender.com/api/orders/restaurant/${restaurant?._id}/sales/${period}`;
 
         if (period === "day") {
           const today = new Date().toISOString().split("T")[0];
-          endpoint = `http://localhost:6002/api/orders/restaurant/${restaurant?._id}/sales/today?date=${today}`;
+          endpoint = `https://halalexpress.onrender.com/api/orders/restaurant/${restaurant?._id}/sales/today?date=${today}`;
         }
 
         const response = await axios.get(endpoint, config);
@@ -398,7 +398,7 @@ const UserRestaurantPage = () => {
             },
           };
           const response = await axios.get(
-            `http://localhost:6002/api/orders/restaurant/${restaurant?._id}/monthly-sales`,
+            `https://halalexpress.onrender.com/api/orders/restaurant/${restaurant?._id}/monthly-sales`,
             config
           );
           setMonthlySales(response.data.sales);
@@ -421,7 +421,7 @@ const UserRestaurantPage = () => {
             },
           };
           const response = await axios.get(
-            `http://localhost:6002/api/orders/restaurant/${restaurant?._id}/top-foods`,
+            `https://halalexpress.onrender.com/api/orders/restaurant/${restaurant?._id}/top-foods`,
             config
           );
           setTopOrderedFoods(response.data.topFoods);
