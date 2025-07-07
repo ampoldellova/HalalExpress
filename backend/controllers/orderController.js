@@ -922,8 +922,21 @@ module.exports = {
       const hourlyData = [];
       for (let hour = 0; hour < 24; hour++) {
         const existingData = sales.find((item) => item._id === hour);
+        
+        // Format hour to AM/PM
+        let displayPeriod;
+        if (hour === 0) {
+          displayPeriod = "12:00 AM";
+        } else if (hour < 12) {
+          displayPeriod = `${hour}:00 AM`;
+        } else if (hour === 12) {
+          displayPeriod = "12:00 PM";
+        } else {
+          displayPeriod = `${hour - 12}:00 PM`;
+        }
+        
         hourlyData.push({
-          period: `${hour.toString().padStart(2, "0")}:00`,
+          period: displayPeriod,
           totalSales: existingData ? existingData.totalSales : 0,
           orderCount: existingData ? existingData.orderCount : 0,
           hour: hour,
@@ -1048,8 +1061,21 @@ module.exports = {
       const hourlyData = [];
       for (let hour = 0; hour < 24; hour++) {
         const existingData = sales.find((item) => item._id === hour);
+        
+        // Format hour to AM/PM
+        let displayPeriod;
+        if (hour === 0) {
+          displayPeriod = "12:00 AM";
+        } else if (hour < 12) {
+          displayPeriod = `${hour}:00 AM`;
+        } else if (hour === 12) {
+          displayPeriod = "12:00 PM";
+        } else {
+          displayPeriod = `${hour - 12}:00 PM`;
+        }
+        
         hourlyData.push({
-          period: `${hour.toString().padStart(2, "0")}:00`,
+          period: displayPeriod,
           totalSales: existingData ? existingData.totalSales : 0,
           orderCount: existingData ? existingData.orderCount : 0,
           hour: hour,

@@ -337,7 +337,7 @@ const OrderPage = () => {
                                     mr: 1,
                                   }}
                                 >
-                                  Ordered Status:
+                                  Order Status:
                                 </Typography>
                                 <Box
                                   sx={{ display: "flex", alignItems: "center" }}

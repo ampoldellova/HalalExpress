@@ -334,7 +334,22 @@ const UserRestaurantPage = () => {
           yPosition += 10;
         }
 
-        pdf.text(item.period, 20, yPosition);
+        // Format time for daily reports to AM/PM
+        let displayPeriod = item.period;
+        if (salesFilter === "day") {
+          const hour = parseInt(item.period.split(":")[0]);
+          if (hour === 0) {
+            displayPeriod = "12:00 AM";
+          } else if (hour < 12) {
+            displayPeriod = `${hour}:00 AM`;
+          } else if (hour === 12) {
+            displayPeriod = "12:00 PM";
+          } else {
+            displayPeriod = `${hour - 12}:00 PM`;
+          }
+        }
+
+        pdf.text(displayPeriod, 20, yPosition);
         pdf.text(item.totalSales.toFixed(2), 80, yPosition);
         pdf.text((item.orderCount || 0).toString(), 140, yPosition);
         yPosition += 8;
