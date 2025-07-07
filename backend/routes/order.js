@@ -102,7 +102,7 @@ router.get(
 );
 
 router.get(
-  "/delivery-report",
+  "/store/:storeId/delivery-report",
   verifyAndAuthorization,
   orderController.getDeliveryReport
 );

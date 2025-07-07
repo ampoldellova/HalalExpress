@@ -286,7 +286,7 @@ const ManageOrders = ({ restaurantId }) => {
           )}
 
           {orderStatus === "Completed" && (
-            <CompletedOrders completedOrders={completedOrders} />
+            <CompletedOrders completedOrders={completedOrders} restaurantId={restaurantId} />
           )}
 
           {orderStatus === "Cancelled" && (

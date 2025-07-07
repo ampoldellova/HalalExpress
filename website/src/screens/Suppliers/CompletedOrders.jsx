@@ -20,7 +20,7 @@ import note from "../../assets/images/note.png";
 import axios from "axios";
 import { generateDeliveryReportPDF } from "../../utils/pdfGenerator";
 
-const CompletedOrders = ({ completedOrders }) => {
+const CompletedOrders = ({ completedOrders, storeId }) => {
   const [selectedOrder, setSelectedOrder] = React.useState(null);
   const [generatingReport, setGeneratingReport] = React.useState(false);
 
@@ -44,9 +44,9 @@ const CompletedOrders = ({ completedOrders }) => {
         },
       };
 
-      // Fetch delivery report data from backend
+      // Fetch store-specific delivery report data from backend
       const response = await axios.get(
-        "http://localhost:6002/api/orders/delivery-report",
+        `http://localhost:6002/api/orders/store/${storeId}/delivery-report`,
         config
       );
 

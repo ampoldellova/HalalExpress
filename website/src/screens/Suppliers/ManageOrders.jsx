@@ -286,7 +286,7 @@ const ManageOrders = ({ storeId }) => {
           )}
 
           {orderStatus === "Completed" && (
-            <CompletedOrders completedOrders={completedOrders} />
+            <CompletedOrders completedOrders={completedOrders} storeId={storeId} />
           )}
 
           {orderStatus === "Cancelled" && (

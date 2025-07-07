@@ -1154,10 +1154,16 @@ module.exports = {
 
   getDeliveryReport: async (req, res) => {
     try {
-      // Get all completed orders from MongoDB
+      const { storeId } = req.params;
+      
+      // Get completed orders for specific restaurant/supplier from MongoDB
       const completedOrders = await Order.aggregate([
         {
           $match: {
+            $or: [
+              { restaurant: new mongoose.Types.ObjectId(storeId) },
+              { supplier: new mongoose.Types.ObjectId(storeId) }
+            ],
             orderStatus: "Completed",
             deliveryOption: "standard"
           }
@@ -1198,10 +1204,26 @@ module.exports = {
         }
       ]);
 
+      // Get store/restaurant info
+      let storeInfo = null;
+      try {
+        storeInfo = await Restaurant.findById(storeId);
+        if (!storeInfo) {
+          storeInfo = await Supplier.findById(storeId);
+        }
+      } catch (error) {
+        console.log('Store lookup error:', error);
+      }
+
       res.status(200).json({
         status: true,
         message: "Delivery report generated successfully",
         data: {
+          storeInfo: storeInfo ? {
+            id: storeInfo._id,
+            name: storeInfo.title,
+            type: storeInfo.coords ? 'restaurant' : 'supplier'
+          } : null,
           totalCustomers: completedOrders.length,
           reportGeneratedAt: new Date().toISOString(),
           customerRankings: completedOrders
