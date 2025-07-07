@@ -1151,4 +1151,65 @@ module.exports = {
       res.status(500).json({ status: false, message: error.message });
     }
   },
+
+  getDeliveryReport: async (req, res) => {
+    try {
+      // Get all completed orders from MongoDB
+      const completedOrders = await Order.aggregate([
+        {
+          $match: {
+            orderStatus: "Completed",
+            deliveryOption: "standard"
+          }
+        },
+        {
+          $group: {
+            _id: "$userId",
+            totalDeliveries: { $sum: 1 },
+            totalAmountSpent: { $sum: "$totalAmount" },
+            orders: { $push: "$$ROOT" }
+          }
+        },
+        {
+          $lookup: {
+            from: "users",
+            localField: "_id",
+            foreignField: "_id",
+            as: "customer"
+          }
+        },
+        {
+          $unwind: "$customer"
+        },
+        {
+          $project: {
+            customerId: "$_id",
+            customerName: "$customer.username",
+            customerEmail: "$customer.email",
+            customerPhone: "$customer.phone",
+            totalDeliveries: 1,
+            totalAmountSpent: 1,
+            averageOrderValue: { $divide: ["$totalAmountSpent", "$totalDeliveries"] },
+            lastOrderDate: { $max: "$orders.createdAt" }
+          }
+        },
+        {
+          $sort: { totalDeliveries: -1 }
+        }
+      ]);
+
+      res.status(200).json({
+        status: true,
+        message: "Delivery report generated successfully",
+        data: {
+          totalCustomers: completedOrders.length,
+          reportGeneratedAt: new Date().toISOString(),
+          customerRankings: completedOrders
+        }
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ status: false, message: error.message });
+    }
+  },
 };

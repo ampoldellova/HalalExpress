@@ -1,4 +1,11 @@
-import { Box, Divider, IconButton, Typography } from "@mui/material";
+import {
+  Box,
+  Divider,
+  IconButton,
+  Typography,
+  Button,
+  CircularProgress,
+} from "@mui/material";
 import React from "react";
 import { COLORS } from "../../styles/theme";
 import gcash from "../../assets/images/gcash1.png";
@@ -7,13 +14,60 @@ import Lottie from "lottie-react";
 import empty from "../../assets/anime/emptyOrders.json";
 import AddAddressMapDisplay from "../../components/Users/AddAddressMapDisplay";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
+import AssessmentIcon from "@mui/icons-material/Assessment";
 import { toast } from "react-toastify";
 import note from "../../assets/images/note.png";
+import axios from "axios";
+import { generateDeliveryReportPDF } from "../../utils/pdfGenerator";
 
 const CompletedOrders = ({ completedOrders }) => {
   const [selectedOrder, setSelectedOrder] = React.useState(null);
+  const [generatingReport, setGeneratingReport] = React.useState(false);
+
   const openOrderDetails = (order) => {
     setSelectedOrder(order);
+  };
+
+  const generateReport = async () => {
+    setGeneratingReport(true);
+    try {
+      const token = sessionStorage.getItem("token");
+      if (!token) {
+        toast.error("Authentication required");
+        setGeneratingReport(false);
+        return;
+      }
+
+      const config = {
+        headers: {
+          Authorization: `Bearer ${JSON.parse(token)}`,
+        },
+      };
+
+      // Fetch delivery report data from backend
+      const response = await axios.get(
+        "http://localhost:6002/api/orders/delivery-report",
+        config
+      );
+
+      if (response.data.status) {
+        // Generate PDF with the fetched data
+        const result = await generateDeliveryReportPDF(response.data.data);
+
+        if (result.success) {
+          toast.success(result.message);
+        } else {
+          toast.error(result.message);
+        }
+      } else {
+        toast.error("Failed to fetch delivery report data");
+      }
+    } catch (error) {
+      console.error("Error generating report:", error);
+      toast.error("Failed to generate delivery report");
+    } finally {
+      setGeneratingReport(false);
+    }
   };
 
   return (
@@ -30,14 +84,47 @@ const CompletedOrders = ({ completedOrders }) => {
           }}
         >
           {!selectedOrder && (
-            <Box
-              sx={{
-                display: "grid",
-                gridTemplateColumns: "repeat(2, 1fr)",
-                gap: 2,
-                p: 2,
-              }}
-            >
+            <>
+              <Box
+                sx={{ mt: 2, display: "flex", justifyContent: "center" }}
+              >
+                <Button
+                  variant="contained"
+                  startIcon={<AssessmentIcon />}
+                  onClick={generateReport}
+                  disabled={generatingReport}
+                  sx={{
+                    fontFamily: "bold",
+                    textTransform: "none",
+                    bgcolor: COLORS.primary,
+                    color: COLORS.white,
+                    "&:hover": { bgcolor: COLORS.secondary },
+                    "&:disabled": { bgcolor: COLORS.gray2 },
+                  }}
+                >
+                  {generatingReport ? (
+                    <>
+                      <CircularProgress
+                        size={20}
+                        color="inherit"
+                        sx={{ mr: 1 }}
+                      />
+                      Generating...
+                    </>
+                  ) : (
+                    "Generate Delivery Report"
+                  )}
+                </Button>
+              </Box>
+
+              <Box
+                sx={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(2, 1fr)",
+                  gap: 2,
+                  p: 2,
+                }}
+              >
               {completedOrders.map((order) => (
                 <Box
                   key={order._id}
@@ -197,9 +284,9 @@ const CompletedOrders = ({ completedOrders }) => {
                       </Typography>
                     </Box>
                   </Box>
-                </Box>
-              ))}
-            </Box>
+                </Box>                ))}
+              </Box>
+            </>
           )}
 
           {selectedOrder && (

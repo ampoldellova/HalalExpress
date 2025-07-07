@@ -102,15 +102,9 @@ router.get(
 );
 
 router.get(
-  "/supplier/:supplierId/sales/day",
+  "/delivery-report",
   verifyAndAuthorization,
-  orderController.getSupplierDailySales
-);
-
-router.get(
-  "/supplier/:supplierId/sales/week",
-  verifyAndAuthorization,
-  orderController.getSupplierWeeklySales
+  orderController.getDeliveryReport
 );
 
 module.exports = router;

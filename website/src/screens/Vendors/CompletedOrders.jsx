@@ -1,4 +1,11 @@
-import { Box, Divider, IconButton, Typography } from "@mui/material";
+import {
+  Box,
+  Divider,
+  IconButton,
+  Typography,
+  Button,
+  CircularProgress,
+} from "@mui/material";
 import React from "react";
 import { COLORS } from "../../styles/theme";
 import gcash from "../../assets/images/gcash1.png";
@@ -7,13 +14,60 @@ import Lottie from "lottie-react";
 import empty from "../../assets/anime/emptyOrders.json";
 import AddAddressMapDisplay from "../../components/Users/AddAddressMapDisplay";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
+import AssessmentIcon from "@mui/icons-material/Assessment";
 import { toast } from "react-toastify";
 import note from "../../assets/images/note.png";
+import axios from "axios";
+import { generateDeliveryReportPDF } from "../../utils/pdfGenerator";
 
 const CompletedOrders = ({ completedOrders }) => {
   const [selectedOrder, setSelectedOrder] = React.useState(null);
+  const [generatingReport, setGeneratingReport] = React.useState(false);
+
   const openOrderDetails = (order) => {
     setSelectedOrder(order);
+  };
+
+  const generateReport = async () => {
+    setGeneratingReport(true);
+    try {
+      const token = sessionStorage.getItem("token");
+      if (!token) {
+        toast.error("Authentication required");
+        setGeneratingReport(false);
+        return;
+      }
+
+      const config = {
+        headers: {
+          Authorization: `Bearer ${JSON.parse(token)}`,
+        },
+      };
+
+      // Fetch delivery report data from backend
+      const response = await axios.get(
+        "http://localhost:6002/api/orders/delivery-report",
+        config
+      );
+
+      if (response.data.status) {
+        // Generate PDF with the fetched data
+        const result = await generateDeliveryReportPDF(response.data.data);
+
+        if (result.success) {
+          toast.success(result.message);
+        } else {
+          toast.error(result.message);
+        }
+      } else {
+        toast.error("Failed to fetch delivery report data");
+      }
+    } catch (error) {
+      console.error("Error generating report:", error);
+      toast.error("Failed to generate delivery report");
+    } finally {
+      setGeneratingReport(false);
+    }
   };
 
   return (
@@ -27,102 +81,124 @@ const CompletedOrders = ({ completedOrders }) => {
             border: `1px solid ${COLORS.gray2}`,
             borderRadius: "8px",
             overflowY: "auto",
+            position: "relative",
           }}
         >
           {!selectedOrder && (
-            <Box
-              sx={{
-                display: "grid",
-                gridTemplateColumns: "repeat(2, 1fr)",
-                gap: 2,
-                p: 2,
-              }}
-            >
-              {completedOrders.map((order) => (
-                <Box
-                  key={order._id}
+            <>
+              <Box
+                sx={{ mt: 2, display: "flex", justifyContent: "center" }}
+              >
+                <Button
+                  variant="contained"
+                  startIcon={<AssessmentIcon />}
+                  onClick={generateReport}
+                  disabled={generatingReport}
                   sx={{
-                    border: "1px solid #e0e0e0",
-                    borderRadius: "8px",
-                    position: "relative",
-                    cursor: "pointer",
-                    "&:hover": {
-                      boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-                      transform: "scale(1.02)",
-                      transition: "transform 0.2s ease-in-out",
-                    },
+                    fontFamily: "bold",
+                    textTransform: "none",
+                    bgcolor: COLORS.primary,
+                    color: COLORS.white,
+                    "&:hover": { bgcolor: COLORS.secondary },
+                    "&:disabled": { bgcolor: COLORS.gray2 },
                   }}
-                  onClick={() => openOrderDetails(order)}
                 >
-                  <Box
-                    sx={{
-                      width: "100%",
-                      height: "20px",
-                      bgcolor: COLORS.primary,
-                      borderRadius: "8px 8px 0 0",
-                    }}
-                  />
+                  {generatingReport ? (
+                    <>
+                      <CircularProgress
+                        size={20}
+                        color="inherit"
+                        sx={{ mr: 1 }}
+                      />
+                      Generating...
+                    </>
+                  ) : (
+                    "Generate Delivery Report"
+                  )}
+                </Button>
+              </Box>
 
+              <Box
+                sx={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(2, 1fr)",
+                  gap: 2,
+                  p: 2,
+                }}
+              >
+                {completedOrders.map((order) => (
                   <Box
-                    component="img"
-                    src={pin}
+                    key={order._id}
                     sx={{
-                      position: "absolute",
-                      objectFit: "contain",
-                      marginLeft: "10px",
-                      right: 10,
-                      top: 0,
-                      width: 50,
-                      height: 50,
+                      border: "1px solid #e0e0e0",
+                      borderRadius: "8px",
+                      position: "relative",
+                      cursor: "pointer",
+                      "&:hover": {
+                        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                        transform: "scale(1.02)",
+                        transition: "transform 0.2s ease-in-out",
+                      },
                     }}
-                  />
-                  <Box sx={{ display: "flex", alignItems: "flex-start", p: 1 }}>
+                    onClick={() => openOrderDetails(order)}
+                  >
                     <Box
-                      component="img"
-                      src={order?.userId?.profile?.url}
                       sx={{
-                        width: 30,
-                        height: 30,
-                        borderRadius: 99,
+                        width: "100%",
+                        height: "20px",
+                        bgcolor: COLORS.primary,
+                        borderRadius: "8px 8px 0 0",
                       }}
                     />
 
                     <Box
-                      sx={{ display: "flex", flexDirection: "column", ml: 1 }}
+                      component="img"
+                      src={pin}
+                      sx={{
+                        position: "absolute",
+                        objectFit: "contain",
+                        marginLeft: "10px",
+                        right: 10,
+                        top: 0,
+                        width: 50,
+                        height: 50,
+                      }}
+                    />
+                    <Box
+                      sx={{ display: "flex", alignItems: "flex-start", p: 1 }}
                     >
-                      <Typography
+                      <Box
+                        component="img"
+                        src={order?.userId?.profile?.url}
                         sx={{
-                          fontFamily: "bold",
-                          fontSize: 16,
+                          width: 30,
+                          height: 30,
+                          borderRadius: 99,
                         }}
-                      >
-                        Order #: {order?._id}
-                      </Typography>
+                      />
 
-                      <Typography
-                        sx={{
-                          fontFamily: "bold",
-                          fontSize: 14,
-                          color: COLORS.gray,
-                        }}
+                      <Box
+                        sx={{ display: "flex", flexDirection: "column", ml: 1 }}
                       >
-                        Customer: {order?.userId?.username}
-                      </Typography>
+                        <Typography
+                          sx={{
+                            fontFamily: "bold",
+                            fontSize: 16,
+                          }}
+                        >
+                          Order #: {order?._id}
+                        </Typography>
 
-                      <Typography
-                        sx={{
-                          fontFamily: "regular",
-                          fontSize: 14,
-                          color: COLORS.gray,
-                        }}
-                      >
-                        Delivery option:{" "}
-                        {order?.deliveryOption === "standard"
-                          ? "For Delivery"
-                          : "For Pickup"}
-                      </Typography>
+                        <Typography
+                          sx={{
+                            fontFamily: "bold",
+                            fontSize: 14,
+                            color: COLORS.gray,
+                          }}
+                        >
+                          Customer: {order?.userId?.username}
+                        </Typography>
 
-                      <Box sx={{ display: "flex", alignItems: "center" }}>
                         <Typography
                           sx={{
                             fontFamily: "regular",
@@ -130,20 +206,13 @@ const CompletedOrders = ({ completedOrders }) => {
                             color: COLORS.gray,
                           }}
                         >
-                          Payment Method:
+                          Delivery option:{" "}
+                          {order?.deliveryOption === "standard"
+                            ? "For Delivery"
+                            : "For Pickup"}
                         </Typography>
 
-                        {order?.paymentMethod === "gcash" ? (
-                          <Box
-                            component="img"
-                            src={gcash}
-                            sx={{
-                              height: 14,
-                              ml: 1,
-                              objectFit: "contain",
-                            }}
-                          />
-                        ) : (
+                        <Box sx={{ display: "flex", alignItems: "center" }}>
                           <Typography
                             sx={{
                               fontFamily: "regular",
@@ -151,55 +220,77 @@ const CompletedOrders = ({ completedOrders }) => {
                               color: COLORS.gray,
                             }}
                           >
-                            Cash on Delivery
+                            Payment Method:
                           </Typography>
-                        )}
+
+                          {order?.paymentMethod === "gcash" ? (
+                            <Box
+                              component="img"
+                              src={gcash}
+                              sx={{
+                                height: 14,
+                                ml: 1,
+                                objectFit: "contain",
+                              }}
+                            />
+                          ) : (
+                            <Typography
+                              sx={{
+                                fontFamily: "regular",
+                                fontSize: 14,
+                                color: COLORS.gray,
+                              }}
+                            >
+                              Cash on Delivery
+                            </Typography>
+                          )}
+                        </Box>
+
+                        <Typography
+                          sx={{
+                            fontFamily: "regular",
+                            fontSize: 14,
+                            color: COLORS.gray,
+                          }}
+                        >
+                          Payment Status:{" "}
+                          {order?.paymentStatus === "Paid"
+                            ? "🟢 Paid"
+                            : "🟡 Pending"}
+                        </Typography>
+
+                        <Typography
+                          sx={{
+                            fontFamily: "regular",
+                            fontSize: 14,
+                            color: COLORS.gray,
+                          }}
+                        >
+                          Ordered on:{" "}
+                          {new Date(order?.createdAt).toLocaleDateString(
+                            "en-US",
+                            {
+                              month: "long",
+                              day: "numeric",
+                              year: "numeric",
+                            }
+                          )}{" "}
+                          at{" "}
+                          {new Date(order?.createdAt).toLocaleTimeString(
+                            "en-US",
+                            {
+                              hour: "numeric",
+                              minute: "2-digit",
+                              hour12: true,
+                            }
+                          )}
+                        </Typography>
                       </Box>
-
-                      <Typography
-                        sx={{
-                          fontFamily: "regular",
-                          fontSize: 14,
-                          color: COLORS.gray,
-                        }}
-                      >
-                        Payment Status:{" "}
-                        {order?.paymentStatus === "Paid"
-                          ? "🟢 Paid"
-                          : "🟡 Pending"}
-                      </Typography>
-
-                      <Typography
-                        sx={{
-                          fontFamily: "regular",
-                          fontSize: 14,
-                          color: COLORS.gray,
-                        }}
-                      >
-                        Ordered on:{" "}
-                        {new Date(order?.createdAt).toLocaleDateString(
-                          "en-US",
-                          {
-                            month: "long",
-                            day: "numeric",
-                            year: "numeric",
-                          }
-                        )}{" "}
-                        at{" "}
-                        {new Date(order?.createdAt).toLocaleTimeString(
-                          "en-US",
-                          {
-                            hour: "numeric",
-                            minute: "2-digit",
-                            hour12: true,
-                          }
-                        )}
-                      </Typography>
                     </Box>
                   </Box>
-                </Box>
-              ))}
-            </Box>
+                ))}
+              </Box>
+            </>
           )}
 
           {selectedOrder && (
