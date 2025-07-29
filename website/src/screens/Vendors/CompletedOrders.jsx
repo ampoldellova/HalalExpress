@@ -18,11 +18,17 @@ import AssessmentIcon from "@mui/icons-material/Assessment";
 import { toast } from "react-toastify";
 import note from "../../assets/images/note.png";
 import axios from "axios";
-import { generateDeliveryReportPDF } from "../../utils/pdfGenerator";
+import {
+  generateDeliveryReportPDF,
+  generateCustomerOrderHistoryPDF,
+} from "../../utils/pdfGenerator";
+import HistoryIcon from "@mui/icons-material/History";
 
 const CompletedOrders = ({ completedOrders, restaurantId }) => {
   const [selectedOrder, setSelectedOrder] = React.useState(null);
   const [generatingReport, setGeneratingReport] = React.useState(false);
+  const [generatingCustomerHistory, setGeneratingCustomerHistory] =
+    React.useState(false);
 
   const openOrderDetails = (order) => {
     setSelectedOrder(order);
@@ -70,6 +76,98 @@ const CompletedOrders = ({ completedOrders, restaurantId }) => {
     }
   };
 
+  const generateCustomerOrderHistory = async (customerId) => {
+    setGeneratingCustomerHistory(true);
+    try {
+      const token = sessionStorage.getItem("token");
+      if (!token) {
+        toast.error("Authentication required");
+        setGeneratingCustomerHistory(false);
+        return;
+      }
+
+      const config = {
+        headers: {
+          Authorization: `Bearer ${JSON.parse(token)}`,
+        },
+      };
+
+      // First try the new endpoint, if it fails, use the fallback approach
+      try {
+        const response = await axios.get(
+          `http://localhost:6002/api/orders/customer/${customerId}/restaurant/${restaurantId}/history`,
+          config
+        );
+
+        if (response.data.status) {
+          const { orders, customerInfo, restaurantInfo } = response.data.data;
+
+          // Generate PDF with the fetched data
+          const result = await generateCustomerOrderHistoryPDF(
+            orders,
+            customerInfo,
+            restaurantInfo
+          );
+
+          if (result.success) {
+            toast.success(result.message);
+          } else {
+            toast.error(result.message);
+          }
+          return;
+        }
+      } catch (endpointError) {
+        console.log("New endpoint not available, using fallback approach");
+      }
+
+      // Fallback approach: Get all store orders and filter for the customer
+      const response = await axios.get(
+        `https://halalexpress.onrender.com/api/orders/store/${restaurantId}/orders`,
+        config
+      );
+
+      if (response.data.status) {
+        // Filter orders for this specific customer and only completed orders
+        const customerOrders = response.data.orders.filter(
+          (order) => order.userId && 
+                    order.userId._id === customerId && 
+                    order.orderStatus === "Completed"
+        );
+
+        if (customerOrders.length === 0) {
+          toast.error(
+            "No order history found for this customer in your restaurant"
+          );
+          return;
+        }
+
+        // Get customer and restaurant info from the filtered orders
+        const customerInfo = customerOrders[0].userId;
+        const restaurantInfo = customerOrders[0].restaurant;
+
+        // Generate PDF with the filtered data
+        const result = await generateCustomerOrderHistoryPDF(
+          customerOrders,
+          customerInfo,
+          restaurantInfo
+        );
+
+        if (result.success) {
+          toast.success(result.message);
+        } else {
+          toast.error(result.message);
+        }
+      } else {
+        toast.error("Failed to fetch customer order history");
+      }
+    } catch (error) {
+      console.error("Error generating customer order history:", error);
+      toast.error("Failed to generate customer order history");
+    } finally {
+      setGeneratingCustomerHistory(false);
+    }
+  };
+
   return (
     <>
       {completedOrders.length > 0 ? (
@@ -86,9 +184,7 @@ const CompletedOrders = ({ completedOrders, restaurantId }) => {
         >
           {!selectedOrder && (
             <>
-              <Box
-                sx={{ mt: 2, display: "flex", justifyContent: "center" }}
-              >
+              <Box sx={{ mt: 2, display: "flex", justifyContent: "center" }}>
                 <Button
                   variant="contained"
                   startIcon={<AssessmentIcon />}
@@ -331,6 +427,37 @@ const CompletedOrders = ({ completedOrders, restaurantId }) => {
               >
                 Order #: {selectedOrder?._id}
               </Typography>
+
+              <Button
+                variant="contained"
+                startIcon={<HistoryIcon />}
+                onClick={() =>
+                  generateCustomerOrderHistory(selectedOrder?.userId?._id)
+                }
+                disabled={generatingCustomerHistory}
+                sx={{
+                  fontFamily: "bold",
+                  textTransform: "none",
+                  bgcolor: COLORS.primary,
+                  color: COLORS.white,
+                  "&:hover": { bgcolor: COLORS.secondary },
+                  "&:disabled": { bgcolor: COLORS.gray2 },
+                  mb: 2,
+                }}
+              >
+                {generatingCustomerHistory ? (
+                  <>
+                    <CircularProgress
+                      size={20}
+                      color="inherit"
+                      sx={{ mr: 1 }}
+                    />
+                    Generating...
+                  </>
+                ) : (
+                  "Generate Customer Order History"
+                )}
+              </Button>
 
               {selectedOrder?.deliveryOption === "standard" && (
                 <Box

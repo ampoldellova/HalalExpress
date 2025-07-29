@@ -107,4 +107,16 @@ router.get(
   orderController.getDeliveryReport
 );
 
+router.get(
+  "/customer/:customerId/restaurant/:restaurantId/history",
+  verifyAndAuthorization,
+  orderController.getCustomerOrderHistoryInRestaurant
+);
+
+router.get(
+  "/customer/:customerId/supplier/:supplierId/history",
+  verifyAndAuthorization,
+  orderController.getCustomerOrderHistoryInSupplier
+);
+
 module.exports = router;

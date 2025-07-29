@@ -1234,4 +1234,90 @@ module.exports = {
       res.status(500).json({ status: false, message: error.message });
     }
   },
+
+  getCustomerOrderHistoryInRestaurant: async (req, res) => {
+    const { customerId, restaurantId } = req.params;
+    
+    try {
+      // Fetch all completed orders for this customer in this specific restaurant
+      const orders = await Order.find({
+        userId: customerId,
+        restaurant: restaurantId,
+        orderStatus: "Completed"
+      })
+      .populate('userId', 'username email phone profile')
+      .populate('restaurant', 'title imageUrl coords')
+      .populate('orderItems.foodId', 'title imageUrl')
+      .populate('orderItems.productId', 'title imageUrl')
+      .sort({ createdAt: -1 });
+
+      if (!orders || orders.length === 0) {
+        return res.status(404).json({
+          status: false,
+          message: "No order history found for this customer in this restaurant"
+        });
+      }
+
+      res.status(200).json({
+        status: true,
+        message: "Customer order history fetched successfully",
+        data: {
+          orders,
+          customerInfo: orders[0].userId,
+          restaurantInfo: orders[0].restaurant,
+          totalOrders: orders.length,
+          totalAmountSpent: orders.reduce((sum, order) => sum + order.totalAmount, 0)
+        }
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({
+        status: false,
+        message: error.message
+      });
+    }
+  },
+
+  getCustomerOrderHistoryInSupplier: async (req, res) => {
+    const { customerId, supplierId } = req.params;
+    
+    try {
+      // Fetch all completed orders for this customer in this specific supplier
+      const orders = await Order.find({
+        userId: customerId,
+        supplier: supplierId,
+        orderStatus: "Completed"
+      })
+      .populate('userId', 'username email phone profile')
+      .populate('supplier', 'title imageUrl coords')
+      .populate('orderItems.foodId', 'title imageUrl')
+      .populate('orderItems.productId', 'title imageUrl')
+      .sort({ createdAt: -1 });
+
+      if (!orders || orders.length === 0) {
+        return res.status(404).json({
+          status: false,
+          message: "No order history found for this customer in this supplier"
+        });
+      }
+
+      res.status(200).json({
+        status: true,
+        message: "Customer order history fetched successfully",
+        data: {
+          orders,
+          customerInfo: orders[0].userId,
+          supplierInfo: orders[0].supplier,
+          totalOrders: orders.length,
+          totalAmountSpent: orders.reduce((sum, order) => sum + order.totalAmount, 0)
+        }
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({
+        status: false,
+        message: error.message
+      });
+    }
+  },
 };
