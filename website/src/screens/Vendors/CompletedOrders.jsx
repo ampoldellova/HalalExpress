@@ -92,17 +92,15 @@ const CompletedOrders = ({ completedOrders, restaurantId }) => {
         },
       };
 
-      // First try the new endpoint, if it fails, use the fallback approach
       try {
         const response = await axios.get(
-          `http://localhost:6002/api/orders/customer/${customerId}/restaurant/${restaurantId}/history`,
+          `https://halalexpress.onrender.com/api/orders/customer/${customerId}/restaurant/${restaurantId}/history`,
           config
         );
 
         if (response.data.status) {
           const { orders, customerInfo, restaurantInfo } = response.data.data;
 
-          // Generate PDF with the fetched data
           const result = await generateCustomerOrderHistoryPDF(
             orders,
             customerInfo,
@@ -120,18 +118,17 @@ const CompletedOrders = ({ completedOrders, restaurantId }) => {
         console.log("New endpoint not available, using fallback approach");
       }
 
-      // Fallback approach: Get all store orders and filter for the customer
       const response = await axios.get(
         `https://halalexpress.onrender.com/api/orders/store/${restaurantId}/orders`,
         config
       );
 
       if (response.data.status) {
-        // Filter orders for this specific customer and only completed orders
         const customerOrders = response.data.orders.filter(
-          (order) => order.userId && 
-                    order.userId._id === customerId && 
-                    order.orderStatus === "Completed"
+          (order) =>
+            order.userId &&
+            order.userId._id === customerId &&
+            order.orderStatus === "Completed"
         );
 
         if (customerOrders.length === 0) {
@@ -141,11 +138,9 @@ const CompletedOrders = ({ completedOrders, restaurantId }) => {
           return;
         }
 
-        // Get customer and restaurant info from the filtered orders
         const customerInfo = customerOrders[0].userId;
         const restaurantInfo = customerOrders[0].restaurant;
 
-        // Generate PDF with the filtered data
         const result = await generateCustomerOrderHistoryPDF(
           customerOrders,
           customerInfo,

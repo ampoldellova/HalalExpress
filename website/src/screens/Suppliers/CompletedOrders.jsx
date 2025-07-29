@@ -88,17 +88,15 @@ const CompletedOrders = ({ completedOrders, storeId }) => {
         },
       };
 
-      // First try the new endpoint, if it fails, use the fallback approach
       try {
         const response = await axios.get(
-          `http://localhost:6002/api/orders/customer/${customerId}/supplier/${storeId}/history`,
+          `https://halalexpress.onrender.com/api/orders/customer/${customerId}/supplier/${storeId}/history`,
           config
         );
 
         if (response.data.status) {
           const { orders, customerInfo, supplierInfo } = response.data.data;
           
-          // Generate PDF with the fetched data
           const result = await generateCustomerOrderHistoryPDF(
             orders,
             customerInfo,
@@ -116,14 +114,12 @@ const CompletedOrders = ({ completedOrders, storeId }) => {
         console.log("New endpoint not available, using fallback approach");
       }
 
-      // Fallback approach: Get all store orders and filter for the customer
       const response = await axios.get(
         `https://halalexpress.onrender.com/api/orders/store/${storeId}/orders`,
         config
       );
 
       if (response.data.status) {
-        // Filter orders for this specific customer and only completed orders
         const customerOrders = response.data.orders.filter(
           (order) => order.userId && 
                     order.userId._id === customerId && 
@@ -137,11 +133,9 @@ const CompletedOrders = ({ completedOrders, storeId }) => {
           return;
         }
 
-        // Get customer and supplier info from the filtered orders
         const customerInfo = customerOrders[0].userId;
         const supplierInfo = customerOrders[0].supplier;
 
-        // Generate PDF with the filtered data
         const result = await generateCustomerOrderHistoryPDF(
           customerOrders,
           customerInfo,
